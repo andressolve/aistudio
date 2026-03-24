@@ -102,7 +102,7 @@
     margin-top: 20px;
     font-size: 16px;
     color: var(--text-muted);
-    max-width: 600px;
+    max-width: 560px;
     line-height: 1.6;
     font-weight: 300;
   }
@@ -116,7 +116,7 @@
     border-left: 3px solid var(--accent3);
     border-radius: 12px;
     padding: 16px 20px;
-    margin-bottom: 32px;
+    margin-bottom: 36px;
     display: flex;
     gap: 14px;
     align-items: flex-start;
@@ -133,111 +133,28 @@
 
   .recap-content strong { color: var(--accent3); font-weight: 500; }
 
-  .recap-pips {
-    display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap;
-  }
+  .recap-pips { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
 
   .recap-pip {
     font-family: 'DM Mono', monospace;
     font-size: 10px;
     padding: 3px 9px;
     border-radius: 4px;
-    background: rgba(45,212,191,0.08);
-    border: 1px solid rgba(45,212,191,0.25);
+    background: rgba(34,211,168,0.08);
+    border: 1px solid rgba(34,211,168,0.25);
     color: var(--accent3);
   }
 
-  /* ---- THE RULE ---- */
-  .rule-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px 24px;
-    margin-bottom: 32px;
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-  }
-
-  .rule-icon { font-size: 28px; line-height: 1; margin-top: 2px; }
-
-  .rule-text h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
-
-  .rule-text p {
-    font-size: 14px;
-    color: var(--text-muted);
-    line-height: 1.6;
-    font-weight: 300;
-  }
-
-  /* ---- CONSTRAINT DIAGRAM ---- */
-  .constraint-visual {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px 24px;
-    margin-bottom: 32px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
-  }
-
-  @media (max-width: 600px) { .constraint-visual { grid-template-columns: 1fr; } }
-
-  .constraint-item {
-    text-align: center;
-    padding: 16px 12px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--surface);
-  }
-
-  .constraint-icon {
-    font-size: 32px;
-    margin-bottom: 8px;
-    display: block;
-  }
-
-  .constraint-label {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-
-  .constraint-detail {
-    font-size: 11px;
-    color: var(--text-muted);
-    line-height: 1.5;
-    font-weight: 300;
-  }
-
-  .constraint-value {
-    font-family: 'DM Mono', monospace;
-    font-size: 20px;
-    font-weight: 500;
-    color: var(--forge);
-    display: block;
-    margin-bottom: 4px;
-  }
-
-  /* ---- PROGRESS BAR ---- */
+  /* ---- PROGRESS ---- */
   .progress-area {
-    margin-bottom: 48px;
+    margin-bottom: 40px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 20px 24px;
+    padding: 16px 20px;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
   }
 
   .progress-label {
@@ -249,8 +166,7 @@
   }
 
   .progress-track {
-    flex: 1;
-    height: 6px;
+    flex: 1; height: 5px;
     background: var(--surface2);
     border-radius: 99px;
     overflow: hidden;
@@ -269,18 +185,18 @@
     font-size: 13px;
     color: var(--forge);
     white-space: nowrap;
-    min-width: 60px;
+    min-width: 50px;
     text-align: right;
   }
 
-  /* ---- SECTION LABELS ---- */
+  /* ---- SECTIONS ---- */
   .section-label {
     font-family: 'DM Mono', monospace;
     font-size: 10px;
     letter-spacing: 3px;
     text-transform: uppercase;
     color: var(--text-dim);
-    margin: 40px 0 16px;
+    margin: 36px 0 14px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -530,11 +446,6 @@
     border-color: rgba(45,212,191,0.25);
   }
 
-  .tip-box.tip-orange {
-    background: rgba(255,107,53,0.06);
-    border-color: rgba(255,107,53,0.25);
-  }
-
   .tip-box.tip-forge {
     background: rgba(232,130,42,0.06);
     border-color: rgba(232,130,42,0.25);
@@ -551,7 +462,6 @@
 
   .tip-content strong { color: var(--accent2); font-weight: 500; }
   .tip-green .tip-content strong { color: var(--accent3); }
-  .tip-orange .tip-content strong { color: var(--accent); }
   .tip-forge .tip-content strong { color: var(--forge); }
 
   /* ---- COMPLETE BUTTON ---- */
@@ -640,21 +550,6 @@
     line-height: 1.5;
     font-weight: 300;
   }
-
-  .model-tag {
-    display: inline-block;
-    margin-top: 6px;
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-    padding: 2px 7px;
-    border-radius: 4px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-
-  .tag-easy { background: rgba(45,212,191,0.1); color: var(--accent3); border: 1px solid rgba(45,212,191,0.3); }
-  .tag-medium { background: rgba(240,192,64,0.1); color: var(--gold); border: 1px solid rgba(240,192,64,0.3); }
-  .tag-hard { background: rgba(240,96,48,0.1); color: var(--accent); border: 1px solid rgba(240,96,48,0.3); }
 
   /* ---- EXAMPLE PANELS ---- */
   .example-toggle {
@@ -768,70 +663,6 @@
 
   .ex-row.two-col { grid-template-columns: 1fr 1fr; }
 
-  /* ---- PIPELINE DIAGRAM ---- */
-  .pipeline {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    margin: 20px 0;
-    flex-wrap: wrap;
-  }
-
-  .pipeline-step {
-    text-align: center;
-    padding: 12px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    min-width: 110px;
-  }
-
-  .pipeline-step .p-icon { font-size: 24px; display: block; margin-bottom: 4px; }
-
-  .pipeline-step .p-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    color: var(--text-muted);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-
-  .pipeline-arrow {
-    font-size: 20px;
-    color: var(--forge);
-    padding: 0 8px;
-    font-family: 'DM Mono', monospace;
-  }
-
-  @media (max-width: 600px) {
-    .pipeline { flex-direction: column; gap: 4px; }
-    .pipeline-arrow { transform: rotate(90deg); padding: 4px 0; }
-  }
-
-  /* ---- WATCH LIST ---- */
-  .watch-list {
-    list-style: none;
-    margin: 14px 0;
-  }
-
-  .watch-list li {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: var(--text-muted);
-    line-height: 1.6;
-    font-weight: 300;
-  }
-
-  .watch-list li .watch-icon {
-    font-size: 14px;
-    margin-top: 3px;
-    min-width: 18px;
-    text-align: center;
-  }
-
   /* ---- XP ---- */
   .xp-row {
     display: flex;
@@ -856,21 +687,6 @@
     border-color: var(--gold);
     color: var(--gold);
   }
-
-  /* ---- CODE BLOCK ---- */
-  .code-block {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 16px;
-    margin: 12px 0;
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    color: var(--accent3);
-    line-height: 1.6;
-    overflow-x: auto;
-    white-space: pre-wrap;
-  }
 </style>
 </head>
 <body>
@@ -878,15 +694,15 @@
 
   <header>
     <div class="eyebrow">// the forge</div>
-    <h1>From Code to<br><span>Physical Object</span><span class="day">Day 5</span></h1>
-    <p class="subtitle">One session. You design a 3D model in code, see it spin on screen, export it to STL, and <strong>hold it in your hand</strong>. The full pipeline &mdash; digital to physical.</p>
+    <h1>The <span>Forge</span><span class="day">Day 5</span></h1>
+    <p class="subtitle">Design something on screen. Then <strong>hold it in your hand</strong>. Today you go from code to a real physical object.</p>
   </header>
 
   <!-- RECAP -->
   <div class="recap-card">
     <div class="recap-icon">&#128203;</div>
     <div class="recap-content">
-      <strong>Skills unlocked so far:</strong> You can direct AI to create stories, visuals, guides, and interactive games. You've learned to iterate, critique, and art-direct. Today you cross a new boundary &mdash; you'll make something that exists outside a screen.
+      <strong>Skills unlocked so far:</strong> You can direct AI to create stories, visuals, guides, and games. You've learned to iterate, critique, and art-direct. Today you cross a new line &mdash; you'll make something that exists outside a screen.
       <div class="recap-pips">
         <span class="recap-pip">Prompt Craft &#10003;</span>
         <span class="recap-pip">Iterative Dev &#10003;</span>
@@ -896,96 +712,95 @@
     </div>
   </div>
 
-  <!-- THE RULE -->
-  <div class="rule-card">
-    <div class="rule-icon">&#9878;&#65039;</div>
-    <div class="rule-text">
-      <h3>The One Rule</h3>
-      <p>A 3D printer builds from the bottom up, layer by layer. It can't print in mid-air. So there's one rule: <strong style="color:var(--forge)">nothing overhangs more than 45&deg;</strong>. Think of stacking wet sand &mdash; you can slope the sides, but you can't build a shelf sticking straight out. That's the design challenge today: make something that looks great <em>and</em> respects gravity.</p>
-    </div>
-  </div>
-
-  <!-- THE PIPELINE -->
-  <div class="pipeline">
-    <div class="pipeline-step">
-      <span class="p-icon">&#128187;</span>
-      <span class="p-label">Three.js Code</span>
-    </div>
-    <span class="pipeline-arrow">&#8594;</span>
-    <div class="pipeline-step">
-      <span class="p-icon">&#128302;</span>
-      <span class="p-label">3D Preview</span>
-    </div>
-    <span class="pipeline-arrow">&#8594;</span>
-    <div class="pipeline-step">
-      <span class="p-icon">&#128196;</span>
-      <span class="p-label">STL Export</span>
-    </div>
-    <span class="pipeline-arrow">&#8594;</span>
-    <div class="pipeline-step">
-      <span class="p-icon">&#9881;&#65039;</span>
-      <span class="p-label">Slicer</span>
-    </div>
-    <span class="pipeline-arrow">&#8594;</span>
-    <div class="pipeline-step">
-      <span class="p-icon">&#127981;</span>
-      <span class="p-label">3D Printer</span>
-    </div>
-  </div>
-
   <!-- PROGRESS -->
   <div class="progress-area">
     <span class="progress-label">MISSIONS COMPLETE</span>
     <div class="progress-track">
       <div class="progress-fill" id="progressFill"></div>
     </div>
-    <span class="progress-count" id="progressCount">0 / 4</span>
+    <span class="progress-count" id="progressCount">0 / 3</span>
   </div>
 
   <!-- =============================== -->
-  <!-- MISSION 1: THE RESEARCH BRIEF -->
+  <!-- MISSION 1: PICK YOUR OBJECT -->
   <!-- =============================== -->
-  <div class="section-label">Phase 01 &mdash; Research</div>
+  <div class="section-label">Mission 01 &mdash; Pick Your Object</div>
 
   <div class="mission-card" id="m1">
     <div class="card-header" onclick="toggleCard('m1')">
       <div class="card-number">01</div>
       <div class="card-meta">
-        <div class="card-tag">Research</div>
-        <div class="card-title">Teach the Machine</div>
-        <span class="card-badge badge-cool">10 min</span>
+        <div class="card-tag">Design</div>
+        <div class="card-title">What Will You Hold?</div>
+        <span class="card-badge badge-cool">5 min</span>
       </div>
       <div class="card-chevron">&#8250;</div>
     </div>
     <div class="card-body">
-      <p>Before you build anything, do something most people don't think to do: <strong>tell Claude Code to learn the domain first.</strong> It'll research how to make Three.js models that actually work for 3D printing &mdash; then it builds smarter.</p>
+      <p>The question is simple: <strong>what would be cool to hold in your hand?</strong> Something you designed, that didn't exist before today. Pick from the grid or invent your own.</p>
 
-      <div class="say-box">
-        <div class="say-label">&#128172; Say this to Claude Code</div>
-        <div class="say-text">I want to make a 3D model using Three.js, export it as an STL file, and 3D print it &mdash; without needing any supports. Before we start, research what you need to know about making this work: Three.js to STL pipeline, printable geometry, and designing for no supports. Tell me the key things I should understand.</div>
+      <div class="model-grid">
+        <div class="model-card">
+          <span class="model-emoji">&#9876;&#65039;</span>
+          <div class="model-title">War Helmet</div>
+          <div class="model-desc">A Spartan, Viking, or samurai helmet &mdash; miniature scale, sitting on a small display base. Crest, face guard, the works.</div>
+        </div>
+        <div class="model-card">
+          <span class="model-emoji">&#127984;</span>
+          <div class="model-title">Fortress Tower</div>
+          <div class="model-desc">A medieval tower with battlements, arrow slits, and a spiral staircase inside. Could be the start of a whole castle.</div>
+        </div>
+        <div class="model-card">
+          <span class="model-emoji">&#9823;</span>
+          <div class="model-title">Custom Chess Piece</div>
+          <div class="model-desc">Design your own king, queen, or knight. Not the standard shape &mdash; YOUR version. A dragon for the knight? A throne for the king? You decide.</div>
+        </div>
+        <div class="model-card">
+          <span class="model-emoji">&#128121;</span>
+          <div class="model-title">Dragon Skull</div>
+          <div class="model-desc">A low-poly dragon skull on a mounting base. Horns swept back, jaw angled up. The kind of thing you'd see in a fantasy museum.</div>
+        </div>
+        <div class="model-card">
+          <span class="model-emoji">&#128737;&#65039;</span>
+          <div class="model-title">Shield</div>
+          <div class="model-desc">A Greek aspis, a Roman scutum, or a Viking round shield. Add an emblem on the front &mdash; your own design or a historical one.</div>
+        </div>
+        <div class="model-card">
+          <span class="model-emoji">&#128142;</span>
+          <div class="model-title">Crystal Formation</div>
+          <div class="model-desc">Hexagonal crystals erupting from a rocky base at different heights and angles &mdash; like a real mineral specimen for your desk.</div>
+        </div>
+        <div class="model-card">
+          <span class="model-emoji">&#127751;</span>
+          <div class="model-title">Miniature Cityscape</div>
+          <div class="model-desc">A tiny skyline rising from a base &mdash; towers, rooftops, antenna spires. Your own city that fits in your palm.</div>
+        </div>
+        <div class="model-card">
+          <span class="model-emoji">&#128161;</span>
+          <div class="model-title">Your Own Idea</div>
+          <div class="model-desc">A trophy, a game token, a rocket, a mountain terrain, a dice tower, a character bust &mdash; if you can describe it, Claude Code can build it.</div>
+        </div>
       </div>
 
-      <p>Claude Code will come back with a summary. The most important things it'll tell you:</p>
+      <div class="prompt-box">
+        <div class="prompt-label">Write This Down</div>
+        <div class="prompt-text">In one or two sentences: what is it, and what makes it interesting?<br><br>
+Example: "A Spartan helmet on a small base. The crest goes straight back, there's a T-shaped opening for the face, and the cheek guards flare out."</div>
+      </div>
 
-      <ul class="watch-list">
-        <li><span class="watch-icon">&#9650;</span> <strong>The 45&deg; rule:</strong> No surface can overhang more than 45&deg; or the printer has nothing to build on.</li>
-        <li><span class="watch-icon">&#128167;</span> <strong>Watertight mesh:</strong> The model has to be a sealed shell with no holes. Think: if you filled it with water, none would leak out.</li>
-      </ul>
-
-      <div class="tip-box tip-green">
+      <div class="tip-box tip-forge">
         <div class="tip-icon">&#128161;</div>
-        <div class="tip-content"><strong>The technique here:</strong> You just told AI to educate itself before starting work. That's a real skill &mdash; Claude Code builds better when it understands the problem first. You'll use this technique for the rest of your life.</div>
+        <div class="tip-content"><strong>Keep it solid.</strong> Objects that build upward from a base print the cleanest. A helmet on a stand, a tower rising from the ground, a chess piece on its base &mdash; all great. A flying dragon with outstretched wings? That's a fight with gravity you don't need today.</div>
       </div>
 
       <ol class="steps">
-        <li>Open Claude Code and give it the research prompt.</li>
-        <li>Read what it finds. The 45&deg; rule is the big one.</li>
-        <li>Ask any questions you have &mdash; better to understand now than during the build.</li>
+        <li>Look at the grid. Which one would you actually want on your desk?</li>
+        <li>Write your idea in one or two sentences. Be specific about what makes it yours.</li>
       </ol>
 
       <div class="tool-chips">
-        <span class="chip">Claude Code</span>
-        <span class="chip">Web research</span>
+        <span class="chip">Your brain</span>
+        <span class="chip">Paper + pen (optional)</span>
       </div>
 
       <button class="complete-btn" onclick="markDone('m1', event)">
@@ -995,119 +810,79 @@
   </div>
 
   <!-- =============================== -->
-  <!-- MISSION 2: DESIGN YOUR OBJECT -->
+  <!-- MISSION 2: BUILD IT -->
   <!-- =============================== -->
-  <div class="section-label">Phase 02 &mdash; Design</div>
+  <div class="section-label">Mission 02 &mdash; Build It</div>
 
   <div class="mission-card" id="m2">
     <div class="card-header" onclick="toggleCard('m2')">
       <div class="card-number">02</div>
       <div class="card-meta">
-        <div class="card-tag">Design</div>
-        <div class="card-title">The Design Spec</div>
-        <span class="card-badge badge-warm">10 min</span>
+        <div class="card-tag">Build</div>
+        <div class="card-title">From Idea to 3D Model</div>
+        <span class="card-badge badge-forge">30 min</span>
       </div>
       <div class="card-chevron">&#8250;</div>
     </div>
     <div class="card-body">
-      <p>Time to pick what you're building. The fun question: <strong>what would be cool to hold in your hand?</strong> Pick something from the grid below, or invent your own. Things that build upward from a base tend to print the cleanest.</p>
+      <p>Same loop you've used all week &mdash; describe what you want, look at the result, fix one thing, repeat &mdash; but now you're sculpting a 3D object you can rotate on screen.</p>
 
-      <div class="model-grid">
-        <div class="model-card">
-          <span class="model-emoji">&#127963;&#65039;</span>
-          <div class="model-title">Roman Colosseum</div>
-          <div class="model-desc">The iconic elliptical arena &mdash; tiered arches, crumbling walls, exposed interior seating. A half-section sliced open looks even more dramatic than the full ring.</div>
-          <span class="model-tag tag-medium">needs thought</span>
-        </div>
-        <div class="model-card">
-          <span class="model-emoji">&#127963;</span>
-          <div class="model-title">Greek Temple</div>
-          <div class="model-desc">Parthenon-style: stepped base, columns, and a triangular pediment on top. Classical proportions that the ancient Greeks obsessed over. Looks incredible at miniature scale.</div>
-          <span class="model-tag tag-medium">needs thought</span>
-        </div>
-        <div class="model-card">
-          <span class="model-emoji">&#128121;</span>
-          <div class="model-title">Low-Poly Dragon Skull</div>
-          <div class="model-desc">A faceted, geometric dragon skull on a mounting base. Horns sweep backward, jaw angles upward. Looks like something out of a natural history museum. The low-poly style is the move here.</div>
-          <span class="model-tag tag-medium">needs thought</span>
-        </div>
-        <div class="model-card">
-          <span class="model-emoji">&#128142;</span>
-          <div class="model-title">Crystal Formation</div>
-          <div class="model-desc">A cluster of hexagonal crystals erupting from a rocky base &mdash; different heights, thicknesses, and angles like a real mineral specimen. Looks great on a desk or shelf.</div>
-          <span class="model-tag tag-medium">needs thought</span>
-        </div>
-        <div class="model-card">
-          <span class="model-emoji">&#127751;</span>
-          <div class="model-title">City Skyline</div>
-          <div class="model-desc">A miniature skyline &mdash; towers, skyscrapers, and rooftop details rising from a street-level base. Add antenna spires, water towers, setbacks. Naturally support-free since buildings go straight up.</div>
-          <span class="model-tag tag-easy">support-free</span>
-        </div>
-        <div class="model-card">
-          <span class="model-emoji">&#9881;&#65039;</span>
-          <div class="model-title">Gear Train</div>
-          <div class="model-desc">Interlocking gears on a base plate with axle pegs. Flat profile, zero overhangs. If the tolerances are right, they actually mesh and turn once printed.</div>
-          <span class="model-tag tag-easy">support-free</span>
-        </div>
-        <div class="model-card">
-          <span class="model-emoji">&#127755;</span>
-          <div class="model-title">Parametric Vase</div>
-          <div class="model-desc">Mathematical curves spiraling upward &mdash; sinusoidal walls, twisted profiles, organic shapes generated by equations. Looks like it belongs in a design gallery. Naturally support-free.</div>
-          <span class="model-tag tag-easy">support-free</span>
-        </div>
-        <div class="model-card">
-          <span class="model-emoji">&#128161;</span>
-          <div class="model-title">Your Own Idea</div>
-          <div class="model-desc">Medieval castle, lighthouse, chess set, sci-fi helmet, mountain terrain, rocket, dice tower &mdash; if you can describe it and keep overhangs under 45&deg;, Claude Code can build it.</div>
-          <span class="model-tag tag-hard">you decide</span>
-        </div>
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">Build me a 3D model of [YOUR IDEA] using Three.js. Show it to me in the 3D viewer so I can spin it around. It needs to be 3D-printable &mdash; keep everything solid, no thin parts floating in mid-air, and make sure nothing sticks out sideways at a steep angle. Make it look good &mdash; this is going on my shelf.</div>
+        <div class="say-note">Replace [YOUR IDEA] with your description from Mission 1. If Claude Code asks clarifying questions, answer them &mdash; that means it's trying to get the details right.</div>
       </div>
 
-      <div class="prompt-box">
-        <div class="prompt-label">Write Your Design Spec</div>
-        <div class="prompt-text">Answer these three questions:<br><br>
-&#8594; What is it? (name and description)<br>
-&#8594; What makes it interesting? (the detail, the shape, the function)<br>
-&#8594; Where might overhangs be? (and how will you handle them)</div>
-      </div>
+      <p>Claude Code will show you the model in a 3D viewer you can rotate with your mouse. <strong>Spin it around.</strong> Look at it from every angle. Look at it from below &mdash; that's where problems hide.</p>
 
       <div class="tip-box tip-green">
-        <div class="tip-icon">&#9989;</div>
-        <div class="tip-content"><strong>Validate your idea.</strong> Once you've written your spec, run it past Claude Code: "Here's what I want to build. Given the 45-degree rule and support-free constraint, will this design work? What parts might be problematic, and how would you modify them?" Let it sanity-check your design before you commit.</div>
+        <div class="tip-icon">&#128257;</div>
+        <div class="tip-content"><strong>One change at a time.</strong> Same rule as game building. "Make the horns longer" &mdash; rotate, check. "The base is too thin" &mdash; rotate, check. Don't stack five requests. Each round the model gets closer to what you imagined.</div>
+      </div>
+
+      <div class="tip-box tip-forge">
+        <div class="tip-icon">&#9650;</div>
+        <div class="tip-content"><strong>The gravity rule.</strong> A 3D printer builds from the bottom up, layer by layer. It can't print in mid-air. So anything that sticks out sideways at more than about 45&deg; needs something underneath to hold it up. The easy fix: design things that grow upward from a base. If Claude Code flags an overhang problem, ask it to fix it.</div>
       </div>
 
       <button class="example-toggle" onclick="toggleExample('ex2', this)">
-        <i class="etoggle-icon">+</i> SEE EXAMPLE DESIGN SPECS
+        <i class="etoggle-icon">+</i> EXAMPLE: BUILD CONVERSATION
       </button>
       <div class="example-panel" id="ex2">
-        <div class="example-panel-header">// example &mdash; design specs</div>
+        <div class="example-panel-header">// example &mdash; building a spartan helmet</div>
         <div class="example-panel-body">
-          <div class="ex-row">
-            <div class="ex-card">
-              <div class="ex-card-label neutral">Greek Temple</div>
-              <p><strong style="color:var(--text)">What:</strong> A simplified Parthenon, roughly 80mm wide and 50mm tall. Stepped base, six columns across the front, and a triangular pediment on top.<br><br>
-              <strong style="color:var(--text)">Interesting:</strong> The proportions &mdash; Greek architects obsessed over the ratios between column height, diameter, and spacing. I want it to feel massive even at miniature scale. Fluted columns if possible.<br><br>
-              <strong style="color:var(--text)">Overhangs:</strong> The beam across the column tops is the one risk &mdash; but if the columns are close together it bridges fine. The triangular pediment angles inward naturally. Should work.</p>
-            </div>
-            <div class="ex-card highlight-forge">
-              <div class="ex-card-label strong">Crystal Formation</div>
-              <p><strong style="color:var(--text)">What:</strong> A cluster of 5-7 hexagonal crystal shafts growing from a rough base, tallest one ~80mm.<br><br>
-              <strong style="color:var(--text)">Interesting:</strong> Each crystal is a slightly different height and angle, like a real mineral specimen. Some are thick, some are thin. The base looks like raw rock.<br><br>
-              <strong style="color:var(--text)">Overhangs:</strong> The tilted crystals could be a problem &mdash; I'll keep the tilt angles modest. The pointed tips taper naturally. The rock base builds upward. Should be fine.</p>
-            </div>
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Round 1 &mdash; First Model</div>
+            <p><strong style="color:var(--text)">You:</strong> Build me a 3D model of a Spartan helmet on a small display base. The crest goes straight back, T-shaped face opening, cheek guards flare out. Make it printable &mdash; nothing floating, no steep overhangs. Show it in the 3D viewer.</p>
+            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [writes Three.js code, shows interactive 3D model]</p>
           </div>
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Round 2 &mdash; First Fix</div>
+            <p><strong style="color:var(--text)">You (after rotating):</strong> The crest looks too thin and flat. I want it thicker and taller &mdash; like a mohawk of horsehair, not a fin. Also the cheek guards are too short, they should come down to the chin.</p>
+            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [adjusts crest and cheek guards, shows updated model]</p>
+          </div>
+          <div class="ex-card highlight-forge">
+            <div class="ex-card-label strong">Round 3 &mdash; Getting It Right</div>
+            <p><strong style="color:var(--text)">You:</strong> Way better. But the base looks like a plain disc. Can you make it look like a rough stone pedestal &mdash; slightly irregular edges, like it belongs in a museum?</p>
+            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [adds irregular stone-like base geometry]</p>
+          </div>
+          <p style="margin-top:12px"><strong style="color:var(--text)">That's 3 rounds.</strong> View, spin, spot the problem, describe the fix. Usually 3-4 rounds gets you something you're proud of.</p>
         </div>
       </div>
 
+      <p>When you're happy with how it looks, ask Claude Code: <strong>"Will this print cleanly? Anything I should fix?"</strong> Let it do the engineering check for you.</p>
+
       <ol class="steps">
-        <li>Look at the model grid. What would be satisfying to hold in your hand?</li>
-        <li>Write your design spec: what it is, what makes it interesting, where overhangs might be.</li>
-        <li>Run it past Claude Code for a feasibility check before building.</li>
+        <li>Give Claude Code your description and the build prompt.</li>
+        <li>When the 3D model appears, rotate it. Look from every angle, especially from below.</li>
+        <li>Tell Claude Code one thing to change. View the updated model.</li>
+        <li>Repeat 3-4 rounds until you're happy with it.</li>
+        <li>Ask Claude Code to confirm it'll print clean.</li>
       </ol>
 
       <div class="tool-chips">
-        <span class="chip">Your brain</span>
-        <span class="chip">Claude Code (validation)</span>
+        <span class="chip">Claude Code</span>
+        <span class="chip">Three.js 3D Viewer</span>
       </div>
 
       <button class="complete-btn" onclick="markDone('m2', event)">
@@ -1117,121 +892,40 @@
   </div>
 
   <!-- =============================== -->
-  <!-- MISSION 3: BUILD & ITERATE -->
+  <!-- MISSION 3: EXPORT & PRINT -->
   <!-- =============================== -->
-  <div class="section-label">Phase 03 &mdash; Build</div>
+  <div class="section-label">Mission 03 &mdash; Print It</div>
 
   <div class="mission-card" id="m3">
     <div class="card-header" onclick="toggleCard('m3')">
       <div class="card-number">03</div>
       <div class="card-meta">
-        <div class="card-tag">Build</div>
-        <div class="card-title">Model It</div>
-        <span class="card-badge badge-forge">25 min</span>
-      </div>
-      <div class="card-chevron">&#8250;</div>
-    </div>
-    <div class="card-body">
-      <p>Same loop you used for game building &mdash; build, look at it, fix one thing, repeat &mdash; but now you're sculpting a 3D object.</p>
-
-      <div class="say-box">
-        <div class="say-label">&#128172; Say this to Claude Code</div>
-        <div class="say-text">Build me a 3D model of [YOUR DESIGN] using Three.js. Show it to me in the 3D viewer so I can rotate it. It needs to be 3D-printable without supports &mdash; keep everything within the 45&deg; overhang rule and make the mesh watertight. Make it look good &mdash; this is going on a shelf.</div>
-        <div class="say-note">Replace [YOUR DESIGN] with your design spec from Mission 2.</div>
-      </div>
-
-      <p>Claude Code will show you the model in a 3D viewer you can rotate with your mouse. Spin it around. Look at it from below &mdash; that's where overhang problems hide.</p>
-
-      <div class="tip-box tip-green">
-        <div class="tip-icon">&#128257;</div>
-        <div class="tip-content"><strong>One change at a time.</strong> Same rule as game building. Fix one thing, rotate, inspect. Then fix the next thing. Don't stack five requests at once.</div>
-      </div>
-
-      <button class="example-toggle" onclick="toggleExample('ex3', this)">
-        <i class="etoggle-icon">+</i> EXAMPLE: BUILD ITERATION
-      </button>
-      <div class="example-panel" id="ex3">
-        <div class="example-panel-header">// example &mdash; building a crystal formation</div>
-        <div class="example-panel-body">
-          <div class="ex-card">
-            <div class="ex-card-label neutral">Round 1 &mdash; First Model</div>
-            <p><strong style="color:var(--accent2)">You:</strong> Build me a 3D model of a crystal formation &mdash; 5-7 hexagonal prism crystals growing from a rough base, tallest one about 80mm. Each crystal tilted at different angles but all under 40&deg; from vertical. Show it to me in the 3D viewer.</p>
-            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [writes Three.js code, shows interactive 3D model]</p>
-          </div>
-          <div class="ex-card">
-            <div class="ex-card-label neutral">Round 2 &mdash; First Fix</div>
-            <p><strong style="color:var(--accent2)">You (after rotating):</strong> The crystals all look the same size. I want more variation &mdash; make one crystal much thicker than the others, and make two of them really thin and sharp. Also, the base is too smooth &mdash; make it more irregular, like real rock.</p>
-            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [adjusts crystal dimensions and base geometry]</p>
-          </div>
-          <div class="ex-card highlight-forge">
-            <div class="ex-card-label strong">Round 3 &mdash; Overhang Check</div>
-            <p><strong style="color:var(--accent2)">You:</strong> I looked at it from below. The two tilted crystals on the right &mdash; their undersides look like they might be past 45 degrees. Can you check the actual angles and adjust if needed?</p>
-            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [calculates angles, adjusts the two crystals to 38&deg; tilt, shows updated model]</p>
-          </div>
-          <p style="margin-top:12px"><strong style="color:var(--text)">The loop: view &#8594; rotate &#8594; identify the problem &#8594; describe the fix &#8594; view again.</strong> 3-5 rounds is usually enough to get something you're proud of.</p>
-        </div>
-      </div>
-
-      <p>When you're happy with how it looks, ask Claude Code: <strong>"Will this print cleanly without supports? Anything I should fix?"</strong> Let it do the engineering audit for you.</p>
-
-      <ol class="steps">
-        <li>Give Claude Code your design spec with the build prompt.</li>
-        <li>When the 3D model appears, rotate it. Look at it from every angle, especially from below.</li>
-        <li>Tell Claude Code one thing to change. View the updated model.</li>
-        <li>Repeat until you're happy. 3-4 rounds is usually enough.</li>
-        <li>Ask Claude Code to confirm it'll print clean.</li>
-      </ol>
-
-      <div class="tool-chips">
-        <span class="chip">Claude Code</span>
-        <span class="chip">Three.js 3D Viewer</span>
-      </div>
-
-      <button class="complete-btn" onclick="markDone('m3', event)">
-        <span>&#10003;</span> Mark Complete
-      </button>
-    </div>
-  </div>
-
-  <!-- =============================== -->
-  <!-- MISSION 4: EXPORT & PRINT -->
-  <!-- =============================== -->
-  <div class="section-label">Phase 04 &mdash; Manufacture</div>
-
-  <div class="mission-card" id="m4">
-    <div class="card-header" onclick="toggleCard('m4')">
-      <div class="card-number">04</div>
-      <div class="card-meta">
         <div class="card-tag">Export</div>
-        <div class="card-title">From Bits to Atoms</div>
-        <span class="card-badge badge-purple">15 min</span>
+        <div class="card-title">From Screen to Hand</div>
+        <span class="card-badge badge-purple">15 min + print time</span>
       </div>
       <div class="card-chevron">&#8250;</div>
     </div>
     <div class="card-body">
-      <p>Your model is done on screen. Now you need to get it out of the browser and into your printer. You'll ask Claude Code to create an HTML page with your model and a download button.</p>
+      <p>Your model looks good on screen. Now get it out of the browser and into your printer.</p>
 
       <div class="say-box">
         <div class="say-label">&#128172; Say this to Claude Code</div>
-        <div class="say-text">Now create an HTML file I can open in my browser that shows my model (with rotation controls) and has an "Export STL" button that downloads it as a .stl file. Use the Three.js STLExporter. Make sure 1 unit = 1 millimeter.</div>
+        <div class="say-text">Create an HTML file I can open in my browser that shows my model with rotation controls and has an "Export STL" button that downloads it as a .stl file. Make sure 1 unit = 1 millimeter.</div>
       </div>
 
-      <p>Open the HTML file in your browser, give it one last spin, and hit the export button. Then open the .stl in your slicer.</p>
+      <p>Open the HTML file, give it one last spin, and hit the export button. Then open the .stl in your slicer.</p>
 
       <ol class="steps">
-        <li><strong>Open the STL in your slicer</strong> (Cura, PrusaSlicer, BambuStudio &mdash; whatever you use).</li>
-        <li><strong>Preview it with supports turned off.</strong> If the slicer shows problem areas, go back to Claude Code and tell it what to fix.</li>
-        <li><strong>When it looks clean &mdash; print it.</strong> Watch the first few layers, then let it run.</li>
+        <li>Open the STL in your slicer (Cura, PrusaSlicer, BambuStudio &mdash; whatever you use).</li>
+        <li>Preview it with supports turned off. If the slicer shows problem areas, go back to Claude Code and tell it what to fix.</li>
+        <li>If the model looks tiny or huge, tell Claude Code to adjust the scale and re-export. STL files don't store units, so this is normal.</li>
+        <li>When it looks clean &mdash; print it. Watch the first few layers, then let it run.</li>
       </ol>
-
-      <div class="tip-box tip-forge">
-        <div class="tip-icon">&#128208;</div>
-        <div class="tip-content"><strong>If the model looks tiny or huge in the slicer:</strong> STL files don't store units. Most slicers default to millimeters. If the scale is off, tell Claude Code to adjust and re-export.</div>
-      </div>
 
       <div class="tip-box tip-green">
         <div class="tip-icon">&#127942;</div>
-        <div class="tip-content"><strong>The moment.</strong> When you pull that object off the print bed &mdash; something that started as an idea in your head, became code, spun on your screen, and is now a physical thing you can hold. That's the full loop from imagination to reality.</div>
+        <div class="tip-content"><strong>The moment.</strong> When you pull that object off the print bed &mdash; something that started as an idea in your head, became code on your screen, and is now a physical thing you can hold and put on your shelf. That's the full loop. Imagination to reality.</div>
       </div>
 
       <div class="tool-chips">
@@ -1241,7 +935,7 @@
         <span class="chip">3D Printer</span>
       </div>
 
-      <button class="complete-btn" onclick="markDone('m4', event)">
+      <button class="complete-btn" onclick="markDone('m3', event)">
         <span>&#10003;</span> Mark Complete
       </button>
     </div>
@@ -1253,10 +947,9 @@
   <div style="margin-top: 48px; padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px;">
     <div class="eyebrow" style="margin-bottom: 12px;">// skills earned today</div>
     <div class="xp-row" id="xpRow">
-      <span class="xp-pip" id="xp1">Technical Research</span>
-      <span class="xp-pip" id="xp2">Engineering Constraints</span>
-      <span class="xp-pip" id="xp3">3D Modeling</span>
-      <span class="xp-pip" id="xp4">Physical Prototyping</span>
+      <span class="xp-pip" id="xp1">Object Design</span>
+      <span class="xp-pip" id="xp2">3D Modeling</span>
+      <span class="xp-pip" id="xp3">Physical Prototyping</span>
     </div>
     <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);">
       <div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px;">// total skills (all sessions)</div>
@@ -1273,21 +966,10 @@
         <span class="xp-pip earned">Iterative Dev</span>
         <span class="xp-pip earned">Art Direction</span>
         <span class="xp-pip earned">Playtesting</span>
-        <span class="xp-pip" id="xp1b">Technical Research</span>
-        <span class="xp-pip" id="xp2b">Engineering Constraints</span>
-        <span class="xp-pip" id="xp3b">3D Modeling</span>
-        <span class="xp-pip" id="xp4b">Physical Prototyping</span>
+        <span class="xp-pip" id="xp1b">Object Design</span>
+        <span class="xp-pip" id="xp2b">3D Modeling</span>
+        <span class="xp-pip" id="xp3b">Physical Prototyping</span>
       </div>
-    </div>
-  </div>
-
-  <!-- =============================== -->
-  <!-- BONUS: WHAT'S NEXT -->
-  <!-- =============================== -->
-  <div style="margin-top: 24px; padding: 20px 24px; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--forge); border-radius: 12px;">
-    <div style="font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px;">Once you've printed it...</div>
-    <div style="font-size: 13px; color: var(--text-muted); line-height: 1.7; font-weight: 300;">
-      <strong style="color: var(--forge);">Level up ideas:</strong> Print multiple pieces that snap together. Design interlocking parts. Create a chess set where every piece is your own design. Build a model with moving parts &mdash; gears that actually mesh, hinges that actually rotate. Or go parametric: change one number in the code and the entire shape transforms. The pipeline you just learned &mdash; code to screen to slicer to printer &mdash; is the same one used in actual product design and manufacturing. You just did it.
     </div>
   </div>
 
@@ -1295,7 +977,7 @@
 
 <script>
   const STATE = { completed: new Set() };
-  const TOTAL = 4;
+  const TOTAL = 3;
 
   function toggleCard(id) {
     const card = document.getElementById(id);
@@ -1340,7 +1022,6 @@
     btn.querySelector('.etoggle-icon').textContent = isOpen ? '+' : '\u00d7';
   }
 
-  // Open first card by default
   document.getElementById('m1').classList.add('open');
 </script>
 </body>
