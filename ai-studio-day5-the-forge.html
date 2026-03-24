@@ -825,24 +825,38 @@ Example: "A Spartan helmet on a small base. The crest goes straight back, there'
       <div class="card-chevron">&#8250;</div>
     </div>
     <div class="card-body">
-      <p>Same loop you've used all week &mdash; describe what you want, look at the result, fix one thing, repeat &mdash; but now you're sculpting a 3D object you can rotate on screen.</p>
+      <p>This mission has two parts. First, you'll tell Claude Code to <strong>learn how to make 3D-printable models</strong>. Then you'll build yours. This order matters &mdash; Claude Code builds much better geometry when it understands the constraints first.</p>
 
       <div class="say-box">
-        <div class="say-label">&#128172; Say this to Claude Code</div>
-        <div class="say-text">Build me a 3D model of [YOUR IDEA] using Three.js. Show it to me in the 3D viewer so I can spin it around. It needs to be 3D-printable &mdash; keep everything solid, no thin parts floating in mid-air, and make sure nothing sticks out sideways at a steep angle. Make it look good &mdash; this is going on my shelf.</div>
+        <div class="say-label">&#128172; Step 1 &mdash; Say this first</div>
+        <div class="say-text">I want to make a 3D model using Three.js that I can export as an STL file and 3D print without any supports. Before we start building, research what you need to know to make this work: the Three.js to STL pipeline, what makes geometry 3D-printable, and how to design for printing without supports. Tell me the key rules.</div>
+      </div>
+
+      <p>Claude Code will come back with what it learned. The most important things:</p>
+
+      <div class="tip-box tip-forge">
+        <div class="tip-icon">&#9650;</div>
+        <div class="tip-content"><strong>The 45&deg; rule.</strong> A 3D printer builds from the bottom up, layer by layer. It can't print in mid-air. So nothing should overhang more than 45&deg; &mdash; think of stacking wet sand. You can slope the sides, but you can't build a shelf sticking straight out.</div>
+      </div>
+
+      <div class="tip-box tip-forge">
+        <div class="tip-icon">&#128167;</div>
+        <div class="tip-content"><strong>Watertight mesh.</strong> The model has to be a sealed solid shell &mdash; no holes, no gaps. If you could fill it with water, none should leak out. Claude Code knows how to do this, but only if you tell it to.</div>
+      </div>
+
+      <p>Once Claude Code has done its research, give it your build request:</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Step 2 &mdash; Then say this</div>
+        <div class="say-text">Now build me a 3D model of [YOUR IDEA]. Show it to me in the 3D viewer so I can spin it around. Apply everything you just learned &mdash; watertight mesh, no overhangs past 45&deg;, minimum 2mm wall thickness, flat base for the print bed. Make it look good &mdash; this is going on my shelf.</div>
         <div class="say-note">Replace [YOUR IDEA] with your description from Mission 1. If Claude Code asks clarifying questions, answer them &mdash; that means it's trying to get the details right.</div>
       </div>
 
-      <p>Claude Code will show you the model in a 3D viewer you can rotate with your mouse. <strong>Spin it around.</strong> Look at it from every angle. Look at it from below &mdash; that's where problems hide.</p>
+      <p>Claude Code will show you the model in a 3D viewer you can rotate with your mouse. <strong>Spin it around.</strong> Look at it from every angle. Look at it from below &mdash; that's where overhang problems hide.</p>
 
       <div class="tip-box tip-green">
         <div class="tip-icon">&#128257;</div>
         <div class="tip-content"><strong>One change at a time.</strong> Same rule as game building. "Make the horns longer" &mdash; rotate, check. "The base is too thin" &mdash; rotate, check. Don't stack five requests. Each round the model gets closer to what you imagined.</div>
-      </div>
-
-      <div class="tip-box tip-forge">
-        <div class="tip-icon">&#9650;</div>
-        <div class="tip-content"><strong>The gravity rule.</strong> A 3D printer builds from the bottom up, layer by layer. It can't print in mid-air. So anything that sticks out sideways at more than about 45&deg; needs something underneath to hold it up. The easy fix: design things that grow upward from a base. If Claude Code flags an overhang problem, ask it to fix it.</div>
       </div>
 
       <button class="example-toggle" onclick="toggleExample('ex2', this)">
@@ -852,32 +866,37 @@ Example: "A Spartan helmet on a small base. The crest goes straight back, there'
         <div class="example-panel-header">// example &mdash; building a spartan helmet</div>
         <div class="example-panel-body">
           <div class="ex-card">
-            <div class="ex-card-label neutral">Round 1 &mdash; First Model</div>
-            <p><strong style="color:var(--text)">You:</strong> Build me a 3D model of a Spartan helmet on a small display base. The crest goes straight back, T-shaped face opening, cheek guards flare out. Make it printable &mdash; nothing floating, no steep overhangs. Show it in the 3D viewer.</p>
-            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [writes Three.js code, shows interactive 3D model]</p>
+            <div class="ex-card-label neutral">Round 1 &mdash; Research</div>
+            <p><strong style="color:var(--text)">You:</strong> I want to make a 3D model using Three.js that I can export as an STL and 3D print without supports. Research what you need to know to make this work. Tell me the key rules.</p>
+            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [researches, comes back with: 45&deg; overhang rule, watertight mesh, minimum wall thickness, flat base, manifold geometry, etc.]</p>
           </div>
           <div class="ex-card">
-            <div class="ex-card-label neutral">Round 2 &mdash; First Fix</div>
+            <div class="ex-card-label neutral">Round 2 &mdash; First Model</div>
+            <p><strong style="color:var(--text)">You:</strong> Now build a Spartan helmet on a small display base. Crest goes straight back, T-shaped face opening, cheek guards flare out. Apply everything you just learned. Show it in the 3D viewer.</p>
+            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [builds with proper wall thickness, sealed mesh, no overhangs &mdash; shows interactive 3D model]</p>
+          </div>
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Round 3 &mdash; First Fix</div>
             <p><strong style="color:var(--text)">You (after rotating):</strong> The crest looks too thin and flat. I want it thicker and taller &mdash; like a mohawk of horsehair, not a fin. Also the cheek guards are too short, they should come down to the chin.</p>
             <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [adjusts crest and cheek guards, shows updated model]</p>
           </div>
           <div class="ex-card highlight-forge">
-            <div class="ex-card-label strong">Round 3 &mdash; Getting It Right</div>
+            <div class="ex-card-label strong">Round 4 &mdash; Getting It Right</div>
             <p><strong style="color:var(--text)">You:</strong> Way better. But the base looks like a plain disc. Can you make it look like a rough stone pedestal &mdash; slightly irregular edges, like it belongs in a museum?</p>
             <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [adds irregular stone-like base geometry]</p>
           </div>
-          <p style="margin-top:12px"><strong style="color:var(--text)">That's 3 rounds.</strong> View, spin, spot the problem, describe the fix. Usually 3-4 rounds gets you something you're proud of.</p>
+          <p style="margin-top:12px"><strong style="color:var(--text)">That's the flow.</strong> Research first, then build, then iterate. The research step is what makes the first model actually printable instead of just pretty on screen.</p>
         </div>
       </div>
 
-      <p>When you're happy with how it looks, ask Claude Code: <strong>"Will this print cleanly? Anything I should fix?"</strong> Let it do the engineering check for you.</p>
+      <p>When you're happy with how it looks, ask Claude Code: <strong>"Will this print cleanly without supports? Check the overhangs, wall thickness, and mesh. Anything I should fix?"</strong> Let it do the engineering audit.</p>
 
       <ol class="steps">
-        <li>Give Claude Code your description and the build prompt.</li>
-        <li>When the 3D model appears, rotate it. Look from every angle, especially from below.</li>
+        <li>Give Claude Code the research prompt. Read what it finds &mdash; the 45&deg; rule is the big one.</li>
+        <li>Give it your build request. When the model appears, rotate it from every angle.</li>
         <li>Tell Claude Code one thing to change. View the updated model.</li>
         <li>Repeat 3-4 rounds until you're happy with it.</li>
-        <li>Ask Claude Code to confirm it'll print clean.</li>
+        <li>Ask Claude Code to confirm it'll print clean &mdash; overhangs, wall thickness, mesh integrity.</li>
       </ol>
 
       <div class="tool-chips">

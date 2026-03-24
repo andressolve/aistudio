@@ -57,7 +57,7 @@ The skill pips and progress bars are the ONE concession to gamification — and 
 
 These emerged from iterating on the activities — keep them in mind when building or revising:
 
-- **3 missions is the sweet spot.** 4+ feels like a wall. If a step can be folded into another mission (e.g. "research the domain" folds into the build prompt), fold it.
+- **3 missions is the sweet spot.** 4+ feels like a wall. If a step can be folded into another mission, fold it — but don't cut steps that are functionally necessary. "Research the domain" doesn't need its own mission, but when Claude Code needs domain knowledge to produce good output (e.g. 3D printing constraints), the research prompt must be preserved inside the build mission. Cutting it entirely produces bad results.
 - **Lead with the hook, not the theory.** The first mission should be the exciting choice ("what will you make?"), not background reading. Technical constraints belong as tip boxes inside the build step, where the kid will actually encounter the problem.
 - **Project suggestions must connect to the audience.** Generic "cool engineering demos" don't land. Every suggestion should pass the test: would THIS kid get fired up about it? War helmets, custom chess pieces, fortress towers > parametric vases, gear trains.
 - **No pipeline diagrams or process overviews upfront.** They add to the wall-of-stuff feeling. The steps speak for themselves.
