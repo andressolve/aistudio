@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sebastian's AI Studio — Day 2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --bg: #0c0c14;
+    --surface: #131320;
+    --surface2: #1b1b2e;
+    --border: #262640;
+    --accent: #f06030;
+    --accent2: #3b82f6;
+    --accent3: #34d399;
+    --text: #e6e6f4;
+    --text-muted: #8080aa;
+    --text-dim: #4a4a6e;
+    --gold: #f0c030;
+    --session-a: #3b82f6;
+    --session-b: #a855f7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(59,130,246,0.06) 0%, transparent 45%),
+      radial-gradient(circle at 80% 70%, rgba(168,85,247,0.06) 0%, transparent 45%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 44px 24px 80px;
+  }
+
+  /* ---- HEADER ---- */
+  header { margin-bottom: 44px; }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent3);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--accent3);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(34px, 7vw, 60px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    color: var(--text);
+  }
+
+  h1 .day {
+    font-size: 0.45em;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0;
+    display: block;
+    margin-top: 4px;
+  }
+
+  .subtitle {
+    margin-top: 18px;
+    font-size: 15px;
+    color: var(--text-muted);
+    max-width: 520px;
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .subtitle strong { color: var(--text); font-weight: 500; }
+
+  /* ---- RECAP ---- */
+  .recap-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 36px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .recap-icon { font-size: 20px; line-height: 1; margin-top: 2px; }
+
+  .recap-content {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .recap-content strong { color: var(--accent3); font-weight: 500; }
+
+  .recap-pips {
+    display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap;
+  }
+
+  .recap-pip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    background: rgba(52,211,153,0.08);
+    border: 1px solid rgba(52,211,153,0.25);
+    color: var(--accent3);
+  }
+
+  /* ---- SESSION DIVIDERS ---- */
+  .session-header {
+    margin: 40px 0 8px;
+    padding: 14px 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .session-header.session-a {
+    background: rgba(59,130,246,0.06);
+    border: 1px solid rgba(59,130,246,0.2);
+  }
+
+  .session-header.session-b {
+    background: rgba(168,85,247,0.06);
+    border: 1px solid rgba(168,85,247,0.2);
+  }
+
+  .session-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 500;
+  }
+
+  .session-a .session-badge {
+    background: rgba(59,130,246,0.15);
+    color: var(--session-a);
+  }
+
+  .session-b .session-badge {
+    background: rgba(168,85,247,0.15);
+    color: var(--session-b);
+  }
+
+  .session-info {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  .session-info strong { font-weight: 500; }
+
+  .session-a .session-info strong { color: var(--session-a); }
+  .session-b .session-info strong { color: var(--session-b); }
+
+  /* ---- PROGRESS ---- */
+  .progress-area {
+    margin: 20px 0 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .progress-track {
+    flex: 1; height: 5px;
+    background: var(--surface2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+
+  .progress-fill.fill-a { background: linear-gradient(90deg, var(--session-a), var(--accent3)); }
+  .progress-fill.fill-b { background: linear-gradient(90deg, var(--session-b), var(--accent)); }
+
+  .progress-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    white-space: nowrap;
+    min-width: 50px;
+    text-align: right;
+  }
+
+  .progress-count.count-a { color: var(--session-a); }
+  .progress-count.count-b { color: var(--session-b); }
+
+  /* ---- SECTION LABELS ---- */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 28px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ---- MISSION CARDS ---- */
+  .mission-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+
+  .mission-card.done { opacity: 0.5; border-color: var(--border); }
+  .mission-card.done .card-number { background: var(--accent3); color: var(--bg); }
+  .mission-card.done .card-number::after { content: '✓'; }
+
+  .card-header {
+    display: flex;
+    align-items: stretch;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .card-header:hover { background: var(--surface2); }
+
+  .card-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    width: 54px; min-width: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+    color: var(--text-muted);
+    border-right: 1px solid var(--border);
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .card-meta { padding: 14px 16px; flex: 1; }
+
+  .card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .card-badge {
+    display: inline-block;
+    margin-top: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 99px;
+    border: 1px solid;
+  }
+
+  .badge-warm { color: var(--gold); border-color: var(--gold); background: rgba(240,192,48,0.07); }
+  .badge-cool { color: var(--accent3); border-color: var(--accent3); background: rgba(52,211,153,0.07); }
+  .badge-blue { color: var(--session-a); border-color: var(--session-a); background: rgba(59,130,246,0.07); }
+  .badge-purple { color: var(--session-b); border-color: var(--session-b); background: rgba(168,85,247,0.07); }
+
+  .card-chevron {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    color: var(--text-dim);
+    font-size: 20px;
+    transition: transform 0.3s, color 0.2s;
+  }
+
+  .mission-card.open .card-chevron { transform: rotate(90deg); color: var(--accent); }
+
+  /* ---- CARD BODY ---- */
+  .card-body {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 20px 20px 16px;
+    animation: slideDown 0.25s ease;
+  }
+
+  .mission-card.open .card-body { display: block; }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-body p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 14px;
+    font-weight: 300;
+  }
+
+  .card-body strong { color: var(--text); font-weight: 500; }
+
+  /* ---- PROMPT BOX ---- */
+  .prompt-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 12px 0;
+  }
+
+  .prompt-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .prompt-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  /* ---- STEPS ---- */
+  .steps {
+    list-style: none;
+    counter-reset: step;
+    margin: 14px 0;
+  }
+
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .steps li::before {
+    content: counter(step);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    width: 24px; min-width: 24px; height: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent);
+    margin-top: 1px;
+  }
+
+  /* ---- TIPS ---- */
+  .tip-box {
+    background: rgba(59,130,246,0.06);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 14px 0;
+    display: flex;
+    gap: 10px;
+  }
+
+  .tip-box.tip-purple {
+    background: rgba(168,85,247,0.06);
+    border: 1px solid rgba(168,85,247,0.2);
+  }
+
+  .tip-icon { font-size: 16px; line-height: 1; margin-top: 1px; }
+
+  .tip-content {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .tip-content strong { color: var(--session-a); font-weight: 500; }
+  .tip-purple .tip-content strong { color: var(--session-b); font-weight: 500; }
+
+  /* ---- COMPLETE BUTTON ---- */
+  .complete-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 9px 18px;
+    background: transparent;
+    border: 1px solid var(--accent3);
+    border-radius: 8px;
+    color: var(--accent3);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .complete-btn:hover { background: var(--accent3); color: var(--bg); }
+  .mission-card.done .complete-btn { border-color: var(--text-dim); color: var(--text-dim); }
+
+  /* ---- TOOL CHIPS ---- */
+  .tool-chips {
+    display: flex; flex-wrap: wrap; gap: 7px; margin: 12px 0;
+  }
+
+  .chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 4px 11px;
+    border-radius: 99px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  /* ---- EXAMPLE PANELS ---- */
+  .example-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 10px 0 0;
+    padding: 7px 13px;
+    background: transparent;
+    border: 1px dashed var(--accent2);
+    border-radius: 8px;
+    color: var(--accent2);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .example-toggle:hover { background: rgba(59,130,246,0.1); }
+  .example-toggle .etoggle-icon {
+    transition: transform 0.3s;
+    font-style: normal; font-size: 14px; line-height: 1;
+  }
+
+  .example-panel {
+    display: none;
+    margin-top: 12px;
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    animation: slideDown 0.25s ease;
+  }
+  .example-panel.open { display: block; }
+  .example-panel-header {
+    background: rgba(59,130,246,0.08);
+    padding: 10px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent2);
+    text-transform: uppercase;
+  }
+  .example-panel-body {
+    padding: 14px;
+    background: rgba(59,130,246,0.03);
+  }
+  .example-panel-body p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin-bottom: 10px;
+    font-weight: 300;
+  }
+  .example-panel-body p:last-child { margin-bottom: 0; }
+
+  .ex-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 8px 0;
+  }
+  .ex-card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .ex-card-label.neutral { color: var(--gold); }
+  .ex-card-label.strong { color: var(--accent3); }
+  .ex-card p {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.6;
+    margin: 0 !important;
+  }
+  .ex-card.highlight {
+    border-color: rgba(52,211,153,0.3);
+    background: rgba(52,211,153,0.04);
+  }
+
+  /* ---- XP ---- */
+  .xp-row {
+    display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;
+  }
+
+  .xp-pip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    transition: all 0.3s;
+  }
+
+  .xp-pip.earned {
+    background: rgba(240,192,48,0.1);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* ---- BREAK DIVIDER ---- */
+  .break-card {
+    margin: 36px 0;
+    padding: 18px 22px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .break-card p {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .break-card .break-emoji {
+    font-size: 28px;
+    display: block;
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">// sebastian's creative lab — session 2</div>
+    <h1>AI Studio<span class="day">Day 2</span></h1>
+    <p class="subtitle">4 missions split into <strong>two short sessions</strong>. Do Session A now. Take a break. Do Session B whenever you're ready — today, tomorrow, whenever.</p>
+  </header>
+
+  <!-- RECAP -->
+  <div class="recap-card">
+    <div class="recap-icon">📋</div>
+    <div class="recap-content">
+      <strong>Day 1 skills unlocked:</strong> You told AI what to create, and it built it for you. You learned that better instructions = better results. Today you'll learn new tricks.
+      <div class="recap-pips">
+        <span class="recap-pip">Storytelling ✓</span>
+        <span class="recap-pip">Prompt Craft ✓</span>
+        <span class="recap-pip">Shot Direction ✓</span>
+        <span class="recap-pip">Critical Eye ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- SESSION A -->
+  <!-- ============================================== -->
+  <div class="session-header session-a">
+    <span class="session-badge">Session A</span>
+    <span class="session-info"><strong>Image Missions</strong> — about 20 minutes</span>
+  </div>
+
+  <div class="progress-area">
+    <span class="progress-label">SESSION A</span>
+    <div class="progress-track">
+      <div class="progress-fill fill-a" id="progressFillA"></div>
+    </div>
+    <span class="progress-count count-a" id="progressCountA">0 / 2</span>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 1: MAGIC WORD -->
+  <!-- =============================== -->
+  <div class="section-label">Mission 01 — The Magic Word</div>
+
+  <div class="mission-card" id="m1">
+    <div class="card-header" onclick="toggleCard('m1')">
+      <div class="card-number">01</div>
+      <div class="card-meta">
+        <div class="card-tag">Image Generation</div>
+        <div class="card-title">One Word Changes Everything</div>
+        <span class="card-badge badge-blue">10 min</span>
+      </div>
+      <div class="card-chevron">›</div>
+    </div>
+    <div class="card-body">
+      <p>Here's something wild: you can change the <strong>entire feeling</strong> of an image by adding just one word to your prompt. Let's prove it.</p>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Your Mission</div>
+        <div class="prompt-text">Start with this exact prompt. Generate it.<br><br>
+        "A dragon sitting on top of a mountain"<br><br>
+        Now add ONE word to change the feeling. Generate it again.<br>
+        Try each of these, one at a time:<br><br>
+        → "A <em>baby</em> dragon sitting on top of a mountain"<br>
+        → "A <em>terrifying</em> dragon sitting on top of a mountain"<br>
+        → "A <em>sleeping</em> dragon sitting on top of a mountain"<br><br>
+        Look at all four images. One word. Totally different picture.</div>
+      </div>
+
+      <div class="tip-box">
+        <div class="tip-icon">💡</div>
+        <div class="tip-content"><strong>Why this matters:</strong> Every word you type is an instruction. The AI listens to ALL of them. So picking the right words is like having a superpower — one word can completely change what you get.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex1', this)">
+        <i class="etoggle-icon">+</i> SEE AN EXAMPLE
+      </button>
+      <div class="example-panel" id="ex1">
+        <div class="example-panel-header">// what happens with each word</div>
+        <div class="example-panel-body">
+          <div class="ex-card">
+            <div class="ex-card-label neutral">No extra word</div>
+            <p>"A dragon sitting on top of a mountain"<br><br>
+            You'll probably get a big, generic-looking dragon. Fine, but nothing special.</p>
+          </div>
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Add "baby"</div>
+            <p>"A baby dragon sitting on top of a mountain"<br><br>
+            Now it's small and cute. Totally different feeling — you want to protect it instead of run from it.</p>
+          </div>
+          <div class="ex-card highlight">
+            <div class="ex-card-label strong">Add "terrifying"</div>
+            <p>"A terrifying dragon sitting on top of a mountain"<br><br>
+            Dark, scary, probably bigger teeth and glowing eyes. One word made it a villain.</p>
+          </div>
+          <p style="margin-top:10px">After you try these three, <strong style="color:var(--text)">pick your own word</strong> and add it. What happens?</p>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>Generate the basic dragon prompt. Look at it.</li>
+        <li>Add "baby" — generate again. What changed?</li>
+        <li>Add "terrifying" — generate again. What changed?</li>
+        <li>Add "sleeping" — generate again. What changed?</li>
+        <li>Now pick your OWN word. What do you want the dragon to feel like?</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Claude Code + Nano Banana</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m1', event)">
+        <span>✓</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 2: STYLE SWAP -->
+  <!-- =============================== -->
+  <div class="section-label">Mission 02 — Style Swap</div>
+
+  <div class="mission-card" id="m2">
+    <div class="card-header" onclick="toggleCard('m2')">
+      <div class="card-number">02</div>
+      <div class="card-meta">
+        <div class="card-tag">Image Generation</div>
+        <div class="card-title">Same Picture, Different Universe</div>
+        <span class="card-badge badge-blue">10 min</span>
+      </div>
+      <div class="card-chevron">›</div>
+    </div>
+    <div class="card-body">
+      <p>You just learned that one word changes the feeling. Now here's another trick: you can make the AI draw the <strong>same thing in completely different art styles</strong>.</p>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Your Mission</div>
+        <div class="prompt-text">Pick a character you like. It can be from a book, a game, or one you make up.<br><br>
+        Write a short sentence about them. Example:<br>
+        "A knight standing in the rain holding a broken shield"<br><br>
+        Now generate it three times. Each time, add a different style at the end:<br><br>
+        Version 1 — add "in the style of a manga panel"<br>
+        Version 2 — add "realistic photograph, moody lighting"<br>
+        Version 3 — add any style YOU want (see list below)</div>
+      </div>
+
+      <div class="tip-box">
+        <div class="tip-icon">🎨</div>
+        <div class="tip-content"><strong>The cool part:</strong> The knight is the same. The rain is the same. The broken shield is the same. But the style makes it feel like a totally different story. Manga feels like an action scene. Realistic feels sad and heavy. You get to choose what feeling the viewer gets.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex2', this)">
+        <i class="etoggle-icon">+</i> SEE AN EXAMPLE
+      </button>
+      <div class="example-panel" id="ex2">
+        <div class="example-panel-header">// example — a knight in the rain</div>
+        <div class="example-panel-body">
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Version 1 — Manga</div>
+            <p><strong style="color:var(--text)">Prompt:</strong><br>
+            "A knight standing in the rain holding a broken shield, in the style of a manga panel, bold ink lines, dramatic"<br><br>
+            <strong style="color:var(--gold)">Why a director would pick this style:</strong> It feels like the moment before the hero gets back up and wins.</p>
+          </div>
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Version 2 — Realistic</div>
+            <p><strong style="color:var(--text)">Prompt:</strong><br>
+            "A knight standing in the rain holding a broken shield, realistic photograph, moody lighting, dark sky"<br><br>
+            <strong style="color:var(--gold)">Why a director would pick this style:</strong> It feels real and painful — like this person actually fought and lost.</p>
+          </div>
+          <div class="ex-card highlight">
+            <div class="ex-card-label strong">Version 3 — Pixel Art</div>
+            <p><strong style="color:var(--text)">Prompt:</strong><br>
+            "A knight standing in the rain holding a broken shield, pixel art, 16-bit retro video game style"<br><br>
+            <strong style="color:var(--gold)">Why a director would pick this style:</strong> It feels like a classic video game — the same scene but now it's an adventure, not a tragedy.</p>
+          </div>
+          <div class="ex-card" style="margin-top:10px">
+            <div class="ex-card-label neutral">Styles to try</div>
+            <p>manga · pixel art · oil painting · watercolor · claymation · stained glass · retro movie poster · pencil sketch · Studio Ghibli · dark fantasy concept art · comic book cover</p>
+          </div>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>Pick your character. Write one sentence about them.</li>
+        <li>Generate Version 1 — manga style.</li>
+        <li>Generate Version 2 — realistic photo style.</li>
+        <li>Generate Version 3 — any style you want.</li>
+        <li>Which one is your favourite? Tell someone why.</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Claude Code + Nano Banana</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m2', event)">
+        <span>✓</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- BREAK -->
+  <!-- ============================================== -->
+  <div class="break-card">
+    <span class="break-emoji">☕</span>
+    <p><strong style="color:var(--text)">Nice work — Session A done!</strong><br>
+    Take a break. Read. Play. Snack.<br>
+    Come back for Session B when you feel like it.</p>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- SESSION B -->
+  <!-- ============================================== -->
+  <div class="session-header session-b">
+    <span class="session-badge">Session B</span>
+    <span class="session-info"><strong>Video Missions</strong> — about 20 minutes</span>
+  </div>
+
+  <div class="progress-area">
+    <span class="progress-label">SESSION B</span>
+    <div class="progress-track">
+      <div class="progress-fill fill-b" id="progressFillB"></div>
+    </div>
+    <span class="progress-count count-b" id="progressCountB">0 / 2</span>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 3: YOUR FIRST RESHOOT -->
+  <!-- =============================== -->
+  <div class="section-label">Mission 03 — Fix It</div>
+
+  <div class="mission-card" id="m3">
+    <div class="card-header" onclick="toggleCard('m3')">
+      <div class="card-number">03</div>
+      <div class="card-meta">
+        <div class="card-tag">AI Video</div>
+        <div class="card-title">Make It, Watch It, Fix It</div>
+        <span class="card-badge badge-purple">10 min</span>
+      </div>
+      <div class="card-chevron">›</div>
+    </div>
+    <div class="card-body">
+      <p>When you make a video with AI, the first version is almost never perfect. That's normal — even professional filmmakers reshoot scenes many times. Today you're going to make a video clip, find what's wrong, and <strong>fix it with better words</strong>.</p>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Your Mission</div>
+        <div class="prompt-text">Pick one of these scenes (or make up your own):<br><br>
+        → A wolf howling on a cliff at night<br>
+        → A spaceship flying through a storm<br>
+        → A samurai drawing his sword slowly<br><br>
+        Ask Claude to help you write a prompt for Kling.<br>
+        Generate it. Watch it.<br><br>
+        Now: what's ONE thing that doesn't look right?<br>
+        Tell Claude what's wrong. Ask it to fix just that part.<br>
+        Generate Version 2.</div>
+      </div>
+
+      <div class="tip-box tip-purple">
+        <div class="tip-icon">🎥</div>
+        <div class="tip-content"><strong>The trick:</strong> Don't rewrite the whole thing. If the wolf looks good but the sky is wrong, only change the sky words. If the motion is weird, only change the action words. Fix one thing at a time.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex3', this)">
+        <i class="etoggle-icon">+</i> SEE AN EXAMPLE
+      </button>
+      <div class="example-panel" id="ex3">
+        <div class="example-panel-header">// example — a wolf howling</div>
+        <div class="example-panel-body">
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Version 1</div>
+            <p><strong style="color:var(--text)">Prompt:</strong><br>
+            "A wolf standing on a cliff howling at the moon. Night sky with stars. Camera slowly zooms in. Dark and dramatic."<br><br>
+            <strong style="color:var(--gold)">You watch it. What's wrong?</strong><br>
+            The wolf doesn't actually howl — it just stands there with its mouth closed.</p>
+          </div>
+          <div class="ex-card highlight">
+            <div class="ex-card-label strong">Version 2 — Fix the action</div>
+            <p><strong style="color:var(--text)">What you tell Claude:</strong><br>
+            "The wolf isn't howling. Can you change the prompt so the wolf has its head tilted up and its mouth wide open, howling loud?"<br><br>
+            <strong style="color:var(--text)">New prompt:</strong><br>
+            "A wolf on a cliff tilts its head back and howls with its mouth wide open toward the full moon. Night sky with stars. Camera slowly zooms in. Dark and dramatic."<br><br>
+            <strong style="color:var(--accent3)">Version 2 looks way better.</strong> The wolf is actually doing something now.</p>
+          </div>
+          <p style="margin-top: 10px">That's the whole process: make it → watch it → say what's wrong → fix those words → try again.</p>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>Pick your scene.</li>
+        <li>Ask Claude to write you a Kling prompt for it.</li>
+        <li>Generate Version 1 on Kling. Watch it.</li>
+        <li>What's wrong? Tell Claude the problem.</li>
+        <li>Generate Version 2. Is it better?</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Kling 2.6</span>
+        <span class="chip">Claude Chat</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m3', event)">
+        <span>✓</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 4: BEFORE AND AFTER -->
+  <!-- =============================== -->
+  <div class="section-label">Mission 04 — Tell a Story</div>
+
+  <div class="mission-card" id="m4">
+    <div class="card-header" onclick="toggleCard('m4')">
+      <div class="card-number">04</div>
+      <div class="card-meta">
+        <div class="card-tag">AI Video</div>
+        <div class="card-title">Two Shots, One Story</div>
+        <span class="card-badge badge-purple">10 min</span>
+      </div>
+      <div class="card-chevron">›</div>
+    </div>
+    <div class="card-body">
+      <p>One video clip is just a clip. But <strong>two clips that go together tell a story</strong>. This is how real movies work — each shot connects to the next one.</p>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Your Mission</div>
+        <div class="prompt-text">Make two video clips that go together. Think of it as BEFORE and AFTER:<br><br>
+        Shot 1 — Something calm or normal<br>
+        Shot 2 — Something changes<br><br>
+        When someone watches Shot 1 then Shot 2 back to back, they should understand what happened.</div>
+      </div>
+
+      <div class="tip-box tip-purple">
+        <div class="tip-icon">🧠</div>
+        <div class="tip-content"><strong>The trick to making two shots feel connected:</strong> Keep something the same in both. Same character. Same place. Same weather. If everything changes, it feels like two random clips. If the place stays the same but the mood changes, it feels like a story.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex4', this)">
+        <i class="etoggle-icon">+</i> SEE AN EXAMPLE
+      </button>
+      <div class="example-panel" id="ex4">
+        <div class="example-panel-header">// example ideas — before and after</div>
+        <div class="example-panel-body">
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Idea A — The Storm</div>
+            <p><strong style="color:var(--text)">Shot 1:</strong> "A small fishing boat floating on a calm, flat ocean. Sunny sky. Gentle waves. Peaceful and quiet. Cinematic."<br><br>
+            <strong style="color:var(--text)">Shot 2:</strong> "The same small fishing boat rocking wildly in a massive storm. Dark clouds, huge waves crashing, rain pouring down. Dramatic and intense. Cinematic."</p>
+          </div>
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Idea B — The Discovery</div>
+            <p><strong style="color:var(--text)">Shot 1:</strong> "A kid walking through a dark cave with a small torch. Shadows on the walls. Camera follows from behind. Quiet and mysterious."<br><br>
+            <strong style="color:var(--text)">Shot 2:</strong> "The same kid steps into a huge cavern filled with glowing crystals. Bright blue and purple light everywhere. The kid stops and looks up in amazement. Camera pulls back wide to show the scale."</p>
+          </div>
+          <div class="ex-card highlight">
+            <div class="ex-card-label strong">Idea C — The Standoff</div>
+            <p><strong style="color:var(--text)">Shot 1:</strong> "A lone cowboy walks slowly down an empty dusty street. Wind blows. Camera wide. Sunset light. Tense and quiet."<br><br>
+            <strong style="color:var(--text)">Shot 2:</strong> "Close-up of the cowboy's hand reaching slowly for the gun on his hip. His eyes narrow. Camera zooms in tight. Intense."</p>
+          </div>
+          <p style="margin-top:10px">Notice: each pair keeps the same character and place. Only the <strong style="color:var(--text)">mood changes</strong> between shots. That's what makes it feel like a story.</p>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>Pick a BEFORE and AFTER idea (use one above or make your own).</li>
+        <li>Ask Claude to write the two Kling prompts.</li>
+        <li>Generate Shot 1. Watch it.</li>
+        <li>Generate Shot 2. Watch it.</li>
+        <li>Watch them back to back. Does it feel like a story?</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Kling 2.6</span>
+        <span class="chip">Claude Chat</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m4', event)">
+        <span>✓</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- XP DISPLAY -->
+  <!-- ============================================== -->
+  <div style="margin-top: 44px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px;">
+    <div class="eyebrow" style="margin-bottom: 10px; gap: 0;">// skills earned today</div>
+    <div class="xp-row" id="xpRow">
+      <span class="xp-pip" id="xp1">Word Power</span>
+      <span class="xp-pip" id="xp2">Style Control</span>
+      <span class="xp-pip" id="xp3">The Reshoot</span>
+      <span class="xp-pip" id="xp4">Sequencing</span>
+    </div>
+    <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);">
+      <div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px;">// total skills (day 1 + day 2)</div>
+      <div class="xp-row">
+        <span class="xp-pip earned">Storytelling</span>
+        <span class="xp-pip earned">Prompt Craft</span>
+        <span class="xp-pip earned">Shot Direction</span>
+        <span class="xp-pip earned">Critical Eye</span>
+        <span class="xp-pip" id="xp1b">Word Power</span>
+        <span class="xp-pip" id="xp2b">Style Control</span>
+        <span class="xp-pip" id="xp3b">The Reshoot</span>
+        <span class="xp-pip" id="xp4b">Sequencing</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const STATE = { completed: new Set() };
+  const SESSION_A = ['m1', 'm2'];
+  const SESSION_B = ['m3', 'm4'];
+
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    const isOpen = card.classList.contains('open');
+    document.querySelectorAll('.mission-card').forEach(c => c.classList.remove('open'));
+    if (!isOpen) card.classList.add('open');
+  }
+
+  function markDone(id, e) {
+    e.stopPropagation();
+    const card = document.getElementById(id);
+    const num = id.replace('m', '');
+
+    if (STATE.completed.has(id)) {
+      STATE.completed.delete(id);
+      card.classList.remove('done');
+      document.getElementById('xp' + num).classList.remove('earned');
+      document.getElementById('xp' + num + 'b').classList.remove('earned');
+    } else {
+      STATE.completed.add(id);
+      card.classList.add('done');
+      card.classList.remove('open');
+      document.getElementById('xp' + num).classList.add('earned');
+      document.getElementById('xp' + num + 'b').classList.add('earned');
+    }
+
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const countA = SESSION_A.filter(id => STATE.completed.has(id)).length;
+    const countB = SESSION_B.filter(id => STATE.completed.has(id)).length;
+    document.getElementById('progressFillA').style.width = (countA / 2 * 100) + '%';
+    document.getElementById('progressCountA').textContent = countA + ' / 2';
+    document.getElementById('progressFillB').style.width = (countB / 2 * 100) + '%';
+    document.getElementById('progressCountB').textContent = countB + ' / 2';
+  }
+
+  function toggleExample(id, btn) {
+    event.stopPropagation();
+    const panel = document.getElementById(id);
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+    btn.querySelector('.etoggle-icon').textContent = isOpen ? '+' : '×';
+  }
+
+  document.getElementById('m1').classList.add('open');
+</script>
+</body>
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Studio — All Days</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --bg: #0a0a10;
+    --surface: #131320;
+    --surface2: #1c1c2e;
+    --border: #282842;
+    --accent: #f06030;
+    --accent2: #7c5cf0;
+    --accent3: #22d3a8;
+    --text: #e8e8f2;
+    --text-muted: #7a7a9e;
+    --text-dim: #464868;
+    --gold: #f0c030;
+
+    --day1: #f06030;
+    --day2: #3b82f6;
+    --day3: #22d3a8;
+    --day4: #7c5cf0;
+    --day5: #e8822a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(240,96,48,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 85% 90%, rgba(124,92,240,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(34,211,168,0.02) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ---- HEADER ---- */
+  header { margin-bottom: 56px; }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent3);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--accent3);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(40px, 9vw, 76px);
+    font-weight: 800;
+    line-height: 0.93;
+    letter-spacing: -2px;
+    color: var(--text);
+  }
+
+  h1 span { color: var(--accent3); }
+
+  .subtitle {
+    margin-top: 20px;
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 580px;
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .subtitle strong { color: var(--text); font-weight: 500; }
+
+  /* ---- SECTION LABEL ---- */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 0 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ---- DAY CARDS ---- */
+  .days-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .day-card {
+    display: flex;
+    align-items: stretch;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s, transform 0.15s, background 0.15s;
+  }
+
+  .day-card:hover {
+    transform: translateY(-2px);
+    background: var(--surface2);
+  }
+
+  .day-card:hover .card-arrow { opacity: 1; transform: translateX(0); }
+
+  .day-card[data-day="1"] { --day-color: var(--day1); }
+  .day-card[data-day="1"]:hover { border-color: var(--day1); }
+
+  .day-card[data-day="2"] { --day-color: var(--day2); }
+  .day-card[data-day="2"]:hover { border-color: var(--day2); }
+
+  .day-card[data-day="3"] { --day-color: var(--day3); }
+  .day-card[data-day="3"]:hover { border-color: var(--day3); }
+
+  .day-card[data-day="4"] { --day-color: var(--day4); }
+  .day-card[data-day="4"]:hover { border-color: var(--day4); }
+
+  .day-card[data-day="5"] { --day-color: var(--day5); }
+  .day-card[data-day="5"]:hover { border-color: var(--day5); }
+
+  .day-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    width: 72px;
+    min-width: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+    color: var(--day-color);
+    border-right: 1px solid var(--border);
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .day-number-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 400;
+  }
+
+  .day-body {
+    padding: 20px 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .day-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--day-color);
+    opacity: 0.8;
+  }
+
+  .day-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.15;
+  }
+
+  .day-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    font-weight: 300;
+    margin-top: 4px;
+    max-width: 580px;
+  }
+
+  .day-subtitle strong { color: var(--text); font-weight: 500; }
+
+  .card-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    font-size: 22px;
+    color: var(--day-color);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  @media (max-width: 600px) {
+    .day-number { width: 56px; min-width: 56px; font-size: 18px; }
+    .day-title { font-size: 17px; }
+    .card-arrow { display: none; }
+  }
+
+  /* ---- FOOTER NOTE ---- */
+  .footer-note {
+    margin-top: 48px;
+    padding: 20px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .footer-note-icon { font-size: 18px; line-height: 1; margin-top: 1px; }
+
+  .footer-note-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .footer-note-text strong { color: var(--accent3); font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">// ai studio</div>
+    <h1>The Full<br><span>Program</span></h1>
+    <p class="subtitle">Five days. Five skills. Each session builds on the last — from directing AI to telling stories, building guides, making games, and finally turning code into a <strong>physical object</strong>.</p>
+  </header>
+
+  <div class="section-label">All Days</div>
+
+  <div class="days-grid">
+
+    <a class="day-card" data-day="1" href="francisco-ai-studio%20(1).html">
+      <div class="day-number">
+        <span class="day-number-label">Day</span>
+        01
+      </div>
+      <div class="day-body">
+        <div class="day-tag">// francisco's creative lab</div>
+        <div class="day-title">AI Studio</div>
+        <div class="day-subtitle">5 missions. One skill to master: <strong>you direct, AI builds.</strong> The better your instructions, the better the result.</div>
+      </div>
+      <div class="card-arrow">&#8250;</div>
+    </a>
+
+    <a class="day-card" data-day="2" href="sebastian-ai-studio-day2.html">
+      <div class="day-number">
+        <span class="day-number-label">Day</span>
+        02
+      </div>
+      <div class="day-body">
+        <div class="day-tag">// sebastian's creative lab — session 2</div>
+        <div class="day-title">AI Studio — Day 2</div>
+        <div class="day-subtitle">4 missions split into <strong>two short sessions</strong>. Do Session A now. Take a break. Do Session B whenever you're ready.</div>
+      </div>
+      <div class="card-arrow">&#8250;</div>
+    </a>
+
+    <a class="day-card" data-day="3" href="ai-studio-day3-build-your-guide.html">
+      <div class="day-number">
+        <span class="day-number-label">Day</span>
+        03
+      </div>
+      <div class="day-body">
+        <div class="day-tag">// ai studio — day 3</div>
+        <div class="day-title">Build Your Own Guide</div>
+        <div class="day-subtitle">Pick something you want to understand better. Then use Claude Code to build yourself a <strong>beautiful illustrated guide</strong> about it — with AI-generated images included.</div>
+      </div>
+      <div class="card-arrow">&#8250;</div>
+    </a>
+
+    <a class="day-card" data-day="4" href="francisco-ai-studio-day4.html">
+      <div class="day-number">
+        <span class="day-number-label">Day</span>
+        04
+      </div>
+      <div class="day-body">
+        <div class="day-tag">// francisco's game lab</div>
+        <div class="day-title">Build Your Own Game</div>
+        <div class="day-subtitle">One session. One playable game. You design it, Claude Code builds it, Nano Banana illustrates it. By the end, <strong>someone else will play something you made</strong>.</div>
+      </div>
+      <div class="card-arrow">&#8250;</div>
+    </a>
+
+    <a class="day-card" data-day="5" href="ai-studio-day5-the-forge.html">
+      <div class="day-number">
+        <span class="day-number-label">Day</span>
+        05
+      </div>
+      <div class="day-body">
+        <div class="day-tag">// the forge</div>
+        <div class="day-title">From Code to Physical Object</div>
+        <div class="day-subtitle">One session. You design a 3D model in code, see it spin on screen, export it to STL, and <strong>hold it in your hand</strong>. The full pipeline — digital to physical.</div>
+      </div>
+      <div class="card-arrow">&#8250;</div>
+    </a>
+
+  </div>
+
+  <div class="footer-note">
+    <div class="footer-note-icon">&#128218;</div>
+    <div class="footer-note-text">
+      <strong>How to use this:</strong> Work through the days in order — each one builds on skills from the last. Each session is self-contained and takes roughly an hour. Open a day, follow the missions, and mark them complete as you go.
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

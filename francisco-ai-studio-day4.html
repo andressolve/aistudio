@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Francisco's AI Studio — Day 4: Build Your Own Game</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --bg: #0e0e12;
+    --surface: #16161c;
+    --surface2: #1e1e26;
+    --border: #2a2a38;
+    --accent: #ff6b35;
+    --accent2: #7c5cbf;
+    --accent3: #2dd4bf;
+    --text: #e8e8f0;
+    --text-muted: #7878a0;
+    --text-dim: #4a4a68;
+    --gold: #f0c040;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ---- HEADER ---- */
+  header { margin-bottom: 48px; }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 8vw, 68px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    color: var(--text);
+  }
+
+  h1 span { color: var(--accent); }
+
+  h1 .day {
+    font-size: 0.38em;
+    font-weight: 600;
+    color: var(--accent2);
+    letter-spacing: 0;
+    display: block;
+    margin-top: 8px;
+  }
+
+  .subtitle {
+    margin-top: 20px;
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 560px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .subtitle strong { color: var(--text); font-weight: 500; }
+
+  /* ---- RECAP ---- */
+  .recap-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 32px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .recap-icon { font-size: 20px; line-height: 1; margin-top: 2px; }
+
+  .recap-content {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .recap-content strong { color: var(--accent3); font-weight: 500; }
+
+  .recap-pips {
+    display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap;
+  }
+
+  .recap-pip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    background: rgba(45,212,191,0.08);
+    border: 1px solid rgba(45,212,191,0.25);
+    color: var(--accent3);
+  }
+
+  /* ---- THE RULE ---- */
+  .rule-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .rule-icon { font-size: 28px; line-height: 1; margin-top: 2px; }
+
+  .rule-text h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .rule-text p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* ---- PROGRESS BAR ---- */
+  .progress-area {
+    margin-bottom: 48px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 99px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+
+  .progress-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    white-space: nowrap;
+    min-width: 60px;
+    text-align: right;
+  }
+
+  /* ---- SECTION LABELS ---- */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 40px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ---- MISSION CARDS ---- */
+  .mission-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 0;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .mission-card.done {
+    opacity: 0.55;
+    border-color: var(--border);
+  }
+
+  .mission-card.done .card-number {
+    background: var(--accent3);
+    color: var(--bg);
+  }
+
+  .mission-card.done .card-number::after { content: '\2713'; }
+
+  .card-header {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .card-header:hover { background: var(--surface2); }
+
+  .card-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    width: 64px;
+    min-width: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+    color: var(--text-muted);
+    border-right: 1px solid var(--border);
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .card-meta {
+    padding: 18px 20px;
+    flex: 1;
+  }
+
+  .card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .card-badge {
+    display: inline-block;
+    margin-top: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 99px;
+    border: 1px solid;
+  }
+
+  .badge-warm { color: var(--gold); border-color: var(--gold); background: rgba(240,192,64,0.08); }
+  .badge-cool { color: var(--accent3); border-color: var(--accent3); background: rgba(45,212,191,0.08); }
+  .badge-bold { color: var(--accent); border-color: var(--accent); background: rgba(255,107,53,0.08); }
+  .badge-purple { color: var(--accent2); border-color: var(--accent2); background: rgba(124,92,191,0.08); }
+
+  .card-chevron {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    color: var(--text-dim);
+    font-size: 20px;
+    transition: transform 0.3s, color 0.2s;
+  }
+
+  .mission-card.open .card-chevron {
+    transform: rotate(90deg);
+    color: var(--accent);
+  }
+
+  /* ---- CARD BODY ---- */
+  .card-body {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 24px 24px 20px;
+    animation: slideDown 0.25s ease;
+  }
+
+  .mission-card.open .card-body { display: block; }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-body p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 16px;
+    font-weight: 300;
+  }
+
+  .card-body strong { color: var(--text); font-weight: 500; }
+
+  /* ---- PROMPT / SAY BOX ---- */
+  .prompt-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 12px 0;
+  }
+
+  .prompt-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .prompt-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .say-box {
+    background: var(--bg);
+    border: 1px solid rgba(124,92,191,0.3);
+    border-left: 3px solid var(--accent2);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 14px 0;
+  }
+
+  .say-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .say-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  .say-note {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 10px;
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  /* ---- STEPS ---- */
+  .steps {
+    list-style: none;
+    counter-reset: step;
+    margin: 16px 0;
+  }
+
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 14px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .steps li::before {
+    content: counter(step);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    width: 24px;
+    min-width: 24px;
+    height: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    margin-top: 1px;
+  }
+
+  /* ---- TIPS ---- */
+  .tip-box {
+    background: rgba(124,92,191,0.08);
+    border: 1px solid rgba(124,92,191,0.3);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 16px 0;
+    display: flex;
+    gap: 12px;
+  }
+
+  .tip-box.tip-green {
+    background: rgba(45,212,191,0.06);
+    border-color: rgba(45,212,191,0.25);
+  }
+
+  .tip-box.tip-orange {
+    background: rgba(255,107,53,0.06);
+    border-color: rgba(255,107,53,0.25);
+  }
+
+  .tip-icon { font-size: 16px; line-height: 1; margin-top: 1px; }
+
+  .tip-content {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .tip-content strong { color: var(--accent2); font-weight: 500; }
+  .tip-green .tip-content strong { color: var(--accent3); }
+  .tip-orange .tip-content strong { color: var(--accent); }
+
+  /* ---- COMPLETE BUTTON ---- */
+  .complete-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid var(--accent3);
+    border-radius: 8px;
+    color: var(--accent3);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .complete-btn:hover {
+    background: var(--accent3);
+    color: var(--bg);
+  }
+
+  .mission-card.done .complete-btn {
+    border-color: var(--text-dim);
+    color: var(--text-dim);
+  }
+
+  /* ---- TOOL CHIPS ---- */
+  .tool-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0;
+  }
+
+  .chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 99px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  /* ---- GAME TYPE GRID ---- */
+  .game-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 16px 0;
+  }
+
+  @media (max-width: 600px) { .game-grid { grid-template-columns: 1fr; } }
+
+  .game-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    transition: border-color 0.2s, transform 0.15s;
+    cursor: default;
+  }
+
+  .game-card:hover {
+    border-color: var(--accent2);
+    transform: translateY(-1px);
+  }
+
+  .game-emoji { font-size: 22px; margin-bottom: 6px; display: block; }
+
+  .game-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .game-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  /* ---- EXAMPLE PANELS ---- */
+  .example-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px 0 0;
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px dashed var(--accent2);
+    border-radius: 8px;
+    color: var(--accent2);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .example-toggle:hover { background: rgba(124,92,191,0.1); }
+
+  .example-toggle .etoggle-icon {
+    transition: transform 0.3s;
+    font-style: normal;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .example-toggle.open .etoggle-icon { transform: rotate(45deg); }
+
+  .example-panel {
+    display: none;
+    margin-top: 12px;
+    border: 1px solid rgba(124,92,191,0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    animation: slideDown 0.25s ease;
+  }
+
+  .example-panel.open { display: block; }
+
+  .example-panel-header {
+    background: rgba(124,92,191,0.12);
+    padding: 10px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent2);
+    text-transform: uppercase;
+  }
+
+  .example-panel-body {
+    padding: 16px;
+    background: rgba(124,92,191,0.05);
+  }
+
+  .example-panel-body p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin-bottom: 10px;
+    font-weight: 300;
+  }
+
+  .example-panel-body p:last-child { margin-bottom: 0; }
+
+  .ex-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 8px 0;
+  }
+
+  .ex-card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .ex-card-label.weak { color: var(--text-dim); }
+  .ex-card-label.strong { color: var(--accent3); }
+  .ex-card-label.neutral { color: var(--gold); }
+
+  .ex-card p {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.6;
+    margin: 0 !important;
+  }
+
+  .ex-card.highlight {
+    border-color: rgba(45,212,191,0.4);
+    background: rgba(45,212,191,0.04);
+  }
+
+  .ex-row {
+    display: grid;
+    gap: 10px;
+    margin: 10px 0;
+  }
+
+  .ex-row.two-col { grid-template-columns: 1fr 1fr; }
+
+  /* ---- WATCH LIST ---- */
+  .watch-list {
+    list-style: none;
+    margin: 14px 0;
+  }
+
+  .watch-list li {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .watch-list li .watch-icon {
+    font-size: 14px;
+    margin-top: 3px;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  /* ---- XP ---- */
+  .xp-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .xp-pip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    transition: all 0.3s;
+  }
+
+  .xp-pip.earned {
+    background: rgba(240,192,64,0.1);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">// francisco's game lab</div>
+    <h1>Build Your<br><span>Own Game</span><span class="day">Day 4</span></h1>
+    <p class="subtitle">One session. One playable game. You design it, Claude Code builds it, Nano Banana illustrates it. By the end, <strong>someone else will play something you made</strong>.</p>
+  </header>
+
+  <!-- RECAP -->
+  <div class="recap-card">
+    <div class="recap-icon">&#128203;</div>
+    <div class="recap-content">
+      <strong>Skills unlocked so far:</strong> You can tell AI what to create, critique the result, and iterate until it's good. You've built graphic novels, guides, and trailers. Today you build something people can interact with.
+      <div class="recap-pips">
+        <span class="recap-pip">Storytelling &#10003;</span>
+        <span class="recap-pip">Prompt Craft &#10003;</span>
+        <span class="recap-pip">Critical Eye &#10003;</span>
+        <span class="recap-pip">Full-Project Direction &#10003;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE RULE -->
+  <div class="rule-card">
+    <div class="rule-icon">&#127918;</div>
+    <div class="rule-text">
+      <h3>The Game Designer's Rule</h3>
+      <p>A game designer at a studio doesn't write every line of code or draw every sprite. They design the <strong style="color:var(--text)">experience</strong> &mdash; what the player sees, what they do, what surprises them, what makes them want to play "one more round." Your job today is to be the game designer. Claude Code is your dev team.</p>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-area">
+    <span class="progress-label">MISSIONS COMPLETE</span>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <span class="progress-count" id="progressCount">0 / 4</span>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 1: THE DESIGN DOC -->
+  <!-- =============================== -->
+  <div class="section-label">Level 01 &mdash; Game Design</div>
+
+  <div class="mission-card" id="m1">
+    <div class="card-header" onclick="toggleCard('m1')">
+      <div class="card-number">01</div>
+      <div class="card-meta">
+        <div class="card-tag">Planning</div>
+        <div class="card-title">The Design Doc</div>
+        <span class="card-badge badge-cool">10 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Before you touch Claude Code, you need to know what you're building. Professional game designers write a <strong>"design doc"</strong> &mdash; a short description of the game that anyone on the team can read and understand immediately.</p>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Your Mission</div>
+        <div class="prompt-text">Write a design doc in 3 lines:<br><br>
+        &#8594; What does the player <em>see</em> when the game starts?<br>
+        &#8594; What does the player <em>do</em>? (click, choose, explore, fight, solve?)<br>
+        &#8594; How does the player <em>win</em> &mdash; or <em>lose</em>?</div>
+      </div>
+
+      <p>Pick a type of game that excites you &mdash; or invent your own.</p>
+
+      <div class="game-grid">
+        <div class="game-card">
+          <span class="game-emoji">&#128481;&#65039;</span>
+          <div class="game-title">Dungeon Crawler</div>
+          <div class="game-desc">Explore rooms on a map. Find items. Fight monsters. Reach the final boss. Turn-based, every choice matters.</div>
+        </div>
+        <div class="game-card">
+          <span class="game-emoji">&#127758;</span>
+          <div class="game-title">Survival</div>
+          <div class="game-desc">You're stranded somewhere. Manage food, health, shelter. Make hard decisions. How many days can you last?</div>
+        </div>
+        <div class="game-card">
+          <span class="game-emoji">&#128269;</span>
+          <div class="game-title">Mystery</div>
+          <div class="game-desc">A crime happened. Search a scene, question suspects, collect clues, piece together what happened before time runs out.</div>
+        </div>
+        <div class="game-card">
+          <span class="game-emoji">&#9876;&#65039;</span>
+          <div class="game-title">Battle Arena</div>
+          <div class="game-desc">Turn-based fights. Pick your attacks, manage health and mana. Defeat increasingly tough enemies to become champion.</div>
+        </div>
+        <div class="game-card">
+          <span class="game-emoji">&#128640;</span>
+          <div class="game-title">Space Explorer</div>
+          <div class="game-desc">Your ship. Your crew. Visit planets, each with different challenges and discoveries. Map the unknown galaxy.</div>
+        </div>
+        <div class="game-card">
+          <span class="game-emoji">&#128161;</span>
+          <div class="game-title">Your Own Idea</div>
+          <div class="game-desc">Card game, tower defense, tycoon, escape room, trivia &mdash; if you can describe it clearly, Claude Code can build it.</div>
+        </div>
+      </div>
+
+      <div class="tip-box tip-orange">
+        <div class="tip-icon">&#9888;&#65039;</div>
+        <div class="tip-content"><strong>Start small.</strong> The best first games are ONE screen, ONE mechanic, ONE goal. "Explore a 5-room dungeon and find the key" is a great game. "Open-world RPG with 50 quests" is a disaster. You can always add more rooms, enemies, and features AFTER the basic game works.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex1', this)">
+        <i class="etoggle-icon">+</i> SEE EXAMPLE DESIGN DOCS
+      </button>
+      <div class="example-panel" id="ex1">
+        <div class="example-panel-header">// example design docs &mdash; 3 lines each</div>
+        <div class="example-panel-body">
+          <p>A design doc doesn't have to be long. Three lines is enough. Here are three examples at different difficulty levels.</p>
+          <div class="ex-row">
+            <div class="ex-card">
+              <div class="ex-card-label neutral">Dungeon Crawler</div>
+              <p><strong style="color:var(--text)">See:</strong> A dark room with 3 doors. Your stats (health, gold, items) on the side.<br><br>
+              <strong style="color:var(--text)">Do:</strong> Pick a door. Each leads to a room with a monster, a treasure, or a trap. Turn-based combat: choose attack, defend, or run.<br><br>
+              <strong style="color:var(--text)">Win/Lose:</strong> Find the golden key on floor 5. Lose if health hits 0.</p>
+            </div>
+            <div class="ex-card">
+              <div class="ex-card-label neutral">Survival</div>
+              <p><strong style="color:var(--text)">See:</strong> A forest clearing. Day counter, hunger bar, health bar, inventory.<br><br>
+              <strong style="color:var(--text)">Do:</strong> Each "day" you pick one action: explore, hunt, build shelter, rest. Random events happen. Resources go up and down.<br><br>
+              <strong style="color:var(--text)">Win/Lose:</strong> Survive 10 days until rescue arrives. Lose if hunger or health hits 0.</p>
+            </div>
+            <div class="ex-card highlight">
+              <div class="ex-card-label strong">Mystery</div>
+              <p><strong style="color:var(--text)">See:</strong> A detective's desk with a case file. Three locations to visit, a clue board, a suspect list.<br><br>
+              <strong style="color:var(--text)">Do:</strong> Visit locations to find clues. Question suspects. Drag clues onto the board to connect them. When you think you know who did it, make your accusation.<br><br>
+              <strong style="color:var(--text)">Win/Lose:</strong> Accuse the right person with enough evidence. Only 3 chances &mdash; accuse wrong 3 times and the case goes cold.</p>
+            </div>
+          </div>
+          <p style="margin-top:10px">Pick one of these or write your own. The format is always the same: <strong style="color:var(--text)">See / Do / Win-Lose</strong>.</p>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>Look at the game types. Which one makes you want to play it?</li>
+        <li>Write your 3-line design doc: See, Do, Win/Lose</li>
+        <li>Read it back. Could someone who's never talked to you understand the game? If not, make it clearer.</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Your brain</span>
+        <span class="chip">Paper + pen (optional)</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m1', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 2: FIRST PLAYABLE -->
+  <!-- =============================== -->
+  <div class="section-label">Level 02 &mdash; Development</div>
+
+  <div class="mission-card" id="m2">
+    <div class="card-header" onclick="toggleCard('m2')">
+      <div class="card-number">02</div>
+      <div class="card-meta">
+        <div class="card-tag">Build</div>
+        <div class="card-title">First Playable</div>
+        <span class="card-badge badge-bold">25 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>This is the big one. You're going to hand Claude Code your design doc and tell it to build a <strong>working, playable game</strong>. The first version won't be perfect &mdash; in the industry they call this the "first playable." Your job is to play it and figure out what needs to change.</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">Build me a game as an HTML file I can play in my browser. Here's the concept:<br><br>
+[PASTE YOUR 3-LINE DESIGN DOC]<br><br>
+Make it look good &mdash; dark theme, clean UI, satisfying to interact with. It should feel like a real game, not a homework assignment. Use animations and transitions to make actions feel responsive.</div>
+        <div class="say-note">Replace the bracketed section with your actual design doc from Mission 1.</div>
+      </div>
+
+      <div class="tip-box tip-green">
+        <div class="tip-icon">&#9203;</div>
+        <div class="tip-content"><strong>Claude Code will write a LOT of code.</strong> HTML, CSS, JavaScript &mdash; potentially hundreds of lines. This might take a minute or two. Let it work. When it's done, open the file in your browser and <em>actually play the game</em>. Don't just look at it &mdash; click every button, try to win, try to lose, try to break it.</div>
+      </div>
+
+      <div class="tip-box tip-orange">
+        <div class="tip-icon">&#127919;</div>
+        <div class="tip-content"><strong>The #1 mistake:</strong> Asking for 10 changes at once. Fix <strong>one thing at a time</strong>. Play between each fix. If you stack 10 requests, you'll get 10 mediocre changes. If you fix one, play, fix one, play &mdash; each change will be exactly right.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex2', this)">
+        <i class="etoggle-icon">+</i> EXAMPLE: HOW THE CONVERSATION GOES
+      </button>
+      <div class="example-panel" id="ex2">
+        <div class="example-panel-header">// example &mdash; building a dungeon crawler</div>
+        <div class="example-panel-body">
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Round 1 &mdash; First Playable</div>
+            <p><strong style="color:var(--accent2)">You:</strong> Build me a game as an HTML file. Concept: dark room with 3 doors, each leads to a room with a monster/treasure/trap, turn-based combat (attack/defend/run), find the golden key on floor 5, lose if health hits 0. Dark theme, make it feel like a real game.</p>
+            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [writes ~400 lines of code, builds the whole game]</p>
+          </div>
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Round 2 &mdash; First Fix</div>
+            <p><strong style="color:var(--accent2)">You (after playing):</strong> Combat is too easy &mdash; I never take damage. Make the monsters actually dangerous. The skeleton should hit hard, and the troll should be terrifying.</p>
+            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [adjusts monster stats, adds damage variation]</p>
+          </div>
+          <div class="ex-card highlight">
+            <div class="ex-card-label strong">Round 3 &mdash; Adding Juice</div>
+            <p><strong style="color:var(--accent2)">You:</strong> Way better. But when I open a door, it's instant &mdash; boring. I want a moment of darkness before revealing what's inside. And when I take damage, make the screen shake a little.</p>
+            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [adds door-opening animation, screen shake on damage]</p>
+          </div>
+          <p style="margin-top:12px"><strong style="color:var(--text)">That's the loop: play &#8594; spot the problem &#8594; describe the fix &#8594; play again.</strong> Every round the game gets better because you directed the change.</p>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>Open Claude Code. Paste your design doc with the build instructions.</li>
+        <li>Open the HTML file it creates. Play the whole game &mdash; try to win AND try to lose.</li>
+        <li>What's fun? What's boring? What's broken? Pick the biggest problem.</li>
+        <li>Tell Claude Code ONE specific thing to fix. Play again.</li>
+        <li>Do at least 2-3 rounds of this. Each round the game gets better.</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Claude Code</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m2', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 3: ART PASS -->
+  <!-- =============================== -->
+  <div class="section-label">Level 03 &mdash; Art Direction</div>
+
+  <div class="mission-card" id="m3">
+    <div class="card-header" onclick="toggleCard('m3')">
+      <div class="card-number">03</div>
+      <div class="card-meta">
+        <div class="card-tag">Visuals</div>
+        <div class="card-title">The Art Pass</div>
+        <span class="card-badge badge-purple">15 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Your game works. But right now it probably looks like boxes and text. Time to give it a <strong>visual identity</strong>. You're going to direct Claude Code to generate custom art with Nano Banana and embed it directly into your game.</p>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Your Mission</div>
+        <div class="prompt-text">Tell Claude Code to generate at least 3 images for your game:<br><br>
+        &#8594; A <em>title screen</em> &mdash; the first thing the player sees<br>
+        &#8594; A <em>key scene</em> &mdash; a character, monster, location, or item<br>
+        &#8594; An <em>atmosphere image</em> &mdash; a background, environment, or mood shot<br><br>
+        The images should be embedded in the game, not separate files.</div>
+      </div>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say something like this</div>
+        <div class="say-text">Now make my game look amazing. Use Nano Banana to generate images for:<br><br>
+1. A title screen showing [describe the scene/mood]<br>
+2. [A character portrait / an enemy / a key item]<br>
+3. [A background / environment for the main scene]<br><br>
+Embed them directly into the game HTML. Art style: [dark fantasy / pixel art / sci-fi / painted / etc].</div>
+        <div class="say-note">Be specific about the art style. It changes everything &mdash; you know this from Day 2.</div>
+      </div>
+
+      <div class="tip-box">
+        <div class="tip-icon">&#127912;</div>
+        <div class="tip-content"><strong>The style sets the world.</strong> "Pixel art retro" makes it feel like a classic arcade game. "Dark painted concept art" makes it feel like a AAA title. "Clean vector illustration" makes it feel like a polished mobile game. You're not just picking art &mdash; you're picking the feeling of your entire game.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex3', this)">
+        <i class="etoggle-icon">+</i> EXAMPLE ART REQUESTS
+      </button>
+      <div class="example-panel" id="ex3">
+        <div class="example-panel-header">// example &mdash; art for a dungeon crawler</div>
+        <div class="example-panel-body">
+          <div class="ex-row">
+            <div class="ex-card">
+              <div class="ex-card-label neutral">Title Screen</div>
+              <p>"A massive stone dungeon entrance carved into a mountainside, torches flickering on either side, dark fog rolling out from inside. Text space at the top. Dark fantasy oil painting style, dramatic lighting."</p>
+            </div>
+            <div class="ex-card">
+              <div class="ex-card-label neutral">Enemy Portrait</div>
+              <p>"A skeleton warrior in rusted armor holding a cracked sword, glowing blue eyes, dark background. Painted fantasy style, menacing, upper body portrait."</p>
+            </div>
+            <div class="ex-card highlight">
+              <div class="ex-card-label strong">Environment</div>
+              <p>"Inside a dark stone dungeon corridor, torchlight casting long shadows, old wooden doors on both sides, cobwebs, a faint golden glow at the far end. Dark fantasy, atmospheric, wide shot."</p>
+            </div>
+          </div>
+          <div class="ex-card" style="margin-top:10px">
+            <div class="ex-card-label neutral">Art styles that work well for games</div>
+            <p>pixel art 16-bit &middot; dark fantasy oil painting &middot; anime/manga &middot; sci-fi concept art &middot; watercolor storybook &middot; comic book &middot; low-poly 3D render &middot; noir black and white &middot; retro movie poster &middot; Studio Ghibli</p>
+          </div>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>Decide: what art style fits your game?</li>
+        <li>List 3+ images your game needs (title, characters, environments).</li>
+        <li>Tell Claude Code to generate them with Nano Banana and embed them.</li>
+        <li>Play the game again. Does the art make it feel more real?</li>
+        <li>If an image doesn't match your vision, describe what's wrong and regenerate just that one.</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Claude Code</span>
+        <span class="chip">Nano Banana</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m3', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 4: PLAYTEST -->
+  <!-- =============================== -->
+  <div class="section-label">Level 04 &mdash; Playtesting</div>
+
+  <div class="mission-card" id="m4">
+    <div class="card-header" onclick="toggleCard('m4')">
+      <div class="card-number">04</div>
+      <div class="card-meta">
+        <div class="card-tag">Playtest</div>
+        <div class="card-title">The Real Test</div>
+        <span class="card-badge badge-warm">15 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Here's a secret from the game industry: the developer is the <strong>worst</strong> person to test their own game. You already know where everything is, what to click, how to win. You need fresh eyes.</p>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Your Mission</div>
+        <div class="prompt-text">Part 1 &mdash; Play your game one final time. Find 3 things to improve. Tell Claude Code to fix them.<br><br>
+        Part 2 &mdash; Hand your game to someone else. Watch them play. <strong>Don't help. Don't explain. Just watch.</strong></div>
+      </div>
+
+      <p>When you watch someone else play, look for these signals:</p>
+
+      <ul class="watch-list">
+        <li><span class="watch-icon">&#128533;</span> <strong>Where do they get confused?</strong> That means the instructions aren't clear enough. The game should explain itself.</li>
+        <li><span class="watch-icon">&#129393;</span> <strong>Where do they get bored?</strong> That means it's too easy or too slow. The game needs more tension.</li>
+        <li><span class="watch-icon">&#128545;</span> <strong>Where do they get frustrated?</strong> That means it's too hard or feels unfair. The game needs better balance.</li>
+        <li><span class="watch-icon">&#128513;</span> <strong>Where do they smile or laugh?</strong> That means it's working. Figure out why and do more of that.</li>
+      </ul>
+
+      <div class="tip-box">
+        <div class="tip-icon">&#128173;</div>
+        <div class="tip-content"><strong>The hardest part:</strong> When they ask "what do I do?" &mdash; don't answer. That urge to explain means the game isn't clear enough yet. That's not the player's fault. Tell Claude Code to add better instructions, a tutorial moment, or visual cues so the NEXT player won't need to ask.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex4', this)">
+        <i class="etoggle-icon">+</i> EXAMPLE: WHAT PLAYTESTING LOOKS LIKE
+      </button>
+      <div class="example-panel" id="ex4">
+        <div class="example-panel-header">// example &mdash; watching your brother play</div>
+        <div class="example-panel-body">
+          <div class="ex-card">
+            <div class="ex-card-label neutral">What you observe</div>
+            <p>He opens the game and stares at the screen for 5 seconds. He doesn't know he's supposed to click a door. He clicks randomly, finds a door, fights a monster &mdash; but doesn't realize he can use "defend" to block damage. He dies on floor 2 and says "that's unfair."</p>
+          </div>
+          <div class="ex-card highlight">
+            <div class="ex-card-label strong">What you tell Claude Code</div>
+            <p>"Three fixes: (1) When the game starts, add a short message like 'Click a door to begin exploring' that fades after 3 seconds. (2) In the first combat, add a hint that says 'Try using Defend &mdash; it blocks half the damage.' (3) The monster on floor 2 hits too hard for that early &mdash; reduce its damage by 30%."</p>
+          </div>
+          <p style="margin-top:10px">Every one of those fixes came from <strong style="color:var(--text)">watching someone struggle</strong>, not from playing it yourself. That's why playtesting with fresh eyes is so powerful.</p>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>Play your game. List 3 things to improve &mdash; be specific.</li>
+        <li>Tell Claude Code to fix them. Play one more time to confirm.</li>
+        <li>Give the game to someone else. Watch them play without saying a word.</li>
+        <li>Write down what confused them, what they enjoyed, and what felt unfair.</li>
+        <li>(Optional) Make one last round of fixes based on what you observed.</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Claude Code</span>
+        <span class="chip">A victim (sibling, parent, friend)</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m4', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- XP DISPLAY -->
+  <!-- =============================== -->
+  <div style="margin-top: 48px; padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px;">
+    <div class="eyebrow" style="margin-bottom: 12px;">// skills earned today</div>
+    <div class="xp-row" id="xpRow">
+      <span class="xp-pip" id="xp1">Game Design</span>
+      <span class="xp-pip" id="xp2">Iterative Dev</span>
+      <span class="xp-pip" id="xp3">Art Direction</span>
+      <span class="xp-pip" id="xp4">Playtesting</span>
+    </div>
+    <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);">
+      <div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px;">// total skills (all sessions)</div>
+      <div class="xp-row">
+        <span class="xp-pip earned">Storytelling</span>
+        <span class="xp-pip earned">Prompt Craft</span>
+        <span class="xp-pip earned">Shot Direction</span>
+        <span class="xp-pip earned">Critical Eye</span>
+        <span class="xp-pip earned">Creative Direction</span>
+        <span class="xp-pip earned">Topic Research</span>
+        <span class="xp-pip earned">Full-Project Direction</span>
+        <span class="xp-pip earned">Creative Polish</span>
+        <span class="xp-pip" id="xp1b">Game Design</span>
+        <span class="xp-pip" id="xp2b">Iterative Dev</span>
+        <span class="xp-pip" id="xp3b">Art Direction</span>
+        <span class="xp-pip" id="xp4b">Playtesting</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const STATE = { completed: new Set() };
+  const TOTAL = 4;
+
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    const isOpen = card.classList.contains('open');
+    document.querySelectorAll('.mission-card').forEach(c => c.classList.remove('open'));
+    if (!isOpen) card.classList.add('open');
+  }
+
+  function markDone(id, e) {
+    e.stopPropagation();
+    const card = document.getElementById(id);
+    const num = id.replace('m', '');
+
+    if (STATE.completed.has(id)) {
+      STATE.completed.delete(id);
+      card.classList.remove('done');
+      document.getElementById('xp' + num).classList.remove('earned');
+      document.getElementById('xp' + num + 'b').classList.remove('earned');
+    } else {
+      STATE.completed.add(id);
+      card.classList.add('done');
+      card.classList.remove('open');
+      document.getElementById('xp' + num).classList.add('earned');
+      document.getElementById('xp' + num + 'b').classList.add('earned');
+    }
+
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const count = STATE.completed.size;
+    document.getElementById('progressFill').style.width = (count / TOTAL * 100) + '%';
+    document.getElementById('progressCount').textContent = count + ' / ' + TOTAL;
+  }
+
+  function toggleExample(id, btn) {
+    event.stopPropagation();
+    const panel = document.getElementById(id);
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+    btn.querySelector('.etoggle-icon').textContent = isOpen ? '+' : '\u00d7';
+  }
+
+  // Open first card by default
+  document.getElementById('m1').classList.add('open');
+</script>
+</body>
+</html>

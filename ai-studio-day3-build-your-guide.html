@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Studio — Day 3: Build Your Own Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+  :root{--bg:#0b0b12;--surface:#121220;--surface2:#1b1b2c;--border:#262640;--accent:#e85d30;--accent2:#7c5cf0;--accent3:#22d3a8;--text:#e6e6f2;--text-muted:#7c7ca4;--text-dim:#484870;--gold:#f0c030}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 25% 15%,rgba(232,93,48,.05) 0%,transparent 50%),radial-gradient(circle at 75% 85%,rgba(124,92,240,.05) 0%,transparent 50%);pointer-events:none;z-index:0}
+  .wrapper{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:48px 24px 80px}
+  header{margin-bottom:44px}
+  .eyebrow{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent3);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+  .eyebrow::before{content:'';width:8px;height:8px;background:var(--accent3);border-radius:50%;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  h1{font-family:'Syne',sans-serif;font-size:clamp(34px,7vw,62px);font-weight:800;line-height:.95;letter-spacing:-2px;color:var(--text)}
+  h1 .day{font-size:.42em;font-weight:600;color:var(--accent);letter-spacing:0;display:block;margin-top:6px}
+  .subtitle{margin-top:18px;font-size:15px;color:var(--text-muted);max-width:560px;line-height:1.65;font-weight:300}
+  .subtitle strong{color:var(--text);font-weight:500}
+  /* BIG IDEA */
+  .big-idea{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:12px;padding:20px 22px;margin-bottom:36px}
+  .big-idea h3{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:12px}
+  .big-idea p{font-size:14px;color:var(--text-muted);line-height:1.7;font-weight:300;margin-bottom:10px}
+  .big-idea p:last-child{margin-bottom:0}
+  .big-idea strong{color:var(--text);font-weight:500}
+  /* TOPIC GRID */
+  .topic-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+  @media(max-width:600px){.topic-grid{grid-template-columns:1fr}}
+  .topic-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px 16px;transition:border-color .2s,transform .15s;cursor:default}
+  .topic-card:hover{border-color:var(--accent2);transform:translateY(-1px)}
+  .topic-emoji{font-size:22px;margin-bottom:6px;display:block}
+  .topic-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+  .topic-desc{font-size:12px;color:var(--text-muted);line-height:1.5;font-weight:300}
+  /* PROGRESS */
+  .progress-area{margin-bottom:40px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:16px}
+  .progress-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:1px;white-space:nowrap}
+  .progress-track{flex:1;height:5px;background:var(--surface2);border-radius:99px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .6s cubic-bezier(.4,0,.2,1);width:0%}
+  .progress-count{font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);white-space:nowrap;min-width:50px;text-align:right}
+  /* SECTIONS */
+  .section-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);margin:36px 0 14px;display:flex;align-items:center;gap:12px}
+  .section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+  /* MISSION CARDS */
+  .mission-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:0;margin-bottom:14px;overflow:hidden}
+  .mission-card.done{opacity:.5;border-color:var(--border)}
+  .mission-card.done .card-number{background:var(--accent3);color:var(--bg)}
+  .mission-card.done .card-number::after{content:'\2713'}
+  .card-header{display:flex;align-items:stretch;cursor:pointer;transition:background .15s}
+  .card-header:hover{background:var(--surface2)}
+  .card-number{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;width:58px;min-width:58px;display:flex;align-items:center;justify-content:center;background:var(--surface2);color:var(--text-muted);border-right:1px solid var(--border)}
+  .card-meta{padding:16px 18px;flex:1}
+  .card-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px}
+  .card-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--text);line-height:1.2}
+  .card-badge{display:inline-block;margin-top:5px;font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;border-radius:99px;border:1px solid}
+  .badge-warm{color:var(--gold);border-color:var(--gold);background:rgba(240,192,48,.07)}
+  .badge-cool{color:var(--accent3);border-color:var(--accent3);background:rgba(34,211,168,.07)}
+  .badge-bold{color:var(--accent);border-color:var(--accent);background:rgba(232,93,48,.07)}
+  .card-chevron{display:flex;align-items:center;padding:0 18px;color:var(--text-dim);font-size:20px;transition:transform .3s,color .2s}
+  .mission-card.open .card-chevron{transform:rotate(90deg);color:var(--accent)}
+  .card-body{display:none;border-top:1px solid var(--border);padding:22px 22px 18px;animation:slideDown .25s ease}
+  .mission-card.open .card-body{display:block}
+  @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+  .card-body p{font-size:14px;color:var(--text-muted);line-height:1.7;margin-bottom:14px;font-weight:300}
+  .card-body strong{color:var(--text);font-weight:500}
+  /* SAY BOX */
+  .say-box{background:var(--bg);border:1px solid rgba(124,92,240,.3);border-left:3px solid var(--accent2);border-radius:8px;padding:14px 16px;margin:14px 0}
+  .say-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--accent2);text-transform:uppercase;margin-bottom:8px}
+  .say-text{font-family:'DM Mono',monospace;font-size:13px;color:var(--text);line-height:1.65}
+  .say-note{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text-dim);margin-top:10px;font-style:italic;font-weight:300}
+  /* STEPS */
+  .steps{list-style:none;counter-reset:step;margin:16px 0}
+  .steps li{counter-increment:step;display:flex;gap:14px;margin-bottom:11px;font-size:14px;color:var(--text-muted);line-height:1.6;font-weight:300}
+  .steps li::before{content:counter(step);font-family:'DM Mono',monospace;font-size:11px;font-weight:500;width:24px;min-width:24px;height:24px;background:var(--surface2);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--accent);margin-top:1px}
+  /* TIPS */
+  .tip-box{background:rgba(124,92,240,.06);border:1px solid rgba(124,92,240,.2);border-radius:8px;padding:14px 16px;margin:14px 0;display:flex;gap:12px}
+  .tip-box.tip-green{background:rgba(34,211,168,.06);border-color:rgba(34,211,168,.2)}
+  .tip-box.tip-orange{background:rgba(232,93,48,.06);border-color:rgba(232,93,48,.2)}
+  .tip-icon{font-size:16px;line-height:1;margin-top:1px}
+  .tip-content{font-size:13px;color:var(--text-muted);line-height:1.65;font-weight:300}
+  .tip-content strong{color:var(--accent2);font-weight:500}
+  .tip-green .tip-content strong{color:var(--accent3);font-weight:500}
+  .tip-orange .tip-content strong{color:var(--accent);font-weight:500}
+  /* BUTTONS */
+  .complete-btn{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:9px 18px;background:transparent;border:1px solid var(--accent3);border-radius:8px;color:var(--accent3);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:1px;cursor:pointer;transition:background .2s,color .2s}
+  .complete-btn:hover{background:var(--accent3);color:var(--bg)}
+  .mission-card.done .complete-btn{border-color:var(--text-dim);color:var(--text-dim)}
+  .tool-chips{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+  .chip{font-family:'DM Mono',monospace;font-size:11px;padding:4px 11px;border-radius:99px;background:var(--surface2);border:1px solid var(--border);color:var(--text-muted)}
+  /* EXAMPLE */
+  .example-toggle{display:inline-flex;align-items:center;gap:6px;margin:10px 0 0;padding:7px 13px;background:transparent;border:1px dashed var(--accent2);border-radius:8px;color:var(--accent2);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:background .2s}
+  .example-toggle:hover{background:rgba(124,92,240,.1)}
+  .example-toggle .etoggle-icon{transition:transform .3s;font-style:normal;font-size:14px;line-height:1}
+  .example-panel{display:none;margin-top:12px;border:1px solid rgba(124,92,240,.2);border-radius:10px;overflow:hidden;animation:slideDown .25s ease}
+  .example-panel.open{display:block}
+  .example-panel-header{background:rgba(124,92,240,.08);padding:10px 16px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--accent2);text-transform:uppercase}
+  .example-panel-body{padding:14px;background:rgba(124,92,240,.03)}
+  .example-panel-body p{font-size:13px;color:var(--text-muted);line-height:1.65;margin-bottom:10px;font-weight:300}
+  .example-panel-body p:last-child{margin-bottom:0}
+  /* XP */
+  .xp-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .xp-pip{font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);transition:all .3s}
+  .xp-pip.earned{background:rgba(240,192,48,.1);border-color:var(--gold);color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <header>
+    <div class="eyebrow">// ai studio — day 3</div>
+    <h1>Build Your<br>Own Guide<span class="day">Day 3</span></h1>
+    <p class="subtitle">Pick something you want to understand better. Then use Claude Code to build yourself a <strong>beautiful illustrated guide</strong> about it — with AI-generated images included.</p>
+  </header>
+
+  <div class="big-idea">
+    <h3>What You're Making Today</h3>
+    <p>By the end of this session, you'll have an <strong>HTML page you can open in any browser</strong> — like a mini-website — that explains your topic with real text and AI-generated illustrations. You're the director. Claude Code is the writer, designer, and illustrator.</p>
+    <p>The key skill: <strong>giving Claude Code a big, complex job and guiding it to a finished product</strong>. Not one image. Not one paragraph. A whole thing — start to finish.</p>
+  </div>
+
+  <div class="progress-area">
+    <span class="progress-label">MISSIONS</span>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-count" id="progressCount">0 / 3</span>
+  </div>
+
+  <!-- ======= MISSION 1 ======= -->
+  <div class="section-label">Mission 01 — Pick Your Topic</div>
+  <div class="mission-card" id="m1">
+    <div class="card-header" onclick="toggleCard('m1')">
+      <div class="card-number">01</div>
+      <div class="card-meta">
+        <div class="card-tag">Planning</div>
+        <div class="card-title">What Do You Want to Learn About?</div>
+        <span class="card-badge badge-cool">5 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Before you touch Claude Code, decide what your guide will be about. Pick something you're <strong>genuinely curious about</strong> — something where you'd actually want to read the final thing.</p>
+      <p>Here are some ideas. You can use one of these or come up with your own.</p>
+
+      <div class="topic-grid">
+        <div class="topic-card">
+          <span class="topic-emoji">&#9876;&#65039;</span>
+          <div class="topic-title">How Swords Are Made</div>
+          <div class="topic-desc">From raw metal to a finished blade. The forging process, types of steel, why some swords were better than others.</div>
+        </div>
+        <div class="topic-card">
+          <span class="topic-emoji">&#128056;</span>
+          <div class="topic-title">The Deepest Ocean Creatures</div>
+          <div class="topic-desc">What lives at the bottom of the ocean where no light reaches? How do they survive? What do they look like?</div>
+        </div>
+        <div class="topic-card">
+          <span class="topic-emoji">&#128640;</span>
+          <div class="topic-title">How SpaceX Lands a Rocket</div>
+          <div class="topic-desc">The engineering behind landing a rocket backwards on a platform in the ocean. Why it was supposed to be impossible.</div>
+        </div>
+        <div class="topic-card">
+          <span class="topic-emoji">&#129504;</span>
+          <div class="topic-title">How Your Brain Learns New Things</div>
+          <div class="topic-desc">What actually happens inside your head when you practice something. Neurons, myelin, and why repetition works.</div>
+        </div>
+        <div class="topic-card">
+          <span class="topic-emoji">&#127759;</span>
+          <div class="topic-title">Volcanoes: How They Erupt</div>
+          <div class="topic-desc">Magma chambers, tectonic plates, the biggest eruptions in history, and what makes some volcanoes more dangerous than others.</div>
+        </div>
+        <div class="topic-card">
+          <span class="topic-emoji">&#129302;</span>
+          <div class="topic-title">How AI Actually Works</div>
+          <div class="topic-desc">Matrix multiplication, training data, neural networks — the real explanation of what's happening when you talk to Claude.</div>
+        </div>
+        <div class="topic-card">
+          <span class="topic-emoji">&#128025;</span>
+          <div class="topic-title">The Most Dangerous Animals</div>
+          <div class="topic-desc">Not the ones you think. Which animals actually kill the most humans? How do their weapons (venom, strength, speed) work?</div>
+        </div>
+        <div class="topic-card">
+          <span class="topic-emoji">&#127748;</span>
+          <div class="topic-title">Your Own Idea</div>
+          <div class="topic-desc">Anything you want. History, science, sports, games, animals, technology, mythology — if you're curious about it, it works.</div>
+        </div>
+      </div>
+
+      <div class="tip-box tip-orange">
+        <div class="tip-icon">&#128161;</div>
+        <div class="tip-content"><strong>Pick something specific.</strong> "Animals" is too broad. "The deepest ocean creatures and how they survive without light" is specific enough to make a great guide. The more focused your topic, the better the result.</div>
+      </div>
+
+      <ol class="steps">
+        <li>Look at the ideas above. Does one of them grab you?</li>
+        <li>If not, think: what's something I've wondered about recently?</li>
+        <li>Write down your topic in one sentence. Be specific.</li>
+      </ol>
+
+      <div class="tool-chips"><span class="chip">Your brain</span><span class="chip">Paper + pen (optional)</span></div>
+      <button class="complete-btn" onclick="markDone('m1',event)"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- ======= MISSION 2 ======= -->
+  <div class="section-label">Mission 02 — Direct the Build</div>
+  <div class="mission-card" id="m2">
+    <div class="card-header" onclick="toggleCard('m2')">
+      <div class="card-number">02</div>
+      <div class="card-meta">
+        <div class="card-tag">Creation</div>
+        <div class="card-title">Tell Claude Code to Build Your Guide</div>
+        <span class="card-badge badge-bold">25 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Open Claude Code. You're going to give it one big, clear instruction — and let it build the whole guide for you. Your job is to be the <strong>director</strong>: describe what you want, review what it makes, and tell it what to fix.</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say something like this to Claude Code</div>
+        <div class="say-text">Create an illustrated guide about [YOUR TOPIC]. Make it as an HTML file I can open in a browser. It should have:<br><br>
+- A cool title and introduction<br>
+- 4-5 sections that explain the topic step by step<br>
+- An AI-generated image for each section (use Nano Banana to generate them)<br>
+- Make it look really good — dark theme, nice fonts, the images should be embedded in the page<br>
+- Write it for someone my age who is curious but doesn't know much about the topic yet</div>
+        <div class="say-note">Replace [YOUR TOPIC] with what you picked in Mission 1. You can change any of the details — more sections, different style, whatever you want. This is YOUR guide.</div>
+      </div>
+
+      <div class="tip-box tip-green">
+        <div class="tip-icon">&#128640;</div>
+        <div class="tip-content"><strong>Claude Code will do a LOT of work here.</strong> It will write the text, generate image prompts, call Nano Banana to create the images, build the HTML, and put it all together. This might take a few minutes. Let it cook.</div>
+      </div>
+
+      <div class="tip-box">
+        <div class="tip-icon">&#127908;</div>
+        <div class="tip-content"><strong>The director's job isn't done after the first request.</strong> When Claude Code shows you the result, look at it carefully. Is there a section that's confusing? An image that doesn't match? Something missing? Tell Claude Code specifically what to change. The best guides come from 2-3 rounds of feedback, not from one perfect prompt.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex2',this)"><i class="etoggle-icon">+</i> EXAMPLE: HOW A CONVERSATION MIGHT GO</button>
+      <div class="example-panel" id="ex2">
+        <div class="example-panel-header">// example conversation — guide about sword forging</div>
+        <div class="example-panel-body">
+          <p><strong style="color:var(--accent2)">You:</strong> Create an illustrated guide about how swords are made — from raw metal to a finished blade. Make it as an HTML file. 5 sections, an image for each section using Nano Banana, dark theme, make it look amazing. Write it for someone my age.</p>
+          <p><strong style="color:var(--accent3)">Claude Code:</strong> [builds the whole thing — writes text, generates 5 images, assembles the HTML]</p>
+          <p><strong style="color:var(--accent2)">You (after looking at it):</strong> This is cool but the image for the quenching section just shows a generic fire. I want to see the blade being dunked into water with steam rising. Also the section about types of steel is too short — can you add more about the difference between carbon steel and stainless steel?</p>
+          <p><strong style="color:var(--accent3)">Claude Code:</strong> [regenerates that specific image, expands the steel section]</p>
+          <p><strong style="color:var(--accent2)">You:</strong> Much better. One more thing — add a section at the end about the most famous swords in history. With images.</p>
+          <p><strong style="color:var(--accent3)">Claude Code:</strong> [adds the new section with images]</p>
+          <p style="margin-top:8px"><strong style="color:var(--text)">That's 3 rounds.</strong> First pass, fix the problems, add something new. Each round the guide gets better because YOU made it better with specific feedback.</p>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>Open Claude Code and give it your request.</li>
+        <li>Wait for the first version. Open the HTML file and read through it.</li>
+        <li>Find at least ONE thing to improve. Tell Claude Code what to fix.</li>
+        <li>Review the updated version. Fix one more thing if needed.</li>
+        <li>When you're happy with it, save it. That's your guide.</li>
+      </ol>
+
+      <div class="tool-chips"><span class="chip">Claude Code</span><span class="chip">Nano Banana MCP</span></div>
+      <button class="complete-btn" onclick="markDone('m2',event)"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- ======= MISSION 3 ======= -->
+  <div class="section-label">Mission 03 — Make It Yours</div>
+  <div class="mission-card" id="m3">
+    <div class="card-header" onclick="toggleCard('m3')">
+      <div class="card-number">03</div>
+      <div class="card-meta">
+        <div class="card-tag">Polish</div>
+        <div class="card-title">Add Something Only You Would Think Of</div>
+        <span class="card-badge badge-warm">10 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Your guide exists. It works. But right now it's just "a guide about [topic]." This mission turns it into <strong>YOUR guide</strong> — something that has your personality in it.</p>
+
+      <p>Ask Claude Code to add ONE of these (or come up with your own idea):</p>
+
+      <div class="topic-grid">
+        <div class="topic-card">
+          <span class="topic-emoji">&#10068;</span>
+          <div class="topic-title">A Quiz Section</div>
+          <div class="topic-desc">"Add an interactive quiz at the end that tests if the reader actually learned the key facts." Makes the HTML interactive — buttons, answers, scoring.</div>
+        </div>
+        <div class="topic-card">
+          <span class="topic-emoji">&#128483;&#65039;</span>
+          <div class="topic-title">"Myth vs Fact"</div>
+          <div class="topic-desc">"Add a section that busts common myths about this topic." People love being surprised by what they thought was true but isn't.</div>
+        </div>
+        <div class="topic-card">
+          <span class="topic-emoji">&#128200;</span>
+          <div class="topic-title">A Comparison Chart</div>
+          <div class="topic-desc">"Add a visual comparison — like a table or chart — that shows [X vs Y]." Great for topics where you're comparing things.</div>
+        </div>
+        <div class="topic-card">
+          <span class="topic-emoji">&#128173;</span>
+          <div class="topic-title">Your Own Twist</div>
+          <div class="topic-desc">A timeline? A "what would happen if..." section? A rating system? An animated diagram? You decide.</div>
+        </div>
+      </div>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Example</div>
+        <div class="say-text">Add an interactive quiz at the end of my guide. 5 questions based on the content. Multiple choice. Show the score at the end. Make it look clean and match the style of the rest of the page.</div>
+      </div>
+
+      <div class="tip-box tip-green">
+        <div class="tip-icon">&#11088;</div>
+        <div class="tip-content"><strong>This is the director move that matters most.</strong> Anyone can ask Claude Code to make a guide. Adding your own creative twist — something unexpected, something that makes it more fun or more useful — is what separates someone who uses AI from someone who directs it.</div>
+      </div>
+
+      <ol class="steps">
+        <li>Pick one addition from above (or invent your own).</li>
+        <li>Tell Claude Code what to add. Be specific about how it should look and work.</li>
+        <li>Review the result. Does it fit with the rest of the guide?</li>
+        <li>Open the final HTML file in your browser. Show it to someone.</li>
+      </ol>
+
+      <div class="tool-chips"><span class="chip">Claude Code</span><span class="chip">Nano Banana MCP</span></div>
+      <button class="complete-btn" onclick="markDone('m3',event)"><span>&#10003;</span> Mark Complete</button>
+    </div>
+  </div>
+
+  <!-- XP -->
+  <div style="margin-top:44px;padding:22px;background:var(--surface);border:1px solid var(--border);border-radius:12px">
+    <div class="eyebrow" style="margin-bottom:10px;gap:0">// skills earned</div>
+    <div class="xp-row">
+      <span class="xp-pip" id="xp1">Topic Research</span>
+      <span class="xp-pip" id="xp2">Full-Project Direction</span>
+      <span class="xp-pip" id="xp3">Creative Polish</span>
+    </div>
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:8px">// total skills (all sessions)</div>
+      <div class="xp-row">
+        <span class="xp-pip earned">Storytelling</span>
+        <span class="xp-pip earned">Prompt Craft</span>
+        <span class="xp-pip earned">Shot Direction</span>
+        <span class="xp-pip earned">Critical Eye</span>
+        <span class="xp-pip earned">Iteration</span>
+        <span class="xp-pip earned">Style Control</span>
+        <span class="xp-pip earned">Sequencing</span>
+        <span class="xp-pip" id="xp1b">Topic Research</span>
+        <span class="xp-pip" id="xp2b">Full-Project Direction</span>
+        <span class="xp-pip" id="xp3b">Creative Polish</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const STATE={completed:new Set()};
+function toggleCard(id){const card=document.getElementById(id);const isOpen=card.classList.contains('open');document.querySelectorAll('.mission-card').forEach(c=>c.classList.remove('open'));if(!isOpen)card.classList.add('open')}
+function markDone(id,e){e.stopPropagation();const card=document.getElementById(id);const num=id.replace('m','');if(STATE.completed.has(id)){STATE.completed.delete(id);card.classList.remove('done');document.getElementById('xp'+num).classList.remove('earned');document.getElementById('xp'+num+'b').classList.remove('earned')}else{STATE.completed.add(id);card.classList.add('done');card.classList.remove('open');document.getElementById('xp'+num).classList.add('earned');document.getElementById('xp'+num+'b').classList.add('earned')}updateProgress()}
+function updateProgress(){const count=STATE.completed.size;document.getElementById('progressFill').style.width=(count/3*100)+'%';document.getElementById('progressCount').textContent=count+' / 3'}
+function toggleExample(id,btn){event.stopPropagation();const panel=document.getElementById(id);const isOpen=panel.classList.contains('open');panel.classList.toggle('open',!isOpen);btn.classList.toggle('open',!isOpen);btn.querySelector('.etoggle-icon').textContent=isOpen?'+':'\u00d7'}
+document.getElementById('m1').classList.add('open');
+</script>
+</body>
+</html>

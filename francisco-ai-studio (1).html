@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Francisco's AI Studio</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --bg: #0e0e12;
+    --surface: #16161c;
+    --surface2: #1e1e26;
+    --border: #2a2a38;
+    --accent: #ff6b35;
+    --accent2: #7c5cbf;
+    --accent3: #2dd4bf;
+    --text: #e8e8f0;
+    --text-muted: #7878a0;
+    --text-dim: #4a4a68;
+    --gold: #f0c040;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ---- GRID BACKGROUND ---- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ---- HEADER ---- */
+  header {
+    margin-bottom: 56px;
+  }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(40px, 8vw, 72px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    color: var(--text);
+  }
+
+  h1 span {
+    color: var(--accent);
+  }
+
+  .subtitle {
+    margin-top: 20px;
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 520px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* ---- PROGRESS BAR ---- */
+  .progress-area {
+    margin-bottom: 48px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 99px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+
+  .progress-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    white-space: nowrap;
+    min-width: 60px;
+    text-align: right;
+  }
+
+  /* ---- SECTION LABELS ---- */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 40px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ---- MISSION CARDS ---- */
+  .mission-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 0;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+    cursor: pointer;
+  }
+
+  .mission-card:hover {
+    border-color: var(--accent2);
+    transform: translateY(-1px);
+  }
+
+  .mission-card.done {
+    opacity: 0.55;
+    border-color: var(--border);
+  }
+
+  .mission-card.done .card-number {
+    background: var(--accent3);
+    color: var(--bg);
+  }
+
+  .mission-card.done .card-number::after {
+    content: '✓';
+  }
+
+  .card-header {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .card-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    width: 64px;
+    min-width: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+    color: var(--text-muted);
+    border-right: 1px solid var(--border);
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .mission-card.active .card-number {
+    background: var(--accent);
+    color: white;
+  }
+
+  .card-meta {
+    padding: 18px 20px;
+    flex: 1;
+  }
+
+  .card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .mission-card.active .card-title {
+    color: var(--accent);
+  }
+
+  .card-badge {
+    display: inline-block;
+    margin-top: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 99px;
+    border: 1px solid;
+  }
+
+  .badge-warm { color: var(--gold); border-color: var(--gold); background: rgba(240,192,64,0.08); }
+  .badge-cool { color: var(--accent3); border-color: var(--accent3); background: rgba(45,212,191,0.08); }
+  .badge-bold { color: var(--accent); border-color: var(--accent); background: rgba(255,107,53,0.08); }
+  .badge-purple { color: var(--accent2); border-color: var(--accent2); background: rgba(124,92,191,0.08); }
+
+  .card-chevron {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    color: var(--text-dim);
+    font-size: 20px;
+    transition: transform 0.3s, color 0.2s;
+  }
+
+  .mission-card.open .card-chevron {
+    transform: rotate(90deg);
+    color: var(--accent);
+  }
+
+  /* ---- CARD BODY ---- */
+  .card-body {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 24px 24px 20px;
+    animation: slideDown 0.25s ease;
+  }
+
+  .mission-card.open .card-body {
+    display: block;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-body p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 16px;
+    font-weight: 300;
+  }
+
+  .card-body strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* ---- PROMPT BOX ---- */
+  .prompt-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 12px 0;
+  }
+
+  .prompt-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .prompt-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ---- STEPS ---- */
+  .steps {
+    list-style: none;
+    counter-reset: step;
+    margin: 16px 0;
+  }
+
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 14px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .steps li::before {
+    content: counter(step);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    width: 24px;
+    min-width: 24px;
+    height: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    margin-top: 1px;
+  }
+
+  /* ---- POWER TIPS ---- */
+  .tip-box {
+    background: rgba(124,92,191,0.08);
+    border: 1px solid rgba(124,92,191,0.3);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 16px 0;
+    display: flex;
+    gap: 12px;
+  }
+
+  .tip-icon {
+    font-size: 16px;
+    line-height: 1;
+    margin-top: 1px;
+  }
+
+  .tip-content {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .tip-content strong {
+    color: var(--accent2);
+    font-weight: 500;
+  }
+
+  /* ---- COMPLETE BUTTON ---- */
+  .complete-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid var(--accent3);
+    border-radius: 8px;
+    color: var(--accent3);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .complete-btn:hover {
+    background: var(--accent3);
+    color: var(--bg);
+  }
+
+  .mission-card.done .complete-btn {
+    border-color: var(--text-dim);
+    color: var(--text-dim);
+  }
+
+  /* ---- BOSS CHALLENGE ---- */
+  .boss-card {
+    background: linear-gradient(135deg, rgba(255,107,53,0.08), rgba(124,92,191,0.08));
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    padding: 28px;
+    margin-top: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .boss-card::before {
+    content: '⚡';
+    position: absolute;
+    right: 24px;
+    top: 20px;
+    font-size: 48px;
+    opacity: 0.15;
+  }
+
+  .boss-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .boss-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  .boss-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-weight: 300;
+    max-width: 620px;
+  }
+
+  /* ---- THE RULE ---- */
+  .rule-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .rule-icon {
+    font-size: 28px;
+    line-height: 1;
+    margin-top: 2px;
+  }
+
+  .rule-text h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .rule-text p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* ---- TOOL CHIPS ---- */
+  .tool-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0;
+  }
+
+  .chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 99px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  /* ---- EXAMPLE BOX ---- */
+  .example-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px 0 0;
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px dashed var(--accent2);
+    border-radius: 8px;
+    color: var(--accent2);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  .example-toggle:hover {
+    background: rgba(124,92,191,0.1);
+  }
+  .example-toggle .etoggle-icon {
+    transition: transform 0.3s;
+    font-style: normal;
+    font-size: 14px;
+    line-height: 1;
+  }
+  .example-toggle.open .etoggle-icon {
+    transform: rotate(45deg);
+  }
+
+  .example-panel {
+    display: none;
+    margin-top: 12px;
+    border: 1px solid rgba(124,92,191,0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    animation: slideDown 0.25s ease;
+  }
+  .example-panel.open {
+    display: block;
+  }
+  .example-panel-header {
+    background: rgba(124,92,191,0.12);
+    padding: 10px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent2);
+    text-transform: uppercase;
+  }
+  .example-panel-body {
+    padding: 16px;
+    background: rgba(124,92,191,0.05);
+  }
+  .example-panel-body p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin-bottom: 10px;
+    font-weight: 300;
+  }
+  .example-panel-body p:last-child { margin-bottom: 0; }
+
+  .ex-row {
+    display: grid;
+    gap: 10px;
+    margin: 10px 0;
+  }
+  .ex-row.two-col { grid-template-columns: 1fr 1fr; }
+
+  .ex-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .ex-card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .ex-card-label.weak { color: var(--text-dim); }
+  .ex-card-label.strong { color: var(--accent3); }
+  .ex-card-label.neutral { color: var(--gold); }
+
+  .ex-card p {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.6;
+    margin: 0 !important;
+  }
+  .ex-card.highlight {
+    border-color: rgba(45,212,191,0.4);
+    background: rgba(45,212,191,0.04);
+  }
+
+  .ex-divider {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 18px;
+    line-height: 1;
+    padding: 4px 0;
+  }
+
+  /* ---- XP BAR ---- */
+  .xp-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .xp-pip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    transition: all 0.3s;
+  }
+
+  .xp-pip.earned {
+    background: rgba(240,192,64,0.1);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">// francisco's creative lab</div>
+    <h1>AI<br><span>Studio</span></h1>
+    <p class="subtitle">5 missions. One skill to master: <strong style="color:var(--text)">you direct, AI builds.</strong> The better your instructions, the better the result.</p>
+  </header>
+
+  <!-- THE ONE RULE -->
+  <div class="rule-card">
+    <div class="rule-icon">🎬</div>
+    <div class="rule-text">
+      <h3>The Director's Rule</h3>
+      <p>A movie director doesn't build the sets, write every line, or operate the camera. They <strong style="color:var(--text)">describe what they want clearly</strong> — and the crew executes it. Your job today is to be the director. AI is your crew.</p>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-area">
+    <span class="progress-label">MISSIONS COMPLETE</span>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <span class="progress-count" id="progressCount">0 / 5</span>
+  </div>
+
+  <!-- SECTION 1: GRAPHIC NOVEL -->
+  <div class="section-label">Level 01 — Storytelling</div>
+
+  <div class="mission-card" id="m1" onclick="toggleCard('m1')">
+    <div class="card-header">
+      <div class="card-number">01</div>
+      <div class="card-meta">
+        <div class="card-tag">Graphic Novel</div>
+        <div class="card-title">Your Original Story</div>
+        <span class="card-badge badge-warm">30–45 min</span>
+      </div>
+      <div class="card-chevron">›</div>
+    </div>
+    <div class="card-body">
+      <p>Yesterday you made a Spider-Man graphic novel. Today: <strong>no adaptations</strong>. You're going to invent something. It doesn't have to be long or complex — the best ideas are one sentence.</p>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Your Mission</div>
+        <div class="prompt-text">Come up with ONE original character. Give them:<br>
+        → A name<br>
+        → One unusual power or skill<br>
+        → One problem they can't solve with that power<br><br>
+        Then tell Claude Code: <em>"Create a graphic novel about [your idea]"</em></div>
+      </div>
+
+      <div class="tip-box">
+        <div class="tip-icon">💡</div>
+        <div class="tip-content"><strong>Power move:</strong> After the first version is generated, look at it critically. What's one page you wish was different? Tell Claude to fix exactly that one thing. Iteration is the skill.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex1', this)">
+        <i class="etoggle-icon">+</i> SEE AN EXAMPLE
+      </button>
+      <div class="example-panel" id="ex1">
+        <div class="example-panel-header">// example character ideas</div>
+        <div class="example-panel-body">
+          <p>Here are 3 made-up characters to show you the format. You can use one of these OR make your own — but try to make your own first.</p>
+          <div class="ex-row">
+            <div class="ex-card">
+              <div class="ex-card-label neutral">Example A</div>
+              <p><strong style="color:var(--text)">Mira the Hollow</strong><br>
+              Power: She can walk through walls and become invisible.<br>
+              Problem: She's been invisible so long, people she loves can no longer see her — even when she tries to be seen.</p>
+            </div>
+            <div class="ex-card">
+              <div class="ex-card-label neutral">Example B</div>
+              <p><strong style="color:var(--text)">Kael the Burnkeeper</strong><br>
+              Power: He can absorb fire and store it inside his body.<br>
+              Problem: The fire is slowly burning him from the inside — and he has to keep taking in more to survive.</p>
+            </div>
+            <div class="ex-card">
+              <div class="ex-card-label neutral">Example C</div>
+              <p><strong style="color:var(--text)">Sona the Echo</strong><br>
+              Power: She can copy any skill she watches someone do once.<br>
+              Problem: Every skill she copies erases one of her own memories. She's getting stronger — but forgetting who she is.</p>
+            </div>
+          </div>
+          <p>Notice the pattern: the <strong style="color:var(--text)">power sounds cool</strong>, but the <strong style="color:var(--text)">problem comes from the power itself</strong>. That's what makes a great character.</p>
+          <div class="ex-card highlight" style="margin-top:10px">
+            <div class="ex-card-label strong">Prompt to Claude Code</div>
+            <p>Create a graphic novel about Kael the Burnkeeper — a boy who can absorb fire but it's slowly destroying him from the inside. Dark, gritty art style, 8 pages, with a cliffhanger ending.</p>
+          </div>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>Spend 5 minutes writing your character idea on paper first (no AI yet)</li>
+        <li>Open Claude Code. Give it your one-line idea.</li>
+        <li>Review the result. Find one thing to improve.</li>
+        <li>Give Claude a specific instruction to fix it.</li>
+        <li>Save the final version.</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Claude Code</span>
+        <span class="chip">Graphic Novel Skill</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m1', event)">
+        <span>✓</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- SECTION 2: IMAGE PROMPTING -->
+  <div class="section-label">Level 02 — Image Generation</div>
+
+  <div class="mission-card" id="m2" onclick="toggleCard('m2')">
+    <div class="card-header">
+      <div class="card-number">02</div>
+      <div class="card-meta">
+        <div class="card-tag">Image Generation</div>
+        <div class="card-title">The Prompt Ladder</div>
+        <span class="card-badge badge-cool">20 min</span>
+      </div>
+      <div class="card-chevron">›</div>
+    </div>
+    <div class="card-body">
+      <p>Prompting is a skill. A vague prompt gets a generic image. A precise prompt gets exactly what you imagined. This mission trains that muscle.</p>
+
+      <div class="prompt-box">
+        <div class="prompt-label">The Challenge</div>
+        <div class="prompt-text">Pick one scene from The Hobbit or Percy Jackson.<br><br>
+        Round 1 — Short prompt (5 words max). Generate it.<br>
+        Round 2 — Add details: lighting, weather, mood, camera angle.<br>
+        Round 3 — Add a style: "oil painting", "manga", "photorealistic", "concept art".<br><br>
+        Compare all three. What changed?</div>
+      </div>
+
+      <ol class="steps">
+        <li>Pick your scene. Write it in one sentence.</li>
+        <li>Generate Round 1 with the shortest possible prompt.</li>
+        <li>Generate Round 2 — add 2–3 details.</li>
+        <li>Generate Round 3 — add an art style.</li>
+        <li>Write down: what word made the biggest difference?</li>
+      </ol>
+
+      <div class="tip-box">
+        <div class="tip-icon">🎯</div>
+        <div class="tip-content"><strong>The insight:</strong> Every word in a prompt is a vote. More specific words win more votes. "A warrior" vs "a scarred Viking warrior at sunset, tired eyes, holding a cracked shield" — same character, completely different image.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex2', this)">
+        <i class="etoggle-icon">+</i> SEE AN EXAMPLE
+      </button>
+      <div class="example-panel" id="ex2">
+        <div class="example-panel-header">// prompt ladder — bilbo baggins escaping the goblins</div>
+        <div class="example-panel-body">
+          <p>Here's what the same scene looks like at each round. Watch how much the image changes.</p>
+          <div class="ex-row">
+            <div class="ex-card">
+              <div class="ex-card-label weak">Round 1 — too vague</div>
+              <p>A hobbit running from goblins</p>
+            </div>
+            <div class="ex-card">
+              <div class="ex-card-label neutral">Round 2 — getting specific</div>
+              <p>A small barefoot hobbit sprinting through a dark underground tunnel, goblins chasing behind him with torches, dramatic side lighting, panic on his face</p>
+            </div>
+            <div class="ex-card highlight">
+              <div class="ex-card-label strong">Round 3 — locked in</div>
+              <p>A small barefoot hobbit sprinting through a dark underground tunnel, goblins chasing behind him with torches, dramatic side lighting, panic on his face, dark fantasy oil painting style, deep shadows, flickering orange firelight, cinematic composition</p>
+            </div>
+          </div>
+          <p style="margin-top:10px">Try your own scene — maybe Perseus fighting Medusa, or the Shire on a rainy morning, or Gandalf arriving at Bilbo's door. Any scene you can picture clearly works.</p>
+          <div class="ex-row two-col" style="margin-top:4px">
+            <div class="ex-card">
+              <div class="ex-card-label neutral">Style options to try</div>
+              <p>oil painting · manga · watercolor · photorealistic · pencil sketch · concept art · storybook illustration · film noir</p>
+            </div>
+            <div class="ex-card">
+              <div class="ex-card-label neutral">Detail words that help</div>
+              <p>golden hour · stormy · backlit · close-up · aerial view · motion blur · fog · dramatic shadows · high contrast</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tool-chips">
+        <span class="chip">ChatGPT (image)</span>
+        <span class="chip">Claude Chat</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m2', event)">
+        <span>✓</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- SECTION 3: VIDEO -->
+  <div class="section-label">Level 03 — Motion & Video</div>
+
+  <div class="mission-card" id="m3" onclick="toggleCard('m3')">
+    <div class="card-header">
+      <div class="card-number">03</div>
+      <div class="card-meta">
+        <div class="card-tag">AI Video</div>
+        <div class="card-title">The 5-Second Shot</div>
+        <span class="card-badge badge-bold">25 min</span>
+      </div>
+      <div class="card-chevron">›</div>
+    </div>
+    <div class="card-body">
+      <p>Video is harder than images because it involves <strong>time</strong>. You have to describe not just what's in the frame, but what moves, how it moves, and what the camera does.</p>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Your Mission</div>
+        <div class="prompt-text">Write a "shot brief" for a 5-second video clip.<br><br>
+        It must include:<br>
+        → What's in the frame (subject)<br>
+        → What's moving, and how (action)<br>
+        → Camera movement (static / zoom / pan / orbit)<br>
+        → Lighting / time of day<br>
+        → Mood in one word<br><br>
+        Then generate it with Kling or Veo 3.</div>
+      </div>
+
+      <div class="tip-box">
+        <div class="tip-icon">🎥</div>
+        <div class="tip-content"><strong>Director's note:</strong> Real film directors write exactly this for every shot before filming. You're learning a professional skill. Try: a shot from your graphic novel character's story.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex3', this)">
+        <i class="etoggle-icon">+</i> SEE AN EXAMPLE
+      </button>
+      <div class="example-panel" id="ex3">
+        <div class="example-panel-header">// example shot brief → prompt</div>
+        <div class="example-panel-body">
+          <p>Here's a complete shot brief and the final prompt it turns into. Use this exact format for yours.</p>
+          <div class="ex-row two-col">
+            <div class="ex-card">
+              <div class="ex-card-label neutral">Shot Brief (written on paper)</div>
+              <p>
+                Subject: A young warrior standing on a cliff edge<br>
+                Action: His cape whips violently in the wind, he doesn't move<br>
+                Camera: Starts far away, slowly zooms in toward his back<br>
+                Lighting: Sunset, deep orange sky, long shadows<br>
+                Mood: Determination
+              </p>
+            </div>
+            <div class="ex-card highlight">
+              <div class="ex-card-label strong">Final Prompt (paste into Kling)</div>
+              <p>A young warrior in dark armor stands motionless on a cliff edge. His cape thrashes in powerful wind. The camera begins wide and slowly pushes in toward his silhouette from behind. Dramatic sunset sky, deep orange and red, long shadows across the rocks. Slow and cinematic. Mood: quiet determination before a battle.</p>
+            </div>
+          </div>
+          <p style="margin-top:10px">Notice: the brief uses short notes. The prompt turns those notes into full sentences. Claude Chat can help you convert a brief into a prompt if you get stuck — just paste your brief and ask.</p>
+          <div class="ex-card" style="margin-top:8px">
+            <div class="ex-card-label neutral">More scene ideas if you're stuck</div>
+            <p>A dragon landing on a mountain peak at dawn · A character discovering a hidden door in a forest · A crowded market suddenly going silent · A spaceship emerging from clouds over a city · Two characters facing each other before a fight</p>
+          </div>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>Write your shot brief on paper first (don't skip this)</li>
+        <li>Convert it into a single prompt paragraph</li>
+        <li>Generate the clip</li>
+        <li>Watch it. What's one thing the AI got wrong?</li>
+        <li>Rewrite that part of the brief and regenerate</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Kling</span>
+        <span class="chip">Veo 3</span>
+        <span class="chip">Claude Chat (prompt help)</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m3', event)">
+        <span>✓</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- SECTION 4: CRITIC -->
+  <div class="section-label">Level 04 — Critical Thinking</div>
+
+  <div class="mission-card" id="m4" onclick="toggleCard('m4')">
+    <div class="card-header">
+      <div class="card-number">04</div>
+      <div class="card-meta">
+        <div class="card-tag">AI Analysis</div>
+        <div class="card-title">Break the AI</div>
+        <span class="card-badge badge-purple">15 min</span>
+      </div>
+      <div class="card-chevron">›</div>
+    </div>
+    <div class="card-body">
+      <p>The best AI users aren't the ones who generate the most — they're the ones who can <strong>spot what's wrong</strong> and fix it. This mission trains your critical eye.</p>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Your Mission</div>
+        <div class="prompt-text">Take any AI output from today (a page from your graphic novel, an image, or a video clip).<br><br>
+        Write 3 things that are wrong or could be better — be specific.<br>
+        Then: for each problem, write the exact instruction you'd give to fix it.<br><br>
+        You don't have to actually fix them all. Just prove you can see them.</div>
+      </div>
+
+      <div class="tip-box">
+        <div class="tip-icon">🔍</div>
+        <div class="tip-content"><strong>The key question:</strong> "Does this match what I imagined?" If the answer is no — where exactly does it break down? Hands? Lighting? Proportions? The more precisely you can name the problem, the more precisely you can fix it.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex4', this)">
+        <i class="etoggle-icon">+</i> SEE AN EXAMPLE
+      </button>
+      <div class="example-panel" id="ex4">
+        <div class="example-panel-header">// example: spotting problems and writing fixes</div>
+        <div class="example-panel-body">
+          <p>Say you generated an image of your warrior character on a cliff. Here's what a good critique looks like vs a bad one.</p>
+          <div class="ex-row two-col">
+            <div class="ex-card">
+              <div class="ex-card-label weak">Bad critique (too vague)</div>
+              <p>Problem 1: It doesn't look right<br>
+              Problem 2: The character is off<br>
+              Problem 3: I don't like the background<br><br>
+              Fix: Make it better</p>
+            </div>
+            <div class="ex-card highlight">
+              <div class="ex-card-label strong">Good critique (specific + fixable)</div>
+              <p>Problem 1: The character's hands look melted together<br>
+              Fix: "Regenerate with the character's hands clearly separated, one holding a sword at his side"<br><br>
+              Problem 2: The sky is blue but I wanted sunset<br>
+              Fix: "Change the sky to deep orange and red sunset, with the sun low on the horizon"<br><br>
+              Problem 3: The cliff looks fake and flat<br>
+              Fix: "Make the cliff rocky and jagged, with more depth and texture"</p>
+            </div>
+          </div>
+          <p style="margin-top:10px">The rule: if you can't describe the problem in one specific sentence, you haven't looked closely enough yet. Zoom in. What exactly is wrong?</p>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>Pick any output from today</li>
+        <li>Write: Problem 1, Problem 2, Problem 3 (be very specific)</li>
+        <li>For each: write the instruction you'd give Claude to fix it</li>
+        <li>Try fixing at least one of them</li>
+      </ol>
+
+      <button class="complete-btn" onclick="markDone('m4', event)">
+        <span>✓</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- BOSS CHALLENGE -->
+  <div class="section-label">Level 05 — Boss Challenge</div>
+
+  <div class="mission-card" id="m5" onclick="toggleCard('m5')">
+    <div class="card-header">
+      <div class="card-number">05</div>
+      <div class="card-meta">
+        <div class="card-tag">Final Challenge</div>
+        <div class="card-title">The Trailer</div>
+        <span class="card-badge badge-bold">Open-ended</span>
+      </div>
+      <div class="card-chevron">›</div>
+    </div>
+    <div class="card-body">
+      <p>Combine everything. You're going to make a <strong>mini trailer</strong> for your original graphic novel character from Mission 01. This doesn't have to be long — even 3 clips and a title card is a trailer.</p>
+
+      <div class="prompt-box">
+        <div class="prompt-label">What You Need</div>
+        <div class="prompt-text">Shot 1 — Establishing: who is your character, where do they live?<br>
+        Shot 2 — The problem: show what they're up against<br>
+        Shot 3 — The action: one powerful moment<br>
+        Title card — Character name + one tagline<br><br>
+        Ask Claude Chat to help you write the shot briefs if you get stuck.</div>
+      </div>
+
+      <div class="tip-box">
+        <div class="tip-icon">🏆</div>
+        <div class="tip-content"><strong>This is real:</strong> What you're building here is basically what a professional would do in a pitch meeting. "Here's my character, here's their world, here's why you should care." The tools will get better — this skill stays.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex5', this)">
+        <i class="etoggle-icon">+</i> SEE AN EXAMPLE
+      </button>
+      <div class="example-panel" id="ex5">
+        <div class="example-panel-header">// example trailer — kael the burnkeeper</div>
+        <div class="example-panel-body">
+          <p>Here's a complete 3-shot trailer plan for the example character from Mission 1. Use this as your template.</p>
+          <div class="ex-row">
+            <div class="ex-card">
+              <div class="ex-card-label neutral">Shot 1 — Establishing (Who + Where)</div>
+              <p>A teenage boy walks alone through the ruins of a burned village at dawn. Ash floats through cold air. He stops and stares at a charred house — his hands glow faintly orange. Camera slowly orbits around him. Mood: lonely, haunted.</p>
+            </div>
+            <div class="ex-card">
+              <div class="ex-card-label neutral">Shot 2 — The Problem (What's At Stake)</div>
+              <p>Close-up of Kael's chest — cracks of orange fire glow through his skin, spreading. He grabs his own shirt, breathing hard. Cut to black. A voice whispers: "How much longer can you hold it?" Mood: dread.</p>
+            </div>
+            <div class="ex-card highlight">
+              <div class="ex-card-label strong">Shot 3 — The Action (The Hook)</div>
+              <p>Kael stands in front of a massive wall of fire. Instead of running, he opens his arms and absorbs the entire blaze in one burst — his body blazing white. He screams. Then silence. He's still standing. Mood: terrifying power.</p>
+            </div>
+          </div>
+          <div class="ex-card" style="margin-top:10px; border-color: var(--accent); background: rgba(255,107,53,0.05)">
+            <div class="ex-card-label" style="color:var(--accent)">Title Card</div>
+            <p style="font-family:'Syne',sans-serif; font-size:15px; color:var(--text)">KAEL THE BURNKEEPER</p>
+            <p style="margin-top:4px">Tagline: <em style="color:var(--text-muted)">"The fire doesn't burn him. It lives inside him."</em></p>
+          </div>
+          <p style="margin-top:12px">Now do the same for your character from Mission 1. If you want help writing the shot briefs, paste this template into Claude Chat and ask it to help you fill it in for your character.</p>
+        </div>
+      </div>
+
+      <div class="tool-chips">
+        <span class="chip">Claude Chat</span>
+        <span class="chip">Claude Code</span>
+        <span class="chip">Kling / Veo 3</span>
+        <span class="chip">Image Gen</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m5', event)">
+        <span>✓</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- XP DISPLAY -->
+  <div style="margin-top: 48px; padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px;">
+    <div class="eyebrow" style="margin-bottom: 12px;">// skills earned today</div>
+    <div class="xp-row" id="xpRow">
+      <span class="xp-pip" id="xp1">Storytelling</span>
+      <span class="xp-pip" id="xp2">Prompt Craft</span>
+      <span class="xp-pip" id="xp3">Shot Direction</span>
+      <span class="xp-pip" id="xp4">Critical Eye</span>
+      <span class="xp-pip" id="xp5">Creative Direction</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const STATE = { completed: new Set() };
+
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    const isOpen = card.classList.contains('open');
+    document.querySelectorAll('.mission-card').forEach(c => c.classList.remove('open'));
+    if (!isOpen) card.classList.add('open');
+  }
+
+  function markDone(id, e) {
+    e.stopPropagation();
+    const card = document.getElementById(id);
+    const num = id.replace('m', '');
+
+    if (STATE.completed.has(id)) {
+      STATE.completed.delete(id);
+      card.classList.remove('done', 'active');
+      document.getElementById('xp' + num).classList.remove('earned');
+    } else {
+      STATE.completed.add(id);
+      card.classList.add('done');
+      card.classList.remove('open');
+      document.getElementById('xp' + num).classList.add('earned');
+    }
+
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const count = STATE.completed.size;
+    const total = 5;
+    document.getElementById('progressFill').style.width = (count / total * 100) + '%';
+    document.getElementById('progressCount').textContent = count + ' / ' + total;
+  }
+
+  function toggleExample(id, btn) {
+    event.stopPropagation();
+    const panel = document.getElementById(id);
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+    btn.querySelector('.etoggle-icon').textContent = isOpen ? '+' : '×';
+  }
+
+  // Open first card by default
+  document.getElementById('m1').classList.add('open');
+</script>
+</body>
+</html>
