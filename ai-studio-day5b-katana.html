@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Studio — Day 5.2: The Katana</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --bg: #0a0a10;
+    --surface: #131320;
+    --surface2: #1c1c2e;
+    --border: #282842;
+    --accent: #f06030;
+    --accent2: #7c5cf0;
+    --accent3: #22d3a8;
+    --text: #e8e8f2;
+    --text-muted: #7a7a9e;
+    --text-dim: #464868;
+    --gold: #f0c030;
+    --forge: #e8822a;
+    --session-a: #e8822a;
+    --session-b: #7c5cf0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(240,96,48,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 90%, rgba(124,92,240,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(232,130,42,0.02) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ---- HEADER ---- */
+  header { margin-bottom: 48px; }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--forge);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--forge);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 8vw, 68px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    color: var(--text);
+  }
+
+  h1 span { color: var(--forge); }
+
+  h1 .day {
+    font-size: 0.38em;
+    font-weight: 600;
+    color: var(--accent2);
+    letter-spacing: 0;
+    display: block;
+    margin-top: 8px;
+  }
+
+  .subtitle {
+    margin-top: 20px;
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 560px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .subtitle strong { color: var(--text); font-weight: 500; }
+
+  /* ---- RECAP ---- */
+  .recap-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 36px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .recap-icon { font-size: 20px; line-height: 1; margin-top: 2px; }
+
+  .recap-content {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .recap-content strong { color: var(--accent3); font-weight: 500; }
+
+  .recap-pips { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+
+  .recap-pip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    background: rgba(34,211,168,0.08);
+    border: 1px solid rgba(34,211,168,0.25);
+    color: var(--accent3);
+  }
+
+  /* ---- RULE CARD ---- */
+  .rule-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .rule-icon { font-size: 28px; line-height: 1; margin-top: 2px; }
+
+  .rule-text h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .rule-text p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* ---- SESSION DIVIDERS ---- */
+  .session-header {
+    margin: 40px 0 8px;
+    padding: 14px 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .session-header.session-a {
+    background: rgba(232,130,42,0.06);
+    border: 1px solid rgba(232,130,42,0.2);
+  }
+
+  .session-header.session-b {
+    background: rgba(124,92,240,0.06);
+    border: 1px solid rgba(124,92,240,0.2);
+  }
+
+  .session-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 500;
+  }
+
+  .session-a .session-badge {
+    background: rgba(232,130,42,0.15);
+    color: var(--session-a);
+  }
+
+  .session-b .session-badge {
+    background: rgba(124,92,240,0.15);
+    color: var(--session-b);
+  }
+
+  .session-info {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  .session-info strong { font-weight: 500; }
+  .session-a .session-info strong { color: var(--session-a); }
+  .session-b .session-info strong { color: var(--session-b); }
+
+  /* ---- PROGRESS ---- */
+  .progress-area {
+    margin-bottom: 40px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .progress-track {
+    flex: 1; height: 5px;
+    background: var(--surface2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--forge), var(--accent2));
+    border-radius: 99px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+
+  .progress-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--forge);
+    white-space: nowrap;
+    min-width: 50px;
+    text-align: right;
+  }
+
+  /* ---- SECTIONS ---- */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 36px 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ---- MISSION CARDS ---- */
+  .mission-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 0;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .mission-card.done {
+    opacity: 0.55;
+    border-color: var(--border);
+  }
+
+  .mission-card.done .card-number {
+    background: var(--accent3);
+    color: var(--bg);
+  }
+
+  .mission-card.done .card-number::after { content: '\2713'; }
+
+  .card-header {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .card-header:hover { background: var(--surface2); }
+
+  .card-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    width: 64px;
+    min-width: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+    color: var(--text-muted);
+    border-right: 1px solid var(--border);
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .card-meta {
+    padding: 18px 20px;
+    flex: 1;
+  }
+
+  .card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .card-badge {
+    display: inline-block;
+    margin-top: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 99px;
+    border: 1px solid;
+  }
+
+  .badge-warm { color: var(--gold); border-color: var(--gold); background: rgba(240,192,64,0.08); }
+  .badge-cool { color: var(--accent3); border-color: var(--accent3); background: rgba(45,212,191,0.08); }
+  .badge-forge { color: var(--forge); border-color: var(--forge); background: rgba(232,130,42,0.08); }
+
+  .card-chevron {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    color: var(--text-dim);
+    font-size: 20px;
+    transition: transform 0.3s, color 0.2s;
+  }
+
+  .mission-card.open .card-chevron {
+    transform: rotate(90deg);
+    color: var(--forge);
+  }
+
+  /* ---- CARD BODY ---- */
+  .card-body {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 24px 24px 20px;
+    animation: slideDown 0.25s ease;
+  }
+
+  .mission-card.open .card-body { display: block; }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-body p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 16px;
+    font-weight: 300;
+  }
+
+  .card-body strong { color: var(--text); font-weight: 500; }
+
+  /* ---- SAY BOX ---- */
+  .say-box {
+    background: var(--bg);
+    border: 1px solid rgba(124,92,191,0.3);
+    border-left: 3px solid var(--accent2);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 14px 0;
+  }
+
+  .say-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .say-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  .say-note {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 10px;
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  /* ---- PROMPT BOX ---- */
+  .prompt-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--forge);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 12px 0;
+  }
+
+  .prompt-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--forge);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .prompt-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ---- STEPS ---- */
+  .steps {
+    list-style: none;
+    counter-reset: step;
+    margin: 16px 0;
+  }
+
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 14px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .steps li::before {
+    content: counter(step);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    width: 24px;
+    min-width: 24px;
+    height: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--forge);
+    margin-top: 1px;
+  }
+
+  /* ---- TIPS ---- */
+  .tip-box {
+    background: rgba(124,92,191,0.08);
+    border: 1px solid rgba(124,92,191,0.3);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 16px 0;
+    display: flex;
+    gap: 12px;
+  }
+
+  .tip-box.tip-green {
+    background: rgba(45,212,191,0.06);
+    border-color: rgba(45,212,191,0.25);
+  }
+
+  .tip-box.tip-forge {
+    background: rgba(232,130,42,0.06);
+    border-color: rgba(232,130,42,0.25);
+  }
+
+  .tip-icon { font-size: 16px; line-height: 1; margin-top: 1px; }
+
+  .tip-content {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .tip-content strong { color: var(--accent2); font-weight: 500; }
+  .tip-green .tip-content strong { color: var(--accent3); }
+  .tip-forge .tip-content strong { color: var(--forge); }
+
+  /* ---- WATCH LIST ---- */
+  .watch-list {
+    list-style: none;
+    margin: 14px 0;
+  }
+
+  .watch-list li {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .watch-list li .watch-icon {
+    font-size: 14px;
+    margin-top: 3px;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  /* ---- ANATOMY DIAGRAM ---- */
+  .anatomy-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 16px 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--text-muted);
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  .anatomy-box .part-blade { color: #b0b0cc; font-weight: 500; }
+  .anatomy-box .part-guard { color: #cc9944; font-weight: 500; }
+  .anatomy-box .part-handle { color: #8B5E3C; font-weight: 500; }
+  .anatomy-box .part-tang { color: #e8822a; font-weight: 500; }
+  .anatomy-box .dim { color: var(--text-dim); }
+
+  /* ---- EXAMPLE PANELS ---- */
+  .example-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px 0 0;
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px dashed var(--accent2);
+    border-radius: 8px;
+    color: var(--accent2);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .example-toggle:hover { background: rgba(124,92,191,0.1); }
+
+  .example-toggle .etoggle-icon {
+    transition: transform 0.3s;
+    font-style: normal;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .example-toggle.open .etoggle-icon { transform: rotate(45deg); }
+
+  .example-panel {
+    display: none;
+    margin-top: 12px;
+    border: 1px solid rgba(124,92,191,0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    animation: slideDown 0.25s ease;
+  }
+
+  .example-panel.open { display: block; }
+
+  .example-panel-header {
+    background: rgba(124,92,191,0.12);
+    padding: 10px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent2);
+    text-transform: uppercase;
+  }
+
+  .example-panel-body {
+    padding: 16px;
+    background: rgba(124,92,191,0.05);
+  }
+
+  .example-panel-body p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin-bottom: 10px;
+    font-weight: 300;
+  }
+
+  .example-panel-body p:last-child { margin-bottom: 0; }
+
+  .ex-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 8px 0;
+  }
+
+  .ex-card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .ex-card-label.weak { color: var(--text-dim); }
+  .ex-card-label.strong { color: var(--accent3); }
+  .ex-card-label.neutral { color: var(--gold); }
+  .ex-card-label.forge { color: var(--forge); }
+
+  .ex-card p {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.6;
+    margin: 0 !important;
+  }
+
+  .ex-card.highlight-forge {
+    border-color: rgba(232,130,42,0.4);
+    background: rgba(232,130,42,0.04);
+  }
+
+  /* ---- COMPLETE BUTTON ---- */
+  .complete-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid var(--accent3);
+    border-radius: 8px;
+    color: var(--accent3);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .complete-btn:hover {
+    background: var(--accent3);
+    color: var(--bg);
+  }
+
+  .mission-card.done .complete-btn {
+    border-color: var(--text-dim);
+    color: var(--text-dim);
+  }
+
+  /* ---- TOOL CHIPS ---- */
+  .tool-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0;
+  }
+
+  .chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 99px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  /* ---- XP ---- */
+  .xp-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .xp-pip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    transition: all 0.3s;
+  }
+
+  .xp-pip.earned {
+    background: rgba(240,192,64,0.1);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* ---- BREAK CARD ---- */
+  .break-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 24px 0;
+    text-align: center;
+  }
+
+  .break-card p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .break-card strong { color: var(--text); font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">// the forge &mdash; part 2</div>
+    <h1>The <span>Katana</span><span class="day">Day 5.2 &mdash; Assembly</span></h1>
+    <p class="subtitle">A real katana is three pieces &mdash; blade, guard, handle &mdash; held together by a single steel tang. You're going to <strong>study that design, make it yours, and forge the pieces.</strong></p>
+  </header>
+
+  <!-- RECAP -->
+  <div class="recap-card">
+    <div class="recap-icon">&#128203;</div>
+    <div class="recap-content">
+      <strong>Last session:</strong> You went from code to screen to slicer to printer. You made a single-piece object and held it in your hand. Now you're ready for the next challenge: <strong>three pieces that connect together</strong>.
+      <div class="recap-pips">
+        <span class="recap-pip">Technical Research &#10003;</span>
+        <span class="recap-pip">Engineering Constraints &#10003;</span>
+        <span class="recap-pip">3D Modeling &#10003;</span>
+        <span class="recap-pip">Physical Prototyping &#10003;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE RULE -->
+  <div class="rule-card">
+    <div class="rule-icon">&#9876;&#65039;</div>
+    <div class="rule-text">
+      <h3>The Swordsmith's Rule</h3>
+      <p><strong style="color:var(--forge)">Study the blade before you strike.</strong> A swordsmith doesn't guess how a katana fits together &mdash; they learn the anatomy first. The tang, the guard slot, the handle socket. Every dimension serves a purpose. When you understand how the real thing works, the code writes itself. When you guess, you get pieces that don't fit.</p>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-area">
+    <span class="progress-label">MISSIONS COMPLETE</span>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <span class="progress-count" id="progressCount">0 / 3</span>
+  </div>
+
+  <!-- ============== SESSION A ============== -->
+  <div class="session-header session-a">
+    <span class="session-badge">Session A</span>
+    <span class="session-info"><strong>Study &amp; Customize</strong> &mdash; ~30 min</span>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 1: STUDY THE BLADE -->
+  <!-- =============================== -->
+  <div class="section-label">Phase 01 &mdash; Study</div>
+
+  <div class="mission-card" id="m1">
+    <div class="card-header" onclick="toggleCard('m1')">
+      <div class="card-number">01</div>
+      <div class="card-meta">
+        <div class="card-tag">Research</div>
+        <div class="card-title">Study the Blade</div>
+        <span class="card-badge badge-cool">15 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Before building anything, you need to understand how a katana actually fits together. Not a guess &mdash; the real anatomy. Tell Claude Code to build you a study model.</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">I want to build a 3D-printable katana in three pieces: blade, guard, and handle. Before we build, research how a real katana's parts connect. Specifically: what is the tang (nakago) and how does it pass through the guard (tsuba) into the handle (tsuka)? What shape is the tang cross-section? What is the sori (blade curve) and which direction does it curve? What does the blade look like in cross-section (the shinogi ridge)?<br><br>Then build me a study model in OpenSCAD with these requirements:<br><br>1. The blade has a flat rectangular tang extending down from its base. The tang passes THROUGH a matching slot in the guard, and INTO a blind socket in the top of the handle. One continuous connection &mdash; no separate tabs.<br>2. The guard is an elliptical disc with a rectangular through-slot.<br>3. The handle has a rectangular socket (blind hole) in its top to receive the tang.<br>4. Use 0.3mm clearance per side on all joints for 3D printing.<br>5. The blade should have proper sori (curve) &mdash; the spine curves away from the cutting edge. The curve should be visible from the flat face of the blade.<br>6. The blade cross-section should be a flattened hexagon (shinogi-zukuri), not a rectangle &mdash; sharp edge on one side, flat spine on the other.<br>7. Add an "explode" parameter (0 = assembled, 1 = fully separated) so I can see the pieces apart.<br><br>Export each piece as a separate STL, then create an HTML viewer I can open in my browser with a slider to control the explode amount. Color the blade silver, guard bronze, handle brown.</div>
+      </div>
+
+      <p>Open the viewer. Use the explode slider to pull the pieces apart. This is where you learn the anatomy:</p>
+
+      <div class="anatomy-box"><span class="part-blade">BLADE</span>     The curved steel. Has a sharp edge, a flat
+           spine, and a ridge line (shinogi) running
+           down the middle.
+
+<span class="part-tang">TANG</span>      The rectangular bar extending down from the
+           blade base. This is the key &mdash; it passes
+           through the guard and locks into the handle.
+
+<span class="part-guard">GUARD</span>     The flat disc (tsuba). Has a rectangular slot
+           that the tang passes through. Sits between
+           blade and handle.
+
+<span class="part-handle">HANDLE</span>    The grip (tsuka). Has a rectangular socket
+           in the top that receives the tang.
+
+<span class="dim">ASSEMBLY: tang slides through guard slot, into handle socket.
+          Guard is sandwiched between blade base and handle top.</span></div>
+
+      <ul class="watch-list">
+        <li><span class="watch-icon">&#128268;</span> <strong>Assembled (slider at 0%):</strong> The three pieces should sit together cleanly. Tang hidden inside. No gaps.</li>
+        <li><span class="watch-icon">&#128260;</span> <strong>Exploded (slide right):</strong> You should see the tang hanging from the blade, the guard's slot, and the handle's socket. All three shapes match.</li>
+        <li><span class="watch-icon">&#9876;&#65039;</span> <strong>The curve:</strong> Looking at the blade from the flat side, the spine should arc gently. That's the sori &mdash; it's what makes a katana a katana.</li>
+      </ul>
+
+      <div class="tip-box tip-forge">
+        <div class="tip-icon">&#128296;</div>
+        <div class="tip-content"><strong>Why OpenSCAD?</strong> This session uses a code-based modeling tool. Every shape, every joint, every dimension is defined in code &mdash; Claude Code writes it, you direct it. The advantage: joints are precise, dimensions are exact, and every piece is guaranteed solid and watertight. You'll see the result in an interactive 3D viewer you can rotate and zoom.</div>
+      </div>
+
+      <div class="tip-box tip-green">
+        <div class="tip-icon">&#128161;</div>
+        <div class="tip-content"><strong>Why research first?</strong> Without real katana anatomy front-loaded, the AI will guess &mdash; and it'll get the joints wrong. It might put two tabs colliding inside the guard, or curve the blade in the wrong direction. The research step is what makes the difference between a model that looks right and one that actually works.</div>
+      </div>
+
+      <ol class="steps">
+        <li>Give Claude Code the full prompt above. It will research, build the model, and create the viewer.</li>
+        <li>Open the viewer in your browser. Drag to rotate, scroll to zoom.</li>
+        <li>Use the explode slider. Study how the tang connects through the guard into the handle.</li>
+        <li>Look at the blade curve from the flat side. Does it look like a katana? If not, tell Claude Code what's wrong.</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Claude Code</span>
+        <span class="chip">OpenSCAD</span>
+        <span class="chip">Three.js Viewer</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m1', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 2: MAKE IT YOURS -->
+  <!-- =============================== -->
+  <div class="section-label">Phase 02 &mdash; Customize</div>
+
+  <div class="mission-card" id="m2">
+    <div class="card-header" onclick="toggleCard('m2')">
+      <div class="card-number">02</div>
+      <div class="card-meta">
+        <div class="card-tag">Design</div>
+        <div class="card-title">Make It Yours</div>
+        <span class="card-badge badge-warm">15 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>You have a working katana. Now change it. Every part of the design is a parameter you can adjust. The rule: <strong>change one thing at a time, check the viewer, then change the next thing.</strong></p>
+
+      <p>Pick any of these to customize:</p>
+
+      <ul class="watch-list">
+        <li><span class="watch-icon">&#9876;&#65039;</span> <strong>Guard shape:</strong> It's elliptical right now. Make it circular, square, hexagonal, or star-shaped. Change the size. This is the most visible customization.</li>
+        <li><span class="watch-icon">&#127756;</span> <strong>Blade curve:</strong> More sori (dramatic curve) or less (straighter, more like a European sword). Your call.</li>
+        <li><span class="watch-icon">&#128207;</span> <strong>Blade length:</strong> Longer for a full katana, shorter for a tanto (dagger).</li>
+        <li><span class="watch-icon">&#128296;</span> <strong>Handle shape:</strong> It's octagonal right now. Make it round, hexagonal, or squared. Change the length. Add a bigger pommel.</li>
+      </ul>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Example: change the guard</div>
+        <div class="say-text">Change the guard from an ellipse to a [SHAPE YOU WANT] shape, about [SIZE]mm across. Keep the tang slot exactly the same &mdash; same dimensions, same clearance. Rebuild the model and update the viewer.</div>
+        <div class="say-note">Replace [SHAPE] and [SIZE] with your choice. The key phrase is "keep the tang slot exactly the same" &mdash; that protects the joint.</div>
+      </div>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Example: change the blade curve</div>
+        <div class="say-text">Make the blade curve more dramatic &mdash; increase the sori so it's really visible. Keep the same cross-section shape and the same tang. Update the viewer.</div>
+      </div>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Example: change the handle</div>
+        <div class="say-text">Make the handle [round / hexagonal / square] instead of octagonal. Make it [longer / shorter]. Keep the socket dimensions exactly the same. Update the viewer.</div>
+      </div>
+
+      <div class="tip-box tip-forge">
+        <div class="tip-icon">&#9888;&#65039;</div>
+        <div class="tip-content"><strong>The golden rule of customization:</strong> change the look, but <strong>never change the joint dimensions.</strong> The tang, the guard slot, and the handle socket all need to match. If you change one, you break the connection. Always say "keep the tang slot exactly the same" or "keep the socket dimensions the same."</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex1', this)">
+        <i class="etoggle-icon">+</i> SEE EXAMPLE CUSTOMIZATIONS
+      </button>
+      <div class="example-panel" id="ex1">
+        <div class="example-panel-header">// example &mdash; customization rounds</div>
+        <div class="example-panel-body">
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Round 1 &mdash; Guard</div>
+            <p><strong style="color:var(--accent2)">You:</strong> Change the guard to a square with rounded corners, 50mm across. Keep the tang slot the same. Update the viewer.</p>
+            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [rebuilds guard as rounded square, re-exports, updates viewer]</p>
+            <p style="margin-top:8px"><strong style="color:var(--accent2)">You:</strong> [checks explode view &mdash; slot still matches tang] Looks good. Next.</p>
+          </div>
+          <div class="ex-card highlight-forge">
+            <div class="ex-card-label forge">Round 2 &mdash; Blade</div>
+            <p><strong style="color:var(--accent2)">You:</strong> Make the blade shorter &mdash; about 80mm instead of 120. Like a tanto. More curve too. Keep the tang the same.</p>
+            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [shortens blade, increases sori, keeps tang unchanged]</p>
+            <p style="margin-top:8px"><strong style="color:var(--accent2)">You:</strong> [rotates in viewer] That looks sick. The curve is way more visible now.</p>
+          </div>
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Round 3 &mdash; Handle</div>
+            <p><strong style="color:var(--accent2)">You:</strong> Make the handle round instead of octagonal. And add a bigger pommel at the end.</p>
+            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [rebuilds handle as cylinder, enlarges pommel cap]</p>
+          </div>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>Pick one thing to change. Give Claude Code the instruction &mdash; always say "keep the joint dimensions the same."</li>
+        <li>Check the viewer. Toggle explode &mdash; does the joint still work?</li>
+        <li>Pick the next thing to change. Repeat until it feels like YOUR katana.</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Claude Code</span>
+        <span class="chip">OpenSCAD</span>
+        <span class="chip">Three.js Viewer</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m2', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- ============== BREAK ============== -->
+  <div class="break-card">
+    <p>&#9749; <strong>Take a break.</strong> Get up, move around, get a snack. Session B is where you validate the joint and export the final pieces for printing.</p>
+  </div>
+
+  <!-- ============== SESSION B ============== -->
+  <div class="session-header session-b">
+    <span class="session-badge">Session B</span>
+    <span class="session-info"><strong>Validate &amp; Export</strong> &mdash; ~25 min</span>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 3: FORGE & EXPORT -->
+  <!-- =============================== -->
+  <div class="section-label">Phase 03 &mdash; Forge</div>
+
+  <div class="mission-card" id="m3">
+    <div class="card-header" onclick="toggleCard('m3')">
+      <div class="card-number">03</div>
+      <div class="card-meta">
+        <div class="card-tag">Build &amp; Export</div>
+        <div class="card-title">Forge &amp; Export</div>
+        <span class="card-badge badge-forge">25 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Your katana design is done. Before exporting the full pieces, you validate the trickiest part: <strong>the joint.</strong></p>
+
+      <p><strong>Step 1: Test the joint alone.</strong></p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">Build me a joint test piece &mdash; just the last 20mm of the blade (with the tang), the guard, and the top 20mm of the handle (with the socket). No need for the full blade or full handle &mdash; just the area where they connect. Export these test pieces as STLs and create a viewer with the explode slider. I want to inspect the joint up close.</div>
+      </div>
+
+      <p>Open the test viewer. This is a zoomed-in look at just the joint area. Check everything:</p>
+
+      <ul class="watch-list">
+        <li><span class="watch-icon">&#128268;</span> <strong>Tang shape:</strong> Does the rectangular tang match the guard slot and handle socket?</li>
+        <li><span class="watch-icon">&#128207;</span> <strong>Clearance:</strong> Is the tang slightly smaller than the slot? (It should be &mdash; that's the 0.3mm gap for printing.)</li>
+        <li><span class="watch-icon">&#128260;</span> <strong>Assembly direction:</strong> Could you slide these together with your hands? Tang goes down through guard, into handle.</li>
+        <li><span class="watch-icon">&#9876;&#65039;</span> <strong>No overlap:</strong> When assembled, does the guard sit flat between blade base and handle top? No pieces going through each other?</li>
+      </ul>
+
+      <p>If anything looks wrong, tell Claude Code exactly what's off. Fix it before moving on.</p>
+
+      <div class="tip-box tip-green">
+        <div class="tip-icon">&#128161;</div>
+        <div class="tip-content"><strong>This is how real engineers work.</strong> In manufacturing, you always test the joint before building the full product. A 2-minute check on a small test piece saves hours of reprinting. Changing code is free. Reprinting costs time and filament.</div>
+      </div>
+
+      <p><strong>Step 2: Export the full pieces.</strong></p>
+
+      <p>Joint looks good? Now export the complete katana.</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">The joint looks good. Now export the full katana &mdash; each piece as its own STL file: katana-blade.stl, katana-guard.stl, katana-handle.stl. Run analyze_model on each piece to check for geometry problems. Then create a final HTML viewer with all three pieces and the explode slider &mdash; this is my final assembly view.</div>
+      </div>
+
+      <p>Open the final viewer. This is your last check before printing. Toggle the explode slider one more time &mdash; every joint should show matching shapes. In assembled view, the katana should look complete.</p>
+
+      <div class="tip-box tip-forge">
+        <div class="tip-icon">&#128193;</div>
+        <div class="tip-content"><strong>Your STL files are ready for Day 5.3 &mdash; Print Lab.</strong> That's where you'll set up the slicer, dial in print settings for each piece, and send them to the printer. The design and engineering are done &mdash; now it's time to make it physical.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex2', this)">
+        <i class="etoggle-icon">+</i> WHAT IF SOMETHING GOES WRONG?
+      </button>
+      <div class="example-panel" id="ex2">
+        <div class="example-panel-header">// troubleshooting</div>
+        <div class="example-panel-body">
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Problem: tang doesn't match the slot</div>
+            <p>Tell Claude Code: "The tang and slot don't match &mdash; show me the exact dimensions of the tang, the guard slot, and the handle socket. They should all be the same rectangle with 0.3mm clearance."</p>
+          </div>
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Problem: pieces overlap or go through each other</div>
+            <p>Tell Claude Code: "The pieces are overlapping in the assembled view. Make sure the guard sits between the blade base and the handle top with no intersection. Show me a cross-section view."</p>
+          </div>
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Problem: blade doesn't look like a katana</div>
+            <p>Tell Claude Code: "The blade doesn't look right. Research what a real katana blade looks like &mdash; the sori curve direction, the shinogi cross-section, the kissaki tip shape &mdash; and rebuild the blade based on the real geometry."</p>
+          </div>
+          <div class="ex-card highlight-forge">
+            <div class="ex-card-label forge">The key move</div>
+            <p>When something looks wrong, <strong>describe what you see</strong> ("the tab is sticking out above the guard") not what you think the fix is. Claude Code will figure out the fix &mdash; your job is the eyes.</p>
+          </div>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>Tell Claude Code to build the joint test piece. Open the viewer, inspect the joint from every angle.</li>
+        <li>If the joint looks wrong, describe what's off. Fix before continuing.</li>
+        <li>When the joint is solid, tell Claude Code to export the full pieces and create the final viewer.</li>
+        <li>Open the final viewer. Toggle explode. This is your design &mdash; is it ready?</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Claude Code</span>
+        <span class="chip">OpenSCAD</span>
+        <span class="chip">Three.js Viewer</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m3', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- XP DISPLAY -->
+  <!-- =============================== -->
+  <div style="margin-top: 48px; padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px;">
+    <div class="eyebrow" style="margin-bottom: 12px;">// skills earned today</div>
+    <div class="xp-row" id="xpRow">
+      <span class="xp-pip" id="xp1">Real-World Research</span>
+      <span class="xp-pip" id="xp2">Joint Engineering</span>
+      <span class="xp-pip" id="xp3">Digital Validation</span>
+    </div>
+    <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);">
+      <div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px;">// total skills (all sessions)</div>
+      <div class="xp-row">
+        <span class="xp-pip earned">Storytelling</span>
+        <span class="xp-pip earned">Prompt Craft</span>
+        <span class="xp-pip earned">Shot Direction</span>
+        <span class="xp-pip earned">Critical Eye</span>
+        <span class="xp-pip earned">Creative Direction</span>
+        <span class="xp-pip earned">Topic Research</span>
+        <span class="xp-pip earned">Full-Project Direction</span>
+        <span class="xp-pip earned">Creative Polish</span>
+        <span class="xp-pip earned">Game Design</span>
+        <span class="xp-pip earned">Iterative Dev</span>
+        <span class="xp-pip earned">Art Direction</span>
+        <span class="xp-pip earned">Playtesting</span>
+        <span class="xp-pip earned">Technical Research</span>
+        <span class="xp-pip earned">Engineering Constraints</span>
+        <span class="xp-pip earned">3D Modeling</span>
+        <span class="xp-pip earned">Physical Prototyping</span>
+        <span class="xp-pip" id="xp1b">Real-World Research</span>
+        <span class="xp-pip" id="xp2b">Joint Engineering</span>
+        <span class="xp-pip" id="xp3b">Digital Validation</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- WHAT'S NEXT -->
+  <!-- =============================== -->
+  <div style="margin-top: 24px; padding: 20px 24px; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--forge); border-radius: 12px;">
+    <div style="font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px;">Next up: Day 5.3 &mdash; Print Lab</div>
+    <div style="font-size: 13px; color: var(--text-muted); line-height: 1.7; font-weight: 300;">
+      <strong style="color: var(--forge);">Your STL files are ready.</strong> In Day 5.3, you'll set up the slicer, dial in print settings for each piece, send them to the printer, and assemble your katana. The design and engineering are done &mdash; now it's time to hold it in your hands.
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const STATE = { completed: new Set() };
+  const TOTAL = 3;
+
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    const isOpen = card.classList.contains('open');
+    document.querySelectorAll('.mission-card').forEach(c => c.classList.remove('open'));
+    if (!isOpen) card.classList.add('open');
+  }
+
+  function markDone(id, e) {
+    e.stopPropagation();
+    const card = document.getElementById(id);
+    const num = id.replace('m', '');
+
+    if (STATE.completed.has(id)) {
+      STATE.completed.delete(id);
+      card.classList.remove('done');
+      document.getElementById('xp' + num).classList.remove('earned');
+      document.getElementById('xp' + num + 'b').classList.remove('earned');
+    } else {
+      STATE.completed.add(id);
+      card.classList.add('done');
+      card.classList.remove('open');
+      document.getElementById('xp' + num).classList.add('earned');
+      document.getElementById('xp' + num + 'b').classList.add('earned');
+    }
+
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const count = STATE.completed.size;
+    document.getElementById('progressFill').style.width = (count / TOTAL * 100) + '%';
+    document.getElementById('progressCount').textContent = count + ' / ' + TOTAL;
+  }
+
+  function toggleExample(id, btn) {
+    event.stopPropagation();
+    const panel = document.getElementById(id);
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+    btn.querySelector('.etoggle-icon').textContent = isOpen ? '+' : '\u00d7';
+  }
+
+  // Open first card by default
+  document.getElementById('m1').classList.add('open');
+</script>
+</body>
+</html>

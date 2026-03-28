@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Studio — Day 6: The Summoner</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --bg: #0a0a10;
+    --surface: #131320;
+    --surface2: #1c1c2e;
+    --border: #282842;
+    --accent: #f06030;
+    --accent2: #7c5cf0;
+    --accent3: #22d3a8;
+    --text: #e8e8f2;
+    --text-muted: #7a7a9e;
+    --text-dim: #464868;
+    --gold: #f0c030;
+    --summon: #6366f1;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(99,102,241,0.06) 0%, transparent 50%),
+      radial-gradient(circle at 70% 80%, rgba(124,92,240,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(99,102,241,0.02) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  header { margin-bottom: 48px; }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--summon);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--summon);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 8vw, 68px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    color: var(--text);
+  }
+
+  h1 span { color: var(--summon); }
+
+  h1 .day {
+    font-size: 0.38em;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0;
+    display: block;
+    margin-top: 8px;
+  }
+
+  .subtitle {
+    margin-top: 20px;
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 560px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .subtitle strong { color: var(--text); font-weight: 500; }
+
+  .recap-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 36px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .recap-icon { font-size: 20px; line-height: 1; margin-top: 2px; }
+  .recap-content { font-size: 13px; color: var(--text-muted); line-height: 1.65; font-weight: 300; }
+  .recap-content strong { color: var(--accent3); font-weight: 500; }
+  .recap-pips { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .recap-pip { font-family: 'DM Mono', monospace; font-size: 10px; padding: 3px 9px; border-radius: 4px; background: rgba(34,211,168,0.08); border: 1px solid rgba(34,211,168,0.25); color: var(--accent3); }
+
+  .rule-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .rule-icon { font-size: 28px; line-height: 1; margin-top: 2px; }
+  .rule-text h3 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .rule-text p { font-size: 14px; color: var(--text-muted); line-height: 1.6; font-weight: 300; }
+
+  .progress-area {
+    margin-bottom: 40px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .progress-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); letter-spacing: 1px; white-space: nowrap; }
+  .progress-track { flex: 1; height: 5px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--summon), var(--accent)); border-radius: 99px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); width: 0%; }
+  .progress-count { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--summon); white-space: nowrap; min-width: 50px; text-align: right; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 36px 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .mission-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 0;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .mission-card.done { opacity: 0.55; border-color: var(--border); }
+  .mission-card.done .card-number { background: var(--accent3); color: var(--bg); }
+  .mission-card.done .card-number::after { content: '\2713'; }
+
+  .card-header { display: flex; align-items: stretch; cursor: pointer; transition: background 0.15s; }
+  .card-header:hover { background: var(--surface2); }
+  .card-number { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; width: 64px; min-width: 64px; display: flex; align-items: center; justify-content: center; background: var(--surface2); color: var(--text-muted); border-right: 1px solid var(--border); }
+  .card-meta { padding: 18px 20px; flex: 1; }
+  .card-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+  .card-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--text); line-height: 1.2; }
+  .card-badge { display: inline-block; margin-top: 6px; font-family: 'DM Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 99px; border: 1px solid; }
+  .badge-warm { color: var(--gold); border-color: var(--gold); background: rgba(240,192,64,0.08); }
+  .badge-cool { color: var(--accent3); border-color: var(--accent3); background: rgba(45,212,191,0.08); }
+  .badge-summon { color: var(--summon); border-color: var(--summon); background: rgba(99,102,241,0.08); }
+  .badge-forge { color: #e8822a; border-color: #e8822a; background: rgba(232,130,42,0.08); }
+  .card-chevron { display: flex; align-items: center; padding: 0 20px; color: var(--text-dim); font-size: 20px; transition: transform 0.3s, color 0.2s; }
+  .mission-card.open .card-chevron { transform: rotate(90deg); color: var(--summon); }
+
+  .card-body { display: none; border-top: 1px solid var(--border); padding: 24px 24px 20px; animation: slideDown 0.25s ease; }
+  .mission-card.open .card-body { display: block; }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  .card-body p { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 16px; font-weight: 300; }
+  .card-body strong { color: var(--text); font-weight: 500; }
+
+  .say-box { background: var(--bg); border: 1px solid rgba(124,92,191,0.3); border-left: 3px solid var(--accent2); border-radius: 8px; padding: 14px 16px; margin: 14px 0; }
+  .say-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--accent2); text-transform: uppercase; margin-bottom: 8px; }
+  .say-text { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text); line-height: 1.65; }
+  .say-note { font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--text-dim); margin-top: 10px; font-style: italic; font-weight: 300; }
+
+  .prompt-box { background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--summon); border-radius: 8px; padding: 14px 16px; margin: 12px 0; }
+  .prompt-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--summon); text-transform: uppercase; margin-bottom: 8px; }
+  .prompt-text { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text); line-height: 1.6; }
+
+  .steps { list-style: none; counter-reset: step; margin: 16px 0; }
+  .steps li { counter-increment: step; display: flex; gap: 14px; margin-bottom: 12px; font-size: 14px; color: var(--text-muted); line-height: 1.6; font-weight: 300; }
+  .steps li::before { content: counter(step); font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; width: 24px; min-width: 24px; height: 24px; background: var(--surface2); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--summon); margin-top: 1px; }
+
+  .tip-box { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.3); border-radius: 8px; padding: 14px 16px; margin: 16px 0; display: flex; gap: 12px; }
+  .tip-box.tip-green { background: rgba(45,212,191,0.06); border-color: rgba(45,212,191,0.25); }
+  .tip-box.tip-forge { background: rgba(232,130,42,0.06); border-color: rgba(232,130,42,0.25); }
+  .tip-icon { font-size: 16px; line-height: 1; margin-top: 1px; }
+  .tip-content { font-size: 13px; color: var(--text-muted); line-height: 1.6; font-weight: 300; }
+  .tip-content strong { color: var(--summon); font-weight: 500; }
+  .tip-green .tip-content strong { color: var(--accent3); }
+  .tip-forge .tip-content strong { color: #e8822a; }
+
+  .watch-list { list-style: none; margin: 14px 0; }
+  .watch-list li { display: flex; gap: 12px; margin-bottom: 10px; font-size: 14px; color: var(--text-muted); line-height: 1.6; font-weight: 300; }
+  .watch-list li .watch-icon { font-size: 14px; margin-top: 3px; min-width: 18px; text-align: center; }
+
+  .model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0; }
+  @media (max-width: 600px) { .model-grid { grid-template-columns: 1fr; } }
+  .model-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; transition: border-color 0.2s, transform 0.15s; cursor: default; }
+  .model-card:hover { border-color: var(--summon); transform: translateY(-1px); }
+  .model-emoji { font-size: 22px; margin-bottom: 6px; display: block; }
+  .model-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .model-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; font-weight: 300; }
+
+  .example-toggle { display: inline-flex; align-items: center; gap: 6px; margin: 14px 0 0; padding: 8px 14px; background: transparent; border: 1px dashed var(--accent2); border-radius: 8px; color: var(--accent2); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1px; cursor: pointer; transition: background 0.2s; }
+  .example-toggle:hover { background: rgba(124,92,191,0.1); }
+  .example-toggle .etoggle-icon { transition: transform 0.3s; font-style: normal; font-size: 14px; line-height: 1; }
+  .example-toggle.open .etoggle-icon { transform: rotate(45deg); }
+  .example-panel { display: none; margin-top: 12px; border: 1px solid rgba(124,92,191,0.3); border-radius: 10px; overflow: hidden; animation: slideDown 0.25s ease; }
+  .example-panel.open { display: block; }
+  .example-panel-header { background: rgba(124,92,191,0.12); padding: 10px 16px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--accent2); text-transform: uppercase; }
+  .example-panel-body { padding: 16px; background: rgba(124,92,191,0.05); }
+  .example-panel-body p { font-size: 13px; color: var(--text-muted); line-height: 1.65; margin-bottom: 10px; font-weight: 300; }
+  .example-panel-body p:last-child { margin-bottom: 0; }
+  .ex-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin: 8px 0; }
+  .ex-card-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .ex-card-label.weak { color: var(--text-dim); }
+  .ex-card-label.strong { color: var(--accent3); }
+  .ex-card-label.neutral { color: var(--gold); }
+  .ex-card p { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text); line-height: 1.6; margin: 0 !important; }
+  .ex-card.highlight { border-color: rgba(45,212,191,0.4); background: rgba(45,212,191,0.04); }
+  .ex-row { display: grid; gap: 10px; margin: 10px 0; }
+  .ex-row.two-col { grid-template-columns: 1fr 1fr; }
+
+  .complete-btn { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; padding: 10px 20px; background: transparent; border: 1px solid var(--accent3); border-radius: 8px; color: var(--accent3); font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 1px; cursor: pointer; transition: background 0.2s, color 0.2s; }
+  .complete-btn:hover { background: var(--accent3); color: var(--bg); }
+  .mission-card.done .complete-btn { border-color: var(--text-dim); color: var(--text-dim); }
+
+  .tool-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .chip { font-family: 'DM Mono', monospace; font-size: 11px; padding: 5px 12px; border-radius: 99px; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); }
+
+  .xp-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .xp-pip { font-family: 'DM Mono', monospace; font-size: 10px; padding: 4px 10px; border-radius: 4px; background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); transition: all 0.3s; }
+  .xp-pip.earned { background: rgba(240,192,64,0.1); border-color: var(--gold); color: var(--gold); }
+
+  /* ---- BOSS CARD ---- */
+  .boss-card {
+    background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(240,96,48,0.08));
+    border: 1px solid var(--summon);
+    border-radius: 16px;
+    padding: 28px;
+    margin-top: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .boss-card::before { content: '\26A1'; position: absolute; right: 24px; top: 20px; font-size: 48px; opacity: 0.15; }
+  .boss-eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--summon); text-transform: uppercase; margin-bottom: 8px; }
+  .boss-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 12px; }
+  .boss-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; font-weight: 300; max-width: 620px; }
+
+  /* ---- SIZE REF ---- */
+  .size-ref { display: flex; gap: 16px; margin: 16px 0; flex-wrap: wrap; }
+  .size-item { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; flex: 1; min-width: 120px; text-align: center; }
+  .size-num { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--summon); }
+  .size-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">// the summoner</div>
+    <h1>The <span>Summoner</span><span class="day">Day 6</span></h1>
+    <p class="subtitle">Describe something. The AI sculpts it in 3D. Seventy seconds later, it exists. Then you <strong>hold it in your hand.</strong></p>
+  </header>
+
+  <!-- RECAP -->
+  <div class="recap-card">
+    <div class="recap-icon">&#128203;</div>
+    <div class="recap-content">
+      <strong>Your skills so far:</strong> You can direct AI to create images, stories, guides, games, and 3D-printed objects. You've learned prompt craft, iteration, and engineering constraints. Today you combine all of it &mdash; <strong>describe something in words, and an AI will sculpt it in three dimensions.</strong>
+      <div class="recap-pips">
+        <span class="recap-pip">Prompt Craft &#10003;</span>
+        <span class="recap-pip">Creative Direction &#10003;</span>
+        <span class="recap-pip">3D Modeling &#10003;</span>
+        <span class="recap-pip">Physical Prototyping &#10003;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE RULE -->
+  <div class="rule-card">
+    <div class="rule-icon">&#9999;&#65039;</div>
+    <div class="rule-text">
+      <h3>The Summoner's Rule</h3>
+      <p><strong style="color:var(--summon)">The AI builds what you describe, not what you imagine.</strong> The gap between those two things is the skill. Every detail you name is a detail the AI adds. Anything you leave out, the AI guesses. Your prompt is the blueprint.</p>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-area">
+    <span class="progress-label">MISSIONS COMPLETE</span>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <span class="progress-count" id="progressCount">0 / 3</span>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 1: SUMMON IT -->
+  <!-- =============================== -->
+  <div class="section-label">Phase 01 &mdash; Summon</div>
+
+  <div class="mission-card" id="m1">
+    <div class="card-header" onclick="toggleCard('m1')">
+      <div class="card-number">01</div>
+      <div class="card-meta">
+        <div class="card-tag">Generate</div>
+        <div class="card-title">Summon It</div>
+        <span class="card-badge badge-summon">15 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Pick something. Describe it. The AI sculpts it.</p>
+
+      <p>This is a different kind of AI than what you used for images or code. This one takes your words and builds a <strong>full 3D object</strong> &mdash; geometry you can rotate, zoom into, and eventually print. The catch: you get one shot per generation. You can't say "make the horns bigger." You have to describe the whole thing, every time. So <strong>your description is everything.</strong></p>
+
+      <p>Pick what you want to summon:</p>
+
+      <div class="model-grid">
+        <div class="model-card">
+          <span class="model-emoji">&#129430;</span>
+          <div class="model-title">Dinosaur Skull</div>
+          <div class="model-desc">T-Rex, raptor, triceratops &mdash; on a museum display base. Bone texture, teeth, cracks, weathering. Like something you'd see behind glass.</div>
+        </div>
+        <div class="model-card">
+          <span class="model-emoji">&#128009;</span>
+          <div class="model-title">Dragon</div>
+          <div class="model-desc">Full dragon coiled on a rocky base, or a dragon head bust. Wings tucked close to the body. Scales, horns, glowing-eye detail.</div>
+        </div>
+        <div class="model-card">
+          <span class="model-emoji">&#127918;</span>
+          <div class="model-title">Your Game Character</div>
+          <div class="model-desc">A character from your game, your comics, or your imagination. Standing hero pose on a round base. This is YOUR creation &mdash; make it real.</div>
+        </div>
+        <div class="model-card">
+          <span class="model-emoji">&#129302;</span>
+          <div class="model-title">Mech Warrior</div>
+          <div class="model-desc">Battle robot. Armored suit. Giant mech with heavy weapons. Chunky proportions, standing on a platform. Think Iron Giant, not stick figure.</div>
+        </div>
+        <div class="model-card">
+          <span class="model-emoji">&#128296;</span>
+          <div class="model-title">Legendary Weapon</div>
+          <div class="model-desc">Thor's hammer on a stone pedestal. A wizard's staff. A cursed sword in an anvil. Simple shape, maximum detail &mdash; prints clean.</div>
+        </div>
+        <div class="model-card">
+          <span class="model-emoji">&#128161;</span>
+          <div class="model-title">Your Own Invention</div>
+          <div class="model-desc">Something that doesn't exist yet. Alien creature. Hybrid animal. A weapon from a world you made up. The weirder the description, the more interesting the result.</div>
+        </div>
+      </div>
+
+      <p><strong>Before you type anything</strong> &mdash; write your description on paper first. Not in Claude Code. On paper. This forces you to think about what you actually want before the clock starts.</p>
+
+      <button class="example-toggle" onclick="toggleExample('ex1', this)">
+        <i class="etoggle-icon">+</i> SEE WEAK VS STRONG DESCRIPTIONS
+      </button>
+      <div class="example-panel" id="ex1">
+        <div class="example-panel-header">// prompt craft &mdash; the difference detail makes</div>
+        <div class="example-panel-body">
+          <div class="ex-row two-col">
+            <div class="ex-card">
+              <div class="ex-card-label weak">Weak &mdash; vague</div>
+              <p>A dinosaur skull</p>
+            </div>
+            <div class="ex-card highlight">
+              <div class="ex-card-label strong">Strong &mdash; specific</div>
+              <p>A Tyrannosaurus Rex skull with jaws open showing rows of sharp teeth, deep eye sockets, and cracked bone texture. Weathered and ancient-looking. Mounted on a rectangular stone museum pedestal. Single solid object.</p>
+            </div>
+          </div>
+          <p style="margin-top: 12px"><strong style="color:var(--text)">The weak prompt gives the AI nothing to work with.</strong> It will produce something generic. The strong prompt names specific details &mdash; open jaws, teeth, eye sockets, bone texture, weathering. Every detail you name is a detail the AI adds. The phrase "mounted on a stone pedestal" also solves a printing problem: it gives the model a flat bottom.</p>
+          <div class="ex-row two-col">
+            <div class="ex-card">
+              <div class="ex-card-label weak">Weak</div>
+              <p>A robot</p>
+            </div>
+            <div class="ex-card highlight">
+              <div class="ex-card-label strong">Strong</div>
+              <p>A heavy battle mech with thick armored legs, a cockpit head with a glowing visor, and a cannon mounted on the right shoulder. Battle-damaged with scratches and scorch marks. Standing on a metal platform base. Chunky proportions, single solid piece.</p>
+            </div>
+          </div>
+          <p style="margin-top: 12px"><strong style="color:var(--text)">Notice "chunky proportions, single solid piece."</strong> This tells the AI to keep parts thick and connected &mdash; important for 3D printing. Without it, you might get thin antenna or weapons that snap off, or parts floating in mid-air.</p>
+        </div>
+      </div>
+
+      <p>Ready? Give your description to Claude Code:</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">Use Meshy to generate a 3D model preview from this description:<br><br>"[YOUR DESCRIPTION]"<br><br>When it's done, show me the preview image. Then download the 3D model and create an HTML viewer I can open in my browser to spin it around.</div>
+        <div class="say-note">Replace [YOUR DESCRIPTION] with what you wrote on paper. Keep it under 500 characters &mdash; be dense with detail, not wordy. This is a preview &mdash; no textures yet, just the shape. You'll refine it later if the shape is right.</div>
+      </div>
+
+      <p><strong>The wait.</strong> The preview takes about 60-70 seconds. While you wait:</p>
+
+      <div class="prompt-box">
+        <div class="prompt-label">While you wait</div>
+        <div class="prompt-text">Write down what you THINK will appear vs. what you actually DESCRIBED. When the model arrives, compare. The gap between what you imagined and what you described &mdash; that's what your next prompt will close.</div>
+      </div>
+
+      <p>When it arrives, open the 3D viewer. Rotate it. Zoom in. Look at it from every angle. Is the <strong>shape</strong> right? Don't worry about color or texture yet &mdash; the preview is just the raw geometry.</p>
+
+      <div class="tip-box">
+        <div class="tip-icon">&#128161;</div>
+        <div class="tip-content"><strong>Look at the bottom.</strong> Flip the model upside down in the viewer. Is there a flat base? If the bottom is open or uneven, add "sitting on a solid display base" to your next prompt. You need a flat bottom for 3D printing.</div>
+      </div>
+
+      <p>If the shape looks good, tell Claude Code to refine it:</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">The shape looks good. Refine this model for better quality and textures.</div>
+        <div class="say-note">Only refine if you're happy with the shape. If it's wrong, skip to Mission 2 and rewrite your description instead &mdash; don't waste a refine on a bad shape.</div>
+      </div>
+
+      <ol class="steps">
+        <li>Pick what you want to summon. Write the description on paper first &mdash; every detail matters.</li>
+        <li>Give Claude Code the say-box prompt with your description.</li>
+        <li>Wait ~70 seconds. Write down what you expect vs. what you described.</li>
+        <li>Open the 3D viewer. Rotate, zoom, inspect. Is the shape right?</li>
+        <li>If yes &mdash; refine it. If no &mdash; skip to Mission 2 and rewrite.</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Claude Code</span>
+        <span class="chip">Meshy AI</span>
+        <span class="chip">3D Viewer</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m1', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 2: REFINE OR REROLL -->
+  <!-- =============================== -->
+  <div class="section-label">Phase 02 &mdash; Iterate</div>
+
+  <div class="mission-card" id="m2">
+    <div class="card-header" onclick="toggleCard('m2')">
+      <div class="card-number">02</div>
+      <div class="card-meta">
+        <div class="card-tag">Iterate</div>
+        <div class="card-title">Refine or Reroll</div>
+        <span class="card-badge badge-cool">15 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Look at your first model. What's right? What's missing? What surprised you?</p>
+
+      <p>Here's the thing about this AI: <strong>you cannot tweak.</strong> You can't say "make the horns bigger" or "add more detail to the left side." It generates from scratch every time. So iteration means <strong>rewriting your entire description</strong>, informed by what you learned from the first one.</p>
+
+      <p>This is a different skill than what you used in Days 4-5, where you changed one thing at a time. Here, you rewrite the whole brief. Keep what worked. Change what didn't. Add what was missing.</p>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Before your second prompt</div>
+        <div class="prompt-text">Look at your first model and answer:<br><br>&#8594; What details appeared that you DID describe? (keep those words)<br>&#8594; What's missing that you FORGOT to describe? (add those words)<br>&#8594; What appeared that you DIDN'T want? (add a note: "no [thing]")<br>&#8594; Is the overall style right? (realistic, stylized, cartoon?)</div>
+      </div>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">I want to try a new version. Use Meshy to generate a 3D model preview from this improved description:<br><br>"[YOUR IMPROVED DESCRIPTION]"<br><br>When it's done, show me the preview and create a viewer. I want to compare this one with my first version.</div>
+      </div>
+
+      <div class="tip-box tip-green">
+        <div class="tip-icon">&#128161;</div>
+        <div class="tip-content"><strong>If your first model is exactly what you wanted</strong> &mdash; skip this mission and go straight to Mission 3. But most of the time, the second prompt is better. Now you know what the AI does with your words.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex2', this)">
+        <i class="etoggle-icon">+</i> SEE EXAMPLE ITERATION
+      </button>
+      <div class="example-panel" id="ex2">
+        <div class="example-panel-header">// example &mdash; prompt iteration</div>
+        <div class="example-panel-body">
+          <div class="ex-card">
+            <div class="ex-card-label neutral">First prompt</div>
+            <p>"A dragon sitting on a rock, with wings and horns. Detailed scales. On a base."</p>
+          </div>
+          <p><strong style="color:var(--text)">Result:</strong> Dragon is there, but the wings are spread wide (hard to print), the base is paper-thin, and it looks like a cartoon.</p>
+          <div class="ex-card highlight">
+            <div class="ex-card-label strong">Second prompt (improved)</div>
+            <p>"A fierce dragon with wings folded tight against its body, coiled around a tall rocky outcrop. Heavy scales with scratches and battle scars. Two swept-back horns. Thick muscular tail wrapped around the base. Realistic style, dark and weathered. Solid single piece on a thick stone pedestal."</p>
+          </div>
+          <p><strong style="color:var(--text)">What changed:</strong> "Wings folded tight" solves the printing overhang. "Coiled around a rocky outcrop" gives it structure instead of thin legs in the air. "Thick stone pedestal" replaces the flimsy base. Added "realistic style" to kill the cartoon look. "Solid single piece" for printability.</p>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>Study your first model. Identify what worked and what's missing.</li>
+        <li>Rewrite the full description on paper. Keep the good parts, fix the rest.</li>
+        <li>Generate a new preview. Compare the two shapes in the viewers.</li>
+        <li>Pick your favorite. Refine that one for full quality.</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Claude Code</span>
+        <span class="chip">Meshy AI</span>
+        <span class="chip">3D Viewer</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m2', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 3: PRINT PREP -->
+  <!-- =============================== -->
+  <div class="section-label">Phase 03 &mdash; Forge</div>
+
+  <div class="mission-card" id="m3">
+    <div class="card-header" onclick="toggleCard('m3')">
+      <div class="card-number">03</div>
+      <div class="card-meta">
+        <div class="card-tag">Prepare &amp; Print</div>
+        <div class="card-title">Make It Real</div>
+        <span class="card-badge badge-forge">20 min + print time</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Your model exists on screen. It has hundreds of thousands of tiny triangles &mdash; beautiful for rendering, but your printer and slicer need a leaner file. Claude Code is going to <strong>optimize it for the physical world</strong>: shrink the triangle count, scale it to the right size, fix any geometry problems, and set up your slicer.</p>
+
+      <p>First, pick your size:</p>
+
+      <div class="size-ref">
+        <div class="size-item">
+          <div class="size-num">6 cm</div>
+          <div class="size-label">Chess piece</div>
+        </div>
+        <div class="size-item">
+          <div class="size-num">10 cm</div>
+          <div class="size-label">Soda can</div>
+        </div>
+        <div class="size-item">
+          <div class="size-num">15 cm</div>
+          <div class="size-label">Coffee mug</div>
+        </div>
+        <div class="size-item">
+          <div class="size-num">20 cm</div>
+          <div class="size-label">Large &mdash; 4+ hours</div>
+        </div>
+      </div>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">I want to 3D print my best model on my Qidi Q1 Pro. Here's what I need:<br><br>1. Use Meshy's remesh tool to convert it to STL format, reduce it to about 30,000 triangles, and scale it to [SIZE] cm tall. Set the origin to the bottom so it sits flat.<br>2. Download the print-ready STL file.<br>3. Check the mesh: is it watertight? Any problems?<br>4. Tell me the slicer settings I should use: layer height, walls, infill, supports, brim. And the estimated print time.<br>5. Give me step-by-step instructions for loading it into Qidi Studio.</div>
+        <div class="say-note">Replace [SIZE] with the height you want from the size chart above. 10 cm is a good starting point.</div>
+      </div>
+
+      <p>Claude Code will come back with a report. The key things to check:</p>
+
+      <ul class="watch-list">
+        <li><span class="watch-icon">&#128200;</span> <strong>Triangle count:</strong> Raw Meshy models have around 600K triangles. After optimization, around 30K. Your printer can't resolve detail finer than ~0.4mm anyway &mdash; extra triangles just slow down the slicer.</li>
+        <li><span class="watch-icon">&#9989;</span> <strong>Watertight:</strong> Should say "yes" or "repaired." If it says the mesh can't be fixed, see the troubleshooting panel below.</li>
+        <li><span class="watch-icon">&#128207;</span> <strong>Supports:</strong> Models with overhangs (arms reaching out, horns at angles) will need support material. Claude Code will tell you. It adds print time but prevents droopy plastic.</li>
+        <li><span class="watch-icon">&#9201;</span> <strong>Print time:</strong> A 10 cm model is typically 3-5 hours depending on complexity and supports. Check that the estimate seems right for your size.</li>
+      </ul>
+
+      <p><strong>Load it into the slicer and start the print.</strong> Follow Claude Code's step-by-step instructions for Qidi Studio. Watch the first few layers &mdash; if the base sticks well, you're good. Then go do something else while the printer works.</p>
+
+      <button class="example-toggle" onclick="toggleExample('ex3', this)">
+        <i class="etoggle-icon">+</i> TROUBLESHOOTING
+      </button>
+      <div class="example-panel" id="ex3">
+        <div class="example-panel-header">// what if something goes wrong</div>
+        <div class="example-panel-body">
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Mesh can't be repaired</div>
+            <p>Some Meshy models have geometry too broken to auto-fix. Go back to Mission 1 or 2 and add these words to your prompt: "solid single piece, thick walls, no thin floating details, sitting on a solid base." Regenerate.</p>
+          </div>
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Slicer shows red areas</div>
+            <p>Red areas are unsupported overhangs. Tell Claude Code: "The slicer shows unsupported areas. Should I enable supports, or can you orient the model differently?" Claude Code will figure out the best approach.</p>
+          </div>
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Thin details break during printing</div>
+            <p>Horn tips, antenna, thin sword blades &mdash; these are fragile in PLA. If they break off, glue them back with super glue. For next time, mention "sturdy proportions" or "thick details" in your prompt.</p>
+          </div>
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Model has no flat bottom</div>
+            <p>Tell Claude Code: "Add a simple flat circular base to the bottom of this model, about 5mm thick, so it sits flat on the print bed." Or regenerate with "sitting on a solid display base" in your prompt.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box tip-forge">
+        <div class="tip-icon">&#9876;&#65039;</div>
+        <div class="tip-content"><strong>From words to object.</strong> You typed a description. An AI sculpted it in 3D. Claude Code optimized it for your printer. Now a machine is melting plastic, layer by layer, turning your words into something you can hold. That's the full pipeline &mdash; imagination to physical reality.</div>
+      </div>
+
+      <ol class="steps">
+        <li>Pick your print size (10 cm is a good default).</li>
+        <li>Give Claude Code the print prep prompt. It handles the optimization.</li>
+        <li>Review the report: triangle count, watertight, supports needed, print time.</li>
+        <li>Follow the slicer instructions. Load the STL, apply settings, start the print.</li>
+        <li>Watch the first few layers. If it sticks, go do something else.</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Claude Code</span>
+        <span class="chip">Meshy Remesh</span>
+        <span class="chip">Qidi Studio</span>
+        <span class="chip">Qidi Q1 Pro</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m3', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- BOSS: THE GALLERY (Francisco) -->
+  <!-- =============================== -->
+  <div class="boss-card">
+    <div class="boss-eyebrow">// bonus mission</div>
+    <div class="boss-title">The Gallery</div>
+    <div class="boss-desc">
+      <p style="color:var(--text-muted); line-height:1.7; font-weight:300; margin-bottom:12px">You've got the pipeline down. Now use it again &mdash; faster, on your own, no scaffolding.</p>
+      <p style="color:var(--text-muted); line-height:1.7; font-weight:300; margin-bottom:12px">Generate a <strong style="color:var(--text)">second model</strong> that pairs with your first one. If you made a dragon, make the knight who fights it. If you made a mech, make its enemy. If you made a dinosaur skull, make the full skeleton. Run the full pipeline: describe, generate, optimize, print. A collection starts with two.</p>
+      <p style="color:var(--text-muted); line-height:1.7; font-weight:300">This one's on you. You know the prompts. You know the pipeline. Go.</p>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- XP DISPLAY -->
+  <!-- =============================== -->
+  <div style="margin-top: 48px; padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px;">
+    <div class="eyebrow" style="margin-bottom: 12px;">// skills earned today</div>
+    <div class="xp-row" id="xpRow">
+      <span class="xp-pip" id="xp1">3D Prompt Craft</span>
+      <span class="xp-pip" id="xp2">3D Iteration</span>
+      <span class="xp-pip" id="xp3">Print Preparation</span>
+    </div>
+    <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);">
+      <div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px;">// total skills (all sessions)</div>
+      <div class="xp-row">
+        <span class="xp-pip earned">Storytelling</span>
+        <span class="xp-pip earned">Prompt Craft</span>
+        <span class="xp-pip earned">Shot Direction</span>
+        <span class="xp-pip earned">Critical Eye</span>
+        <span class="xp-pip earned">Creative Direction</span>
+        <span class="xp-pip earned">Topic Research</span>
+        <span class="xp-pip earned">Full-Project Direction</span>
+        <span class="xp-pip earned">Creative Polish</span>
+        <span class="xp-pip earned">Game Design</span>
+        <span class="xp-pip earned">Iterative Dev</span>
+        <span class="xp-pip earned">Art Direction</span>
+        <span class="xp-pip earned">Playtesting</span>
+        <span class="xp-pip earned">Technical Research</span>
+        <span class="xp-pip earned">Engineering Constraints</span>
+        <span class="xp-pip earned">3D Modeling</span>
+        <span class="xp-pip earned">Physical Prototyping</span>
+        <span class="xp-pip" id="xp1b">3D Prompt Craft</span>
+        <span class="xp-pip" id="xp2b">3D Iteration</span>
+        <span class="xp-pip" id="xp3b">Print Preparation</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const STATE = { completed: new Set() };
+  const TOTAL = 3;
+
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    const isOpen = card.classList.contains('open');
+    document.querySelectorAll('.mission-card').forEach(c => c.classList.remove('open'));
+    if (!isOpen) card.classList.add('open');
+  }
+
+  function markDone(id, e) {
+    e.stopPropagation();
+    const card = document.getElementById(id);
+    const num = id.replace('m', '');
+    if (STATE.completed.has(id)) {
+      STATE.completed.delete(id);
+      card.classList.remove('done');
+      document.getElementById('xp' + num).classList.remove('earned');
+      document.getElementById('xp' + num + 'b').classList.remove('earned');
+    } else {
+      STATE.completed.add(id);
+      card.classList.add('done');
+      card.classList.remove('open');
+      document.getElementById('xp' + num).classList.add('earned');
+      document.getElementById('xp' + num + 'b').classList.add('earned');
+    }
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const count = STATE.completed.size;
+    document.getElementById('progressFill').style.width = (count / TOTAL * 100) + '%';
+    document.getElementById('progressCount').textContent = count + ' / ' + TOTAL;
+  }
+
+  function toggleExample(id, btn) {
+    event.stopPropagation();
+    const panel = document.getElementById(id);
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+    btn.querySelector('.etoggle-icon').textContent = isOpen ? '+' : '\u00d7';
+  }
+
+  document.getElementById('m1').classList.add('open');
+</script>
+</body>
+</html>

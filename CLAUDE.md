@@ -15,7 +15,8 @@ Self-contained HTML activity guides — dark-themed, polished, interactive — t
 | `ai-studio-day3-build-your-guide.html` | 3 | Build Your Own Guide | Both | Full-project direction: pick topic, direct Claude Code to build illustrated HTML guide, add personal twist |
 | `francisco-ai-studio-day4.html` | 4 | Build Your Own Game | Francisco | Game design doc (See/Do/Win-Lose), first playable, art pass with Nano Banana, playtesting with fresh eyes |
 | `ai-studio-day5-the-forge.html` | 5 | The Forge | Both | 3D modeling (Three.js), STL export, 3D printing. Code-to-physical-object pipeline |
-| `index.html` | — | Hub | — | Index page linking to all 5 days |
+| `ai-studio-day5b-assembly.html` | 5.2 | Assembly | Both | Multi-part printing: split plans, joint design, test prints, assembly |
+| `index.html` | — | Hub | — | Index page linking to all days |
 
 ## Design System
 

@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Studio — Day 5.2: Assembly</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --bg: #0a0a10;
+    --surface: #131320;
+    --surface2: #1c1c2e;
+    --border: #282842;
+    --accent: #f06030;
+    --accent2: #7c5cf0;
+    --accent3: #22d3a8;
+    --text: #e8e8f2;
+    --text-muted: #7a7a9e;
+    --text-dim: #464868;
+    --gold: #f0c030;
+    --forge: #e8822a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(240,96,48,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 90%, rgba(124,92,240,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(232,130,42,0.02) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ---- HEADER ---- */
+  header { margin-bottom: 48px; }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--forge);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--forge);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 8vw, 68px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    color: var(--text);
+  }
+
+  h1 span { color: var(--forge); }
+
+  h1 .day {
+    font-size: 0.38em;
+    font-weight: 600;
+    color: var(--accent2);
+    letter-spacing: 0;
+    display: block;
+    margin-top: 8px;
+  }
+
+  .subtitle {
+    margin-top: 20px;
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 560px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .subtitle strong { color: var(--text); font-weight: 500; }
+
+  /* ---- RECAP ---- */
+  .recap-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 36px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .recap-icon { font-size: 20px; line-height: 1; margin-top: 2px; }
+
+  .recap-content {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .recap-content strong { color: var(--accent3); font-weight: 500; }
+
+  .recap-pips { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+
+  .recap-pip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    background: rgba(34,211,168,0.08);
+    border: 1px solid rgba(34,211,168,0.25);
+    color: var(--accent3);
+  }
+
+  /* ---- RULE CARD ---- */
+  .rule-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .rule-icon { font-size: 28px; line-height: 1; margin-top: 2px; }
+
+  .rule-text h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .rule-text p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* ---- PROGRESS ---- */
+  .progress-area {
+    margin-bottom: 40px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .progress-track {
+    flex: 1; height: 5px;
+    background: var(--surface2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--forge), var(--accent2));
+    border-radius: 99px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+
+  .progress-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--forge);
+    white-space: nowrap;
+    min-width: 50px;
+    text-align: right;
+  }
+
+  /* ---- SECTIONS ---- */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 36px 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ---- MISSION CARDS ---- */
+  .mission-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 0;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .mission-card.done {
+    opacity: 0.55;
+    border-color: var(--border);
+  }
+
+  .mission-card.done .card-number {
+    background: var(--accent3);
+    color: var(--bg);
+  }
+
+  .mission-card.done .card-number::after { content: '\2713'; }
+
+  .card-header {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .card-header:hover { background: var(--surface2); }
+
+  .card-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    width: 64px;
+    min-width: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+    color: var(--text-muted);
+    border-right: 1px solid var(--border);
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .card-meta {
+    padding: 18px 20px;
+    flex: 1;
+  }
+
+  .card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .card-badge {
+    display: inline-block;
+    margin-top: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 99px;
+    border: 1px solid;
+  }
+
+  .badge-warm { color: var(--gold); border-color: var(--gold); background: rgba(240,192,64,0.08); }
+  .badge-cool { color: var(--accent3); border-color: var(--accent3); background: rgba(45,212,191,0.08); }
+  .badge-bold { color: var(--accent); border-color: var(--accent); background: rgba(255,107,53,0.08); }
+  .badge-purple { color: var(--accent2); border-color: var(--accent2); background: rgba(124,92,191,0.08); }
+  .badge-forge { color: var(--forge); border-color: var(--forge); background: rgba(232,130,42,0.08); }
+
+  .card-chevron {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    color: var(--text-dim);
+    font-size: 20px;
+    transition: transform 0.3s, color 0.2s;
+  }
+
+  .mission-card.open .card-chevron {
+    transform: rotate(90deg);
+    color: var(--forge);
+  }
+
+  /* ---- CARD BODY ---- */
+  .card-body {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 24px 24px 20px;
+    animation: slideDown 0.25s ease;
+  }
+
+  .mission-card.open .card-body { display: block; }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-body p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 16px;
+    font-weight: 300;
+  }
+
+  .card-body strong { color: var(--text); font-weight: 500; }
+
+  /* ---- PROMPT / SAY BOX ---- */
+  .prompt-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--forge);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 12px 0;
+  }
+
+  .prompt-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--forge);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .prompt-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .say-box {
+    background: var(--bg);
+    border: 1px solid rgba(124,92,191,0.3);
+    border-left: 3px solid var(--accent2);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 14px 0;
+  }
+
+  .say-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .say-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  .say-note {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 10px;
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  /* ---- STEPS ---- */
+  .steps {
+    list-style: none;
+    counter-reset: step;
+    margin: 16px 0;
+  }
+
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 14px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .steps li::before {
+    content: counter(step);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    width: 24px;
+    min-width: 24px;
+    height: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--forge);
+    margin-top: 1px;
+  }
+
+  /* ---- TIPS ---- */
+  .tip-box {
+    background: rgba(124,92,191,0.08);
+    border: 1px solid rgba(124,92,191,0.3);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 16px 0;
+    display: flex;
+    gap: 12px;
+  }
+
+  .tip-box.tip-green {
+    background: rgba(45,212,191,0.06);
+    border-color: rgba(45,212,191,0.25);
+  }
+
+  .tip-box.tip-forge {
+    background: rgba(232,130,42,0.06);
+    border-color: rgba(232,130,42,0.25);
+  }
+
+  .tip-icon { font-size: 16px; line-height: 1; margin-top: 1px; }
+
+  .tip-content {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .tip-content strong { color: var(--accent2); font-weight: 500; }
+  .tip-green .tip-content strong { color: var(--accent3); }
+  .tip-forge .tip-content strong { color: var(--forge); }
+
+  /* ---- COMPLETE BUTTON ---- */
+  .complete-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid var(--accent3);
+    border-radius: 8px;
+    color: var(--accent3);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .complete-btn:hover {
+    background: var(--accent3);
+    color: var(--bg);
+  }
+
+  .mission-card.done .complete-btn {
+    border-color: var(--text-dim);
+    color: var(--text-dim);
+  }
+
+  /* ---- TOOL CHIPS ---- */
+  .tool-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0;
+  }
+
+  .chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 99px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  /* ---- MODEL GRID ---- */
+  .model-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 16px 0;
+  }
+
+  @media (max-width: 600px) { .model-grid { grid-template-columns: 1fr; } }
+
+  .model-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    transition: border-color 0.2s, transform 0.15s;
+    cursor: default;
+  }
+
+  .model-card:hover {
+    border-color: var(--forge);
+    transform: translateY(-1px);
+  }
+
+  .model-emoji { font-size: 22px; margin-bottom: 6px; display: block; }
+
+  .model-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .model-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  .model-tag {
+    display: inline-block;
+    margin-top: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .tag-easy { background: rgba(45,212,191,0.1); color: var(--accent3); border: 1px solid rgba(45,212,191,0.3); }
+  .tag-medium { background: rgba(240,192,64,0.1); color: var(--gold); border: 1px solid rgba(240,192,64,0.3); }
+  .tag-hard { background: rgba(240,96,48,0.1); color: var(--accent); border: 1px solid rgba(240,96,48,0.3); }
+
+  /* ---- WATCH LIST ---- */
+  .watch-list {
+    list-style: none;
+    margin: 14px 0;
+  }
+
+  .watch-list li {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .watch-list li .watch-icon {
+    font-size: 14px;
+    margin-top: 3px;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  /* ---- EXAMPLE PANELS ---- */
+  .example-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px 0 0;
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px dashed var(--accent2);
+    border-radius: 8px;
+    color: var(--accent2);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .example-toggle:hover { background: rgba(124,92,191,0.1); }
+
+  .example-toggle .etoggle-icon {
+    transition: transform 0.3s;
+    font-style: normal;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .example-toggle.open .etoggle-icon { transform: rotate(45deg); }
+
+  .example-panel {
+    display: none;
+    margin-top: 12px;
+    border: 1px solid rgba(124,92,191,0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    animation: slideDown 0.25s ease;
+  }
+
+  .example-panel.open { display: block; }
+
+  .example-panel-header {
+    background: rgba(124,92,191,0.12);
+    padding: 10px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent2);
+    text-transform: uppercase;
+  }
+
+  .example-panel-body {
+    padding: 16px;
+    background: rgba(124,92,191,0.05);
+  }
+
+  .example-panel-body p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin-bottom: 10px;
+    font-weight: 300;
+  }
+
+  .example-panel-body p:last-child { margin-bottom: 0; }
+
+  .ex-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 8px 0;
+  }
+
+  .ex-card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .ex-card-label.weak { color: var(--text-dim); }
+  .ex-card-label.strong { color: var(--accent3); }
+  .ex-card-label.neutral { color: var(--gold); }
+  .ex-card-label.forge { color: var(--forge); }
+
+  .ex-card p {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.6;
+    margin: 0 !important;
+  }
+
+  .ex-card.highlight {
+    border-color: rgba(45,212,191,0.4);
+    background: rgba(45,212,191,0.04);
+  }
+
+  .ex-card.highlight-forge {
+    border-color: rgba(232,130,42,0.4);
+    background: rgba(232,130,42,0.04);
+  }
+
+  .ex-row {
+    display: grid;
+    gap: 10px;
+    margin: 10px 0;
+  }
+
+  .ex-row.two-col { grid-template-columns: 1fr 1fr; }
+
+  /* ---- XP ---- */
+  .xp-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .xp-pip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    transition: all 0.3s;
+  }
+
+  .xp-pip.earned {
+    background: rgba(240,192,64,0.1);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">// the forge &mdash; part 2</div>
+    <h1>The <span>Forge</span><span class="day">Day 5.2 &mdash; Assembly</span></h1>
+    <p class="subtitle">Your designs got bigger than one piece. Now learn to <strong>split, build, and validate</strong> multi-part objects &mdash; engineering every joint in code before committing to a print.</p>
+  </header>
+
+  <!-- RECAP -->
+  <div class="recap-card">
+    <div class="recap-icon">&#128203;</div>
+    <div class="recap-content">
+      <strong>Last session:</strong> You learned the full pipeline &mdash; code to screen to slicer to printer. You made a single-piece object and held it in your hand. Now you're ready for the next challenge: objects made of <strong>multiple pieces that connect together</strong>.
+      <div class="recap-pips">
+        <span class="recap-pip">Technical Research &#10003;</span>
+        <span class="recap-pip">Engineering Constraints &#10003;</span>
+        <span class="recap-pip">3D Modeling &#10003;</span>
+        <span class="recap-pip">Physical Prototyping &#10003;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE RULE -->
+  <div class="rule-card">
+    <div class="rule-icon">&#129513;</div>
+    <div class="rule-text">
+      <h3>The Assembly Rule</h3>
+      <p><strong style="color:var(--forge)">Test the joint first.</strong> The weakest point in any multi-part build is where the pieces meet. Before you build every piece, validate <em>just</em> the joint area &mdash; a small chunk of each side where they connect. Render it from multiple angles, check the exploded view, verify dimensions in code. If it doesn't fit, you fix the design in seconds. Changing code is free. Reprinting costs time and filament.</p>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-area">
+    <span class="progress-label">MISSIONS COMPLETE</span>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <span class="progress-count" id="progressCount">0 / 4</span>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 1: TEACH THE MACHINE -->
+  <!-- =============================== -->
+  <div class="section-label">Phase 01 &mdash; Research</div>
+
+  <div class="mission-card" id="m1">
+    <div class="card-header" onclick="toggleCard('m1')">
+      <div class="card-number">01</div>
+      <div class="card-meta">
+        <div class="card-tag">Research</div>
+        <div class="card-title">Teach the Machine &mdash; Joints</div>
+        <span class="card-badge badge-cool">10 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Last session you taught Claude Code about 3D printing before building. <strong>Same technique, new domain.</strong> This time it needs to learn how multi-part objects actually connect.</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">I want to build a 3D-printable object made of multiple pieces that connect together. Before we start, research how multi-part 3D prints work: what types of joints are used to connect printed pieces (tabs and slots, pegs and holes, snap fits, flat glue surfaces), how to design joints that actually fit when printed, and how to split a model into pieces that each print on their own. Tell me the key things I should understand.</div>
+      </div>
+
+      <p>Claude Code will come back with a summary. The most important things to watch for:</p>
+
+      <ul class="watch-list">
+        <li><span class="watch-icon">&#128268;</span> <strong>Joint types:</strong> Tabs that slide into slots, pegs that fit into holes, flat surfaces for gluing. Each works differently &mdash; the right choice depends on your object.</li>
+        <li><span class="watch-icon">&#128207;</span> <strong>Each piece prints alone:</strong> Every piece needs its own flat base, watertight mesh, and no supports &mdash; same rules as Day 5, applied to each piece individually.</li>
+        <li><span class="watch-icon">&#128260;</span> <strong>Direction matters:</strong> The pieces need to physically come together from some direction &mdash; slide in, push down, snap on. The joint has to be designed for how the pieces actually meet.</li>
+      </ul>
+
+      <div class="tip-box tip-green">
+        <div class="tip-icon">&#128161;</div>
+        <div class="tip-content"><strong>Same technique, deeper knowledge.</strong> You used "teach the machine" in Day 5 for overhangs and watertight meshes. Now you're adding joint design to Claude Code's knowledge. Each time you do this, the AI builds smarter.</div>
+      </div>
+
+      <div class="tip-box tip-forge">
+        <div class="tip-icon">&#128296;</div>
+        <div class="tip-content"><strong>New tool: OpenSCAD.</strong> This session uses a code-based modeling tool called OpenSCAD for building geometry. Every shape, every joint, every dimension is defined in code &mdash; Claude Code writes it, you direct it. The advantage: joints are precise, dimensions are exact, and every piece is guaranteed solid and watertight. When you need a 5mm tab fitting into a 5.2mm slot, the code says exactly that.<br><br>You'll still see your models in an interactive 3D viewer you can rotate &mdash; same as Day 5. The difference is what's under the hood: OpenSCAD geometry instead of hand-built shapes.</div>
+      </div>
+
+      <ol class="steps">
+        <li>Open Claude Code and give it the research prompt above.</li>
+        <li>Read what it finds. Pay attention to how different joint types work &mdash; you'll pick one in the next mission.</li>
+        <li>Ask any questions. "What joint would work best for connecting a blade to a handle?" is a good one.</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Claude Code</span>
+        <span class="chip">Web research</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m1', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 2: THE SPLIT PLAN -->
+  <!-- =============================== -->
+  <div class="section-label">Phase 02 &mdash; Design</div>
+
+  <div class="mission-card" id="m2">
+    <div class="card-header" onclick="toggleCard('m2')">
+      <div class="card-number">02</div>
+      <div class="card-meta">
+        <div class="card-tag">Design</div>
+        <div class="card-title">The Split Plan</div>
+        <span class="card-badge badge-warm">15 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>You have two choices: <strong>continue your Day 5 project</strong> (make it bigger, add parts, fix what didn't work) or <strong>start something new</strong> that's designed from the start as multi-part.</p>
+
+      <div class="model-grid">
+        <div class="model-card">
+          <span class="model-emoji">&#128260;</span>
+          <div class="model-title">Continue Day 5</div>
+          <div class="model-desc">Take what you already printed and expand it. Bigger shield, longer sword, more complex helmet. You already have the base &mdash; now add to it.</div>
+          <span class="model-tag tag-easy">you know this one</span>
+        </div>
+        <div class="model-card">
+          <span class="model-emoji">&#9876;&#65039;</span>
+          <div class="model-title">Full Weapon</div>
+          <div class="model-desc">A sword, axe, or katana at a bigger scale. Blade, guard, and handle as separate pieces that lock together.</div>
+          <span class="model-tag tag-medium">3-4 pieces</span>
+        </div>
+        <div class="model-card">
+          <span class="model-emoji">&#128737;&#65039;</span>
+          <div class="model-title">Oversized Shield</div>
+          <div class="model-desc">A shield too big for one print. Split into sections &mdash; two halves, or quadrants &mdash; that lock together into something larger than the print bed allows.</div>
+          <span class="model-tag tag-medium">3-4 pieces</span>
+        </div>
+        <div class="model-card">
+          <span class="model-emoji">&#127984;</span>
+          <div class="model-title">Castle Gatehouse</div>
+          <div class="model-desc">Walls, towers, and an arched gate &mdash; each section prints separately, then they slot together into a full structure.</div>
+          <span class="model-tag tag-hard">5+ pieces</span>
+        </div>
+        <div class="model-card">
+          <span class="model-emoji">&#129302;</span>
+          <div class="model-title">Mech Figure</div>
+          <div class="model-desc">Torso, arms, legs, head &mdash; each printed separately. Pegs connect the limbs to the body. Pose it however you want.</div>
+          <span class="model-tag tag-hard">6+ pieces</span>
+        </div>
+        <div class="model-card">
+          <span class="model-emoji">&#128161;</span>
+          <div class="model-title">Your Own Idea</div>
+          <div class="model-desc">Anything that's too big or complex for one piece. If you can describe how it splits and connects, Claude Code can build it.</div>
+          <span class="model-tag tag-medium">you decide</span>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Write Your Split Plan</div>
+        <div class="prompt-text">Answer these four questions:<br><br>
+&#8594; What is the full object? (name and description)<br>
+&#8594; Where does it split? (which pieces, and why split there)<br>
+&#8594; How do the pieces connect? (joint type for each connection)<br>
+&#8594; How does each piece print? (flat base, orientation, any tricky overhangs)</div>
+      </div>
+
+      <div class="tip-box tip-green">
+        <div class="tip-icon">&#9989;</div>
+        <div class="tip-content"><strong>Split at natural boundaries.</strong> A sword splits at the guard &mdash; blade on one side, handle on the other. A helmet splits at the jawline. Don't split through the middle of a detail. Split where it makes physical sense, and where each resulting piece can sit flat on the print bed.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex1', this)">
+        <i class="etoggle-icon">+</i> SEE EXAMPLE SPLIT PLANS
+      </button>
+      <div class="example-panel" id="ex1">
+        <div class="example-panel-header">// example &mdash; split plans</div>
+        <div class="example-panel-body">
+          <div class="ex-row">
+            <div class="ex-card">
+              <div class="ex-card-label neutral">Katana &mdash; 3 pieces</div>
+              <p><strong style="color:var(--text)">Full object:</strong> A katana with curved blade, circular guard (tsuba), and wrapped handle.<br><br>
+              <strong style="color:var(--text)">Split:</strong> Three pieces &mdash; blade, guard, and handle. Split at the guard, which is the natural boundary.<br><br>
+              <strong style="color:var(--text)">Joints:</strong> The blade has a rectangular tab on the end that slides through a matching slot in the guard. The handle has a rectangular tab that slides into the guard from the other side. Both tabs are slightly tapered so they wedge in tight.<br><br>
+              <strong style="color:var(--text)">Printing:</strong> Blade prints on its side (flat edge down). Guard prints flat. Handle prints standing up on its wide end.</p>
+            </div>
+            <div class="ex-card highlight-forge">
+              <div class="ex-card-label strong">Viking Shield &mdash; 3 pieces</div>
+              <p><strong style="color:var(--text)">Full object:</strong> A round Viking shield, bigger than a single print &mdash; 200mm diameter, with a metal boss in the center and a grip behind it.<br><br>
+              <strong style="color:var(--text)">Split:</strong> Two shield halves (split down the middle) plus the center boss as a separate piece.<br><br>
+              <strong style="color:var(--text)">Joints:</strong> The two halves have interlocking tabs along the split line &mdash; three tabs on one side, three matching slots on the other. They slide together left-to-right. The boss has a circular peg that pushes into a matching hole where the halves meet.<br><br>
+              <strong style="color:var(--text)">Printing:</strong> Each half prints face-down (flat back on the bed). The boss prints dome-side-up on a flat base.</p>
+            </div>
+          </div>
+          <p style="margin-top:12px"><strong style="color:var(--text)">Notice:</strong> Every split plan describes the direction pieces come together, and every piece has a flat surface for the print bed.</p>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>Decide: continue your Day 5 project or start fresh. Either is fine.</li>
+        <li>Write your split plan: what's the full object, where does it split, how do pieces connect, how does each piece print.</li>
+        <li>Run it past Claude Code: "Here's my split plan. Will these joints actually work in OpenSCAD? How should each piece sit on the print bed?"</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Your brain</span>
+        <span class="chip">Claude Code (validation)</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m2', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 3: BUILD THE PIECES -->
+  <!-- =============================== -->
+  <div class="section-label">Phase 03 &mdash; Test</div>
+
+  <div class="mission-card" id="m3">
+    <div class="card-header" onclick="toggleCard('m3')">
+      <div class="card-number">03</div>
+      <div class="card-meta">
+        <div class="card-tag">Build</div>
+        <div class="card-title">Build the Pieces</div>
+        <span class="card-badge badge-warm">20 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>This is the mission that saves you from wasting hours. <strong>Before building the full object, you build just the joint area in OpenSCAD</strong> &mdash; a small chunk of each side where the pieces connect. Then you view it in an interactive 3D viewer, spin it around, and check that everything fits. If it doesn't, you fix the code in seconds.</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">Build me OpenSCAD models for a test piece of the connection between [PIECE A] and [PIECE B] &mdash; just the joint area, about 2-3cm of material on each side. Export the pieces as STL files, then create an HTML viewer I can open in my browser that shows both pieces. Give me a slider or button to toggle between assembled (pieces together) and exploded (pieces pulled apart) views. Color each piece differently so I can tell them apart.</div>
+        <div class="say-note">Replace [PIECE A] and [PIECE B] with the pieces from your split plan. If you have multiple joints, start with the trickiest one.</div>
+      </div>
+
+      <p>Open the HTML viewer in your browser. Drag to rotate, scroll to zoom &mdash; same controls as Day 5. Use the explode toggle to pull the pieces apart and push them back together. Look at the joint from every angle:</p>
+
+      <ul class="watch-list">
+        <li><span class="watch-icon">&#128268;</span> <strong>Assembled view:</strong> Do the pieces meet cleanly? No gaps, no overlaps?</li>
+        <li><span class="watch-icon">&#128260;</span> <strong>Exploded view:</strong> Can you see the matching shapes &mdash; tab on one side, slot on the other?</li>
+        <li><span class="watch-icon">&#128207;</span> <strong>Connection direction:</strong> Could you actually slide these together with your hands?</li>
+      </ul>
+
+      <p>If something looks off, tell Claude Code exactly what's wrong. It updates the OpenSCAD code, re-exports, and refreshes the viewer &mdash; <strong>iterate until it's right.</strong></p>
+
+      <div class="tip-box tip-forge">
+        <div class="tip-icon">&#128208;</div>
+        <div class="tip-content"><strong>What to check in the viewer:</strong> Do the joint surfaces match exactly? Is the tab slightly smaller than the slot (it should be &mdash; you need clearance for printing)? Are there any thin walls or overhangs in the joint area? Zoom in on the joint area. If anything looks wrong, tell Claude Code what to fix.</div>
+      </div>
+
+      <div class="tip-box tip-green">
+        <div class="tip-icon">&#128161;</div>
+        <div class="tip-content"><strong>You're validating digitally before committing to a print.</strong> If the joint looks wrong in the render, fix it now &mdash; changing code is free, reprinting costs time and filament.</div>
+      </div>
+
+      <button class="example-toggle" onclick="toggleExample('ex2', this)">
+        <i class="etoggle-icon">+</i> EXAMPLE: TESTING A JOINT
+      </button>
+      <div class="example-panel" id="ex2">
+        <div class="example-panel-header">// example &mdash; testing a katana guard joint</div>
+        <div class="example-panel-body">
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Round 1 &mdash; Build &amp; View</div>
+            <p><strong style="color:var(--accent2)">You:</strong> Build me OpenSCAD test pieces for the connection between the blade and the guard. Just the last 3cm of the blade (with the rectangular tab) and the guard (with the matching slot). Export as STL and give me an HTML viewer with an explode toggle. Color them differently.</p>
+            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [writes .scad file, exports STLs, creates HTML viewer &mdash; blade piece in silver, guard piece in bronze, explode slider at the bottom]</p>
+          </div>
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Round 2 &mdash; Spin &amp; Spot Problems</div>
+            <p><strong style="color:var(--accent2)">You:</strong> [opens viewer, rotates the pieces, toggles explode on and off] The tab is round but the slot is square &mdash; they don't match. And the tab looks way too small, it would rattle around in there.</p>
+            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> Good catch. I'll make the tab rectangular to match the slot, and increase it to leave only 0.2mm clearance per side.</p>
+          </div>
+          <div class="ex-card highlight-forge">
+            <div class="ex-card-label strong">Round 3 &mdash; Fix &amp; Refresh</div>
+            <p><strong style="color:var(--accent2)">You:</strong> Yes, rectangular tab, 0.2mm clearance. Update the viewer.</p>
+            <p style="margin-top:8px"><strong style="color:var(--accent3)">Claude Code:</strong> [updates .scad, re-exports, refreshes viewer &mdash; tab and slot match, snug fit]</p>
+            <p style="margin-top:8px"><strong style="color:var(--accent2)">You:</strong> [spins it around, toggles explode &mdash; looks solid from every angle]</p>
+          </div>
+          <p style="margin-top:12px"><strong style="color:var(--text)">Total time: ~5 minutes. Three iterations, zero filament. The joint is validated before you ever print.</strong></p>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li>Tell Claude Code to build OpenSCAD test pieces for your trickiest joint and create an HTML viewer.</li>
+        <li>Open the viewer in your browser. Spin the pieces around. Toggle explode on and off.</li>
+        <li>Check: does the tab match the slot? Is the fit snug? Does the connection direction make sense?</li>
+        <li>If anything looks wrong, tell Claude Code exactly what's off. It fixes the code and updates the viewer.</li>
+        <li>Keep iterating until the joint looks right from every angle.</li>
+      </ol>
+
+      <div class="tip-box tip-green">
+        <div class="tip-icon">&#127942;</div>
+        <div class="tip-content"><strong>This is how real engineers work.</strong> In product design and manufacturing, you always validate the hard parts first. Nobody builds a whole product and then discovers the hinge doesn't work. You test the hinge digitally, then build the product.</div>
+      </div>
+
+      <div class="tool-chips">
+        <span class="chip">Claude Code</span>
+        <span class="chip">OpenSCAD</span>
+        <span class="chip">Three.js Viewer</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m3', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 4: FULL BUILD & EXPORT -->
+  <!-- =============================== -->
+  <div class="section-label">Phase 04 &mdash; Build &amp; Export</div>
+
+  <div class="mission-card" id="m4">
+    <div class="card-header" onclick="toggleCard('m4')">
+      <div class="card-number">04</div>
+      <div class="card-meta">
+        <div class="card-tag">Build</div>
+        <div class="card-title">Full Build &amp; Export</div>
+        <span class="card-badge badge-warm">20 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Your joint is validated. Now build the full pieces in OpenSCAD &mdash; one at a time &mdash; using the <strong>exact same joint design</strong> you tested.</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">Now build the full [PIECE NAME] in OpenSCAD. Keep the joint design exactly as we tested &mdash; same dimensions, same clearances. The rest of the piece needs watertight geometry, overhangs under 45 degrees, 2mm minimum wall thickness, and a flat base. Export the STL and update the HTML viewer so I can spin it around and check it.</div>
+        <div class="say-note">Do this for each piece. Build one, review it in the viewer, then move on to the next.</div>
+      </div>
+
+      <p>Build each piece the same way you built your Day 5 model &mdash; open the viewer, spin it around, fix one thing at a time. When all pieces are done, do a final validation of the full assembly:</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Final assembly validation</div>
+        <div class="say-text">Now put all pieces into one viewer with the explode toggle. Color each piece differently. I want to see the whole thing assembled, then pull it apart and check every joint. Run analyze_model on each piece to check for issues.</div>
+      </div>
+
+      <p>This is your last chance to catch problems before committing to a print. Toggle the explode slider &mdash; every joint should show matching shapes. In assembled view, the full object should look complete with no gaps. If <code>analyze_model</code> reports any issues, fix them now.</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Export for printing</div>
+        <div class="say-text">Export each piece as its own STL file, named [project]-[piece].stl. These need to be ready for slicing.</div>
+      </div>
+
+      <ol class="steps">
+        <li>Build each piece one at a time in OpenSCAD. Review each in the 3D viewer before moving on.</li>
+        <li>When all pieces are done, load them all into one viewer with the explode toggle.</li>
+        <li>Run <code>analyze_model</code> on each piece to catch geometry issues.</li>
+        <li>Export each piece as its own STL file. One file per piece, named clearly.</li>
+      </ol>
+
+      <div class="tip-box tip-forge">
+        <div class="tip-icon">&#128193;</div>
+        <div class="tip-content"><strong>Your STL files are ready for Day 5.3 &mdash; Print Lab.</strong> That's where you'll set up the slicer, dial in print settings, and send them to the printer. For now, the design work is done.</div>
+      </div>
+
+      <div class="tip-box tip-green">
+        <div class="tip-icon">&#127942;</div>
+        <div class="tip-content"><strong>The moment.</strong> You just engineered a multi-part object entirely in code. You designed how the pieces split, how they connect, validated the joints digitally, and exported print-ready files &mdash; all by directing an AI. The physical moment comes in Day 5.3 when you hold it in your hands. But the engineering? That's done. That's yours.</div>
+      </div>
+
+      <div class="tool-chips">
+        <span class="chip">Claude Code</span>
+        <span class="chip">OpenSCAD</span>
+        <span class="chip">Three.js Viewer</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m4', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- XP DISPLAY -->
+  <!-- =============================== -->
+  <div style="margin-top: 48px; padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px;">
+    <div class="eyebrow" style="margin-bottom: 12px;">// skills earned today</div>
+    <div class="xp-row" id="xpRow">
+      <span class="xp-pip" id="xp1">Multi-Part Design</span>
+      <span class="xp-pip" id="xp2">Joint Engineering</span>
+      <span class="xp-pip" id="xp3">Digital Validation</span>
+      <span class="xp-pip" id="xp4">Assembly Design</span>
+    </div>
+    <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);">
+      <div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px;">// total skills (all sessions)</div>
+      <div class="xp-row">
+        <span class="xp-pip earned">Storytelling</span>
+        <span class="xp-pip earned">Prompt Craft</span>
+        <span class="xp-pip earned">Shot Direction</span>
+        <span class="xp-pip earned">Critical Eye</span>
+        <span class="xp-pip earned">Creative Direction</span>
+        <span class="xp-pip earned">Topic Research</span>
+        <span class="xp-pip earned">Full-Project Direction</span>
+        <span class="xp-pip earned">Creative Polish</span>
+        <span class="xp-pip earned">Game Design</span>
+        <span class="xp-pip earned">Iterative Dev</span>
+        <span class="xp-pip earned">Art Direction</span>
+        <span class="xp-pip earned">Playtesting</span>
+        <span class="xp-pip earned">Technical Research</span>
+        <span class="xp-pip earned">Engineering Constraints</span>
+        <span class="xp-pip earned">3D Modeling</span>
+        <span class="xp-pip earned">Physical Prototyping</span>
+        <span class="xp-pip" id="xp1b">Multi-Part Design</span>
+        <span class="xp-pip" id="xp2b">Joint Engineering</span>
+        <span class="xp-pip" id="xp3b">Digital Validation</span>
+        <span class="xp-pip" id="xp4b">Assembly Design</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- BONUS: WHAT'S NEXT -->
+  <!-- =============================== -->
+  <div style="margin-top: 24px; padding: 20px 24px; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--forge); border-radius: 12px;">
+    <div style="font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px;">Next up: Day 5.3 &mdash; Print Lab</div>
+    <div style="font-size: 13px; color: var(--text-muted); line-height: 1.7; font-weight: 300;">
+      <strong style="color: var(--forge);">Your STL files are ready.</strong> In Day 5.3, you'll set up the slicer, dial in print settings for each piece, send them to the printer, and assemble the final object. The design and engineering are done &mdash; now it's time to make it physical.
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const STATE = { completed: new Set() };
+  const TOTAL = 4;
+
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    const isOpen = card.classList.contains('open');
+    document.querySelectorAll('.mission-card').forEach(c => c.classList.remove('open'));
+    if (!isOpen) card.classList.add('open');
+  }
+
+  function markDone(id, e) {
+    e.stopPropagation();
+    const card = document.getElementById(id);
+    const num = id.replace('m', '');
+
+    if (STATE.completed.has(id)) {
+      STATE.completed.delete(id);
+      card.classList.remove('done');
+      document.getElementById('xp' + num).classList.remove('earned');
+      document.getElementById('xp' + num + 'b').classList.remove('earned');
+    } else {
+      STATE.completed.add(id);
+      card.classList.add('done');
+      card.classList.remove('open');
+      document.getElementById('xp' + num).classList.add('earned');
+      document.getElementById('xp' + num + 'b').classList.add('earned');
+    }
+
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const count = STATE.completed.size;
+    document.getElementById('progressFill').style.width = (count / TOTAL * 100) + '%';
+    document.getElementById('progressCount').textContent = count + ' / ' + TOTAL;
+  }
+
+  function toggleExample(id, btn) {
+    event.stopPropagation();
+    const panel = document.getElementById(id);
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+    btn.querySelector('.etoggle-icon').textContent = isOpen ? '+' : '\u00d7';
+  }
+
+  // Open first card by default
+  document.getElementById('m1').classList.add('open');
+</script>
+</body>
+</html>

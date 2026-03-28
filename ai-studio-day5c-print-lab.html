@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Studio — Day 5.3: Print Lab</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --bg: #0a0a10;
+    --surface: #131320;
+    --surface2: #1c1c2e;
+    --border: #282842;
+    --accent: #f06030;
+    --accent2: #7c5cf0;
+    --accent3: #22d3a8;
+    --text: #e8e8f2;
+    --text-muted: #7a7a9e;
+    --text-dim: #464868;
+    --gold: #f0c030;
+    --forge: #e8822a;
+    --session-a: #e8822a;
+    --session-b: #7c5cf0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(240,96,48,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 90%, rgba(124,92,240,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(232,130,42,0.02) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  header { margin-bottom: 48px; }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--forge);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--forge);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 8vw, 68px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    color: var(--text);
+  }
+
+  h1 span { color: var(--forge); }
+
+  h1 .day {
+    font-size: 0.38em;
+    font-weight: 600;
+    color: var(--accent2);
+    letter-spacing: 0;
+    display: block;
+    margin-top: 8px;
+  }
+
+  .subtitle {
+    margin-top: 20px;
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 560px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .subtitle strong { color: var(--text); font-weight: 500; }
+
+  .recap-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 36px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .recap-icon { font-size: 20px; line-height: 1; margin-top: 2px; }
+
+  .recap-content {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .recap-content strong { color: var(--accent3); font-weight: 500; }
+
+  .recap-pips { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+
+  .recap-pip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    background: rgba(34,211,168,0.08);
+    border: 1px solid rgba(34,211,168,0.25);
+    color: var(--accent3);
+  }
+
+  .rule-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .rule-icon { font-size: 28px; line-height: 1; margin-top: 2px; }
+
+  .rule-text h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .rule-text p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .session-header {
+    margin: 40px 0 8px;
+    padding: 14px 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .session-header.session-a {
+    background: rgba(232,130,42,0.06);
+    border: 1px solid rgba(232,130,42,0.2);
+  }
+
+  .session-header.session-b {
+    background: rgba(124,92,240,0.06);
+    border: 1px solid rgba(124,92,240,0.2);
+  }
+
+  .session-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 500;
+  }
+
+  .session-a .session-badge {
+    background: rgba(232,130,42,0.15);
+    color: var(--session-a);
+  }
+
+  .session-b .session-badge {
+    background: rgba(124,92,240,0.15);
+    color: var(--session-b);
+  }
+
+  .session-info {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  .session-info strong { font-weight: 500; }
+  .session-a .session-info strong { color: var(--session-a); }
+  .session-b .session-info strong { color: var(--session-b); }
+
+  .progress-area {
+    margin-bottom: 40px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .progress-track {
+    flex: 1; height: 5px;
+    background: var(--surface2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--forge), var(--accent2));
+    border-radius: 99px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+
+  .progress-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--forge);
+    white-space: nowrap;
+    min-width: 50px;
+    text-align: right;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 36px 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .mission-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 0;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .mission-card.done { opacity: 0.55; border-color: var(--border); }
+  .mission-card.done .card-number { background: var(--accent3); color: var(--bg); }
+  .mission-card.done .card-number::after { content: '\2713'; }
+
+  .card-header {
+    display: flex;
+    align-items: stretch;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .card-header:hover { background: var(--surface2); }
+
+  .card-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    width: 64px; min-width: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+    color: var(--text-muted);
+    border-right: 1px solid var(--border);
+  }
+
+  .card-meta { padding: 18px 20px; flex: 1; }
+
+  .card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .card-badge {
+    display: inline-block;
+    margin-top: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 99px;
+    border: 1px solid;
+  }
+
+  .badge-warm { color: var(--gold); border-color: var(--gold); background: rgba(240,192,64,0.08); }
+  .badge-cool { color: var(--accent3); border-color: var(--accent3); background: rgba(45,212,191,0.08); }
+  .badge-forge { color: var(--forge); border-color: var(--forge); background: rgba(232,130,42,0.08); }
+
+  .card-chevron {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    color: var(--text-dim);
+    font-size: 20px;
+    transition: transform 0.3s, color 0.2s;
+  }
+
+  .mission-card.open .card-chevron { transform: rotate(90deg); color: var(--forge); }
+
+  .card-body {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 24px 24px 20px;
+    animation: slideDown 0.25s ease;
+  }
+
+  .mission-card.open .card-body { display: block; }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-body p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 16px;
+    font-weight: 300;
+  }
+
+  .card-body strong { color: var(--text); font-weight: 500; }
+
+  .say-box {
+    background: var(--bg);
+    border: 1px solid rgba(124,92,191,0.3);
+    border-left: 3px solid var(--accent2);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 14px 0;
+  }
+
+  .say-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .say-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  .say-note {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 10px;
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  .prompt-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--forge);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 12px 0;
+  }
+
+  .prompt-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--forge);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .prompt-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .steps {
+    list-style: none;
+    counter-reset: step;
+    margin: 16px 0;
+  }
+
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 14px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .steps li::before {
+    content: counter(step);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    width: 24px; min-width: 24px; height: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--forge);
+    margin-top: 1px;
+  }
+
+  .tip-box {
+    background: rgba(124,92,191,0.08);
+    border: 1px solid rgba(124,92,191,0.3);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 16px 0;
+    display: flex;
+    gap: 12px;
+  }
+
+  .tip-box.tip-green {
+    background: rgba(45,212,191,0.06);
+    border-color: rgba(45,212,191,0.25);
+  }
+
+  .tip-box.tip-forge {
+    background: rgba(232,130,42,0.06);
+    border-color: rgba(232,130,42,0.25);
+  }
+
+  .tip-icon { font-size: 16px; line-height: 1; margin-top: 1px; }
+
+  .tip-content {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .tip-content strong { color: var(--accent2); font-weight: 500; }
+  .tip-green .tip-content strong { color: var(--accent3); }
+  .tip-forge .tip-content strong { color: var(--forge); }
+
+  .watch-list { list-style: none; margin: 14px 0; }
+
+  .watch-list li {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .watch-list li .watch-icon {
+    font-size: 14px;
+    margin-top: 3px;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  /* ---- ORIENTATION CARDS ---- */
+  .orient-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin: 16px 0;
+  }
+
+  @media (max-width: 600px) { .orient-grid { grid-template-columns: 1fr; } }
+
+  .orient-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+
+  .orient-card .orient-piece {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .orient-card .orient-how {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--forge);
+    margin-bottom: 6px;
+  }
+
+  .orient-card .orient-why {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  /* ---- SETTINGS TABLE ---- */
+  .settings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+
+  .settings-table th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .settings-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(40,40,66,0.5);
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  .settings-table td:first-child {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .settings-table tr:last-child td { border-bottom: none; }
+
+  /* ---- EXAMPLE PANELS ---- */
+  .example-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px 0 0;
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px dashed var(--accent2);
+    border-radius: 8px;
+    color: var(--accent2);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .example-toggle:hover { background: rgba(124,92,191,0.1); }
+  .example-toggle .etoggle-icon { transition: transform 0.3s; font-style: normal; font-size: 14px; line-height: 1; }
+  .example-toggle.open .etoggle-icon { transform: rotate(45deg); }
+
+  .example-panel {
+    display: none;
+    margin-top: 12px;
+    border: 1px solid rgba(124,92,191,0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    animation: slideDown 0.25s ease;
+  }
+
+  .example-panel.open { display: block; }
+
+  .example-panel-header {
+    background: rgba(124,92,191,0.12);
+    padding: 10px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent2);
+    text-transform: uppercase;
+  }
+
+  .example-panel-body {
+    padding: 16px;
+    background: rgba(124,92,191,0.05);
+  }
+
+  .example-panel-body p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin-bottom: 10px;
+    font-weight: 300;
+  }
+
+  .example-panel-body p:last-child { margin-bottom: 0; }
+
+  .ex-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 8px 0;
+  }
+
+  .ex-card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .ex-card-label.neutral { color: var(--gold); }
+  .ex-card-label.strong { color: var(--accent3); }
+  .ex-card-label.forge { color: var(--forge); }
+
+  .ex-card p {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.6;
+    margin: 0 !important;
+  }
+
+  .ex-card.highlight-forge {
+    border-color: rgba(232,130,42,0.4);
+    background: rgba(232,130,42,0.04);
+  }
+
+  .complete-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid var(--accent3);
+    border-radius: 8px;
+    color: var(--accent3);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .complete-btn:hover { background: var(--accent3); color: var(--bg); }
+  .mission-card.done .complete-btn { border-color: var(--text-dim); color: var(--text-dim); }
+
+  .tool-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+
+  .chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 99px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  .xp-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+  .xp-pip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    transition: all 0.3s;
+  }
+
+  .xp-pip.earned {
+    background: rgba(240,192,64,0.1);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .break-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 24px 0;
+    text-align: center;
+  }
+
+  .break-card p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .break-card strong { color: var(--text); font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">// the forge &mdash; part 3</div>
+    <h1><span>Print</span> Lab<span class="day">Day 5.3 &mdash; From Code to Steel</span></h1>
+    <p class="subtitle">Your katana exists in code. Three STL files, validated joints, everything checked. Now it becomes <strong>a physical object you can hold.</strong></p>
+  </header>
+
+  <!-- RECAP -->
+  <div class="recap-card">
+    <div class="recap-icon">&#128203;</div>
+    <div class="recap-content">
+      <strong>Last session:</strong> You studied real katana anatomy, built an OpenSCAD model with a tang-through-guard joint, customized the design, and exported three STL files. The engineering is done. Now we print.
+      <div class="recap-pips">
+        <span class="recap-pip">Real-World Research &#10003;</span>
+        <span class="recap-pip">Joint Engineering &#10003;</span>
+        <span class="recap-pip">Digital Validation &#10003;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE RULE -->
+  <div class="rule-card">
+    <div class="rule-icon">&#128296;</div>
+    <div class="rule-text">
+      <h3>The Printer's Rule</h3>
+      <p><strong style="color:var(--forge)">Test the joint before the full print.</strong> A full katana takes over an hour to print. A joint test piece takes 15 minutes. If the tang doesn't fit the socket, you want to find out in 15 minutes, not 90. Always test the hard part first.</p>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-area">
+    <span class="progress-label">MISSIONS COMPLETE</span>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <span class="progress-count" id="progressCount">0 / 3</span>
+  </div>
+
+  <!-- ============== SESSION A ============== -->
+  <div class="session-header session-a">
+    <span class="session-badge">Session A</span>
+    <span class="session-info"><strong>Prepare &amp; Test</strong> &mdash; ~35 min (includes 15 min test print)</span>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 1: LOAD & ORIENT -->
+  <!-- =============================== -->
+  <div class="section-label">Phase 01 &mdash; Prepare</div>
+
+  <div class="mission-card" id="m1">
+    <div class="card-header" onclick="toggleCard('m1')">
+      <div class="card-number">01</div>
+      <div class="card-meta">
+        <div class="card-tag">Setup</div>
+        <div class="card-title">Load &amp; Orient</div>
+        <span class="card-badge badge-cool">15 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Every 3D print starts with a question: <strong>how should this piece sit on the print bed?</strong> The answer matters more than any other setting. A piece oriented wrong will warp, snap, or need supports that ruin the surface.</p>
+
+      <p>Ask Claude Code to figure out the right orientation for each piece:</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">I'm ready to print my katana. I have three STL files: katana-blade.stl, katana-guard.stl, katana-handle.stl. My printer is a Qidi Q1 Pro (245x245x245mm build volume). For each piece, tell me:<br><br>1. How should it sit on the print bed? (which face down, which direction)<br>2. What slicer settings should I use? (layer height, wall count, infill %, whether I need a brim or supports)<br>3. Why that orientation? (what goes wrong if I orient it differently)<br><br>Give me step-by-step instructions for setting each one up in Qidi Studio.</div>
+      </div>
+
+      <p>Here's what Claude Code should tell you &mdash; and why each piece is different:</p>
+
+      <div class="orient-grid">
+        <div class="orient-card">
+          <div class="orient-piece" style="color: #b0b0cc;">Blade</div>
+          <div class="orient-how">Flat on its broad face</div>
+          <div class="orient-why">The blade is long and thin. Lying flat means layers stack through the thin dimension &mdash; much stronger against snapping. Add a 5mm brim to prevent the edges from curling up.</div>
+        </div>
+        <div class="orient-card">
+          <div class="orient-piece" style="color: #cc9944;">Guard</div>
+          <div class="orient-how">Flat on the disc face</div>
+          <div class="orient-why">It's a flat disc &mdash; just lay it down. Only ~30 layers tall. The tang hole prints straight through. Easiest piece.</div>
+        </div>
+        <div class="orient-card">
+          <div class="orient-piece" style="color: #8B5E3C;">Handle</div>
+          <div class="orient-how">Standing upright, socket facing up</div>
+          <div class="orient-why">The socket (blind hole on top) prints cleanly this way &mdash; no supports needed. The octagonal base sits flat on the bed.</div>
+        </div>
+      </div>
+
+      <p>Key slicer settings for the katana:</p>
+
+      <table class="settings-table">
+        <tr>
+          <th>Setting</th>
+          <th>Blade</th>
+          <th>Guard</th>
+          <th>Handle</th>
+        </tr>
+        <tr>
+          <td>Layer height</td>
+          <td>0.15mm</td>
+          <td>0.20mm</td>
+          <td>0.20mm</td>
+        </tr>
+        <tr>
+          <td>Walls</td>
+          <td>4</td>
+          <td>3</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td>Infill</td>
+          <td>80%</td>
+          <td>40%</td>
+          <td>40%</td>
+        </tr>
+        <tr>
+          <td>Brim</td>
+          <td>5mm</td>
+          <td>No</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Supports</td>
+          <td>None</td>
+          <td>None</td>
+          <td>None</td>
+        </tr>
+        <tr>
+          <td>Est. time</td>
+          <td>~45 min</td>
+          <td>~12 min</td>
+          <td>~30 min</td>
+        </tr>
+      </table>
+
+      <div class="tip-box tip-forge">
+        <div class="tip-icon">&#128161;</div>
+        <div class="tip-content"><strong>Why 4 walls on the blade?</strong> The blade is only ~5mm thick. With 4 walls at 0.4mm each, that's 1.6mm of solid wall per side &mdash; 3.2mm total out of 5mm. The blade is almost entirely solid. That's what makes it strong enough to handle without snapping.</div>
+      </div>
+
+      <div class="tip-box tip-green">
+        <div class="tip-icon">&#128161;</div>
+        <div class="tip-content"><strong>Why 0.15mm layers on the blade?</strong> Finer layers give smoother surfaces on the curved sori. The guard and handle don't need this &mdash; 0.20mm is fine for flat surfaces and cylinders.</div>
+      </div>
+
+      <ol class="steps">
+        <li>Open Qidi Studio. Load each STL file.</li>
+        <li>Orient each piece using Claude Code's instructions.</li>
+        <li>Set the slicer settings for each piece (or ask Claude Code to set up a profile).</li>
+        <li>Don't print yet &mdash; you're testing the joint first.</li>
+      </ol>
+
+      <div class="tool-chips">
+        <span class="chip">Claude Code</span>
+        <span class="chip">Qidi Studio</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m1', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 2: TEST THE JOINT -->
+  <!-- =============================== -->
+  <div class="section-label">Phase 02 &mdash; Test</div>
+
+  <div class="mission-card" id="m2">
+    <div class="card-header" onclick="toggleCard('m2')">
+      <div class="card-number">02</div>
+      <div class="card-meta">
+        <div class="card-tag">Print &amp; Test</div>
+        <div class="card-title">Test the Joint</div>
+        <span class="card-badge badge-warm">20 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>This is the mission that saves you from wasting an hour. You'll print <strong>just the joint area</strong> &mdash; a tiny section of each piece where they connect. It takes about 15 minutes to print. If the tang doesn't fit the slot, you find out now.</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">I need a joint test print before I commit to the full katana. Take my katana model and export three small test pieces: the last 20mm of the blade (including the full tang), the guard, and the top 20mm of the handle (including the socket). Export these as separate STL files I can load into the slicer. Use the same slicer settings as the full pieces.</div>
+      </div>
+
+      <ol class="steps">
+        <li>Load the test pieces into Qidi Studio. Same orientations as the full pieces.</li>
+        <li>Slice and print. All three test pieces should fit on the bed at once &mdash; total print time ~15 minutes.</li>
+        <li>When the print finishes, remove the pieces and try assembling them by hand.</li>
+      </ol>
+
+      <p><strong>The moment of truth.</strong> Try sliding the tang through the guard slot and into the handle socket. What happens?</p>
+
+      <ul class="watch-list">
+        <li><span class="watch-icon">&#9989;</span> <strong>Slides in with a little resistance, holds snug:</strong> Perfect. Your clearances are right. Print the full pieces.</li>
+        <li><span class="watch-icon">&#128296;</span> <strong>Too tight, won't go in:</strong> Sand the tang lightly with 150-grit sandpaper. Or tell Claude Code: "The tang is too tight for the slot. Increase clearance by 0.1mm per side, re-export, and I'll reprint the test."</li>
+        <li><span class="watch-icon">&#128260;</span> <strong>Too loose, rattles around:</strong> Tell Claude Code: "The tang is too loose in the slot. Decrease clearance by 0.1mm per side, re-export, and I'll reprint the test." Or: wrap one layer of masking tape around the tang for a quick fix.</li>
+        <li><span class="watch-icon">&#10060;</span> <strong>Shapes don't match at all:</strong> Something went wrong in the export. Tell Claude Code exactly what you see. Show it a photo if you can.</li>
+      </ul>
+
+      <div class="tip-box tip-forge">
+        <div class="tip-icon">&#9888;&#65039;</div>
+        <div class="tip-content"><strong>Elephant's foot.</strong> The very first layer of a print often squishes out slightly wider than designed. This can make the guard's tang hole too tight at the bottom. If the tang goes in most of the way but catches at one end, this is probably why. Light sanding or a needle file fixes it in seconds.</div>
+      </div>
+
+      <div class="tip-box tip-green">
+        <div class="tip-icon">&#127942;</div>
+        <div class="tip-content"><strong>15 minutes to validate what took an hour to design.</strong> This is the engineering discipline that separates a successful build from a frustrating one. Professional engineers call this a "fit check" &mdash; they do it every time, even on parts they've built before.</div>
+      </div>
+
+      <div class="tool-chips">
+        <span class="chip">Qidi Studio</span>
+        <span class="chip">Qidi Q1 Pro</span>
+        <span class="chip">Sandpaper (if needed)</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m2', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- ============== BREAK ============== -->
+  <div class="break-card">
+    <p>&#9989; <strong>Joint test passed?</strong> Take a break. Session B is the full print &mdash; about 90 minutes of print time. You'll start it, then go do something else while the printer works.</p>
+  </div>
+
+  <!-- ============== SESSION B ============== -->
+  <div class="session-header session-b">
+    <span class="session-badge">Session B</span>
+    <span class="session-info"><strong>Print &amp; Assemble</strong> &mdash; ~20 min active + print time</span>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 3: THE FULL PRINT -->
+  <!-- =============================== -->
+  <div class="section-label">Phase 03 &mdash; Forge</div>
+
+  <div class="mission-card" id="m3">
+    <div class="card-header" onclick="toggleCard('m3')">
+      <div class="card-number">03</div>
+      <div class="card-meta">
+        <div class="card-tag">Print &amp; Assemble</div>
+        <div class="card-title">Forge the Katana</div>
+        <span class="card-badge badge-forge">~90 min print + 10 min assembly</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Your joint test passed. The clearances work. Now print the real pieces.</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">Joint test passed &mdash; the tang fits through the guard and into the handle. I'm ready to print the full pieces. Remind me of the slicer settings and orientation for each piece. Should I print them one at a time or all at once?</div>
+        <div class="say-note">Printing one at a time is safer (less stringing, less risk of a failure ruining all pieces). But all three fit on the bed at once if you want to save time.</div>
+      </div>
+
+      <p><strong>Print order recommendation:</strong></p>
+
+      <ol class="steps">
+        <li><strong>Guard first</strong> (~12 min). It's the fastest and simplest. Quick win while you wait for the bigger pieces.</li>
+        <li><strong>Handle second</strong> (~30 min). Medium print, straightforward.</li>
+        <li><strong>Blade last</strong> (~45 min). Longest print, finest layers. Keep an eye on it for the first few layers &mdash; if the brim sticks well, you're good.</li>
+      </ol>
+
+      <p>While the printer runs, you wait. That's normal &mdash; 3D printing is a slow craft. Come back when it's done.</p>
+
+      <p><strong>Assembly.</strong></p>
+
+      <p>All three pieces printed. Now you put them together.</p>
+
+      <ol class="steps">
+        <li><strong>Clean up the blade.</strong> If you used a brim, peel or cut it off. A fingernail works for PLA. Trim any rough edges with a hobby knife.</li>
+        <li><strong>Test-fit the tang through the guard.</strong> It should slide through the slot just like the test piece. If it catches, light sanding on the tang.</li>
+        <li><strong>Slide the tang into the handle socket.</strong> Push it all the way in until the guard sits snug between the blade base and the handle top.</li>
+        <li><strong>Check the fit.</strong> Hold the handle and give it a gentle shake. Does the blade wobble? If yes, a drop of super glue in the socket will lock it. If the fit is snug, you might not need glue at all.</li>
+      </ol>
+
+      <button class="example-toggle" onclick="toggleExample('ex1', this)">
+        <i class="etoggle-icon">+</i> TROUBLESHOOTING ASSEMBLY
+      </button>
+      <div class="example-panel" id="ex1">
+        <div class="example-panel-header">// common assembly issues</div>
+        <div class="example-panel-body">
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Tang too tight</div>
+            <p>Wrap the tang with 150-grit sandpaper and rotate back and forth. Remove a tiny bit at a time. Test after every 10 seconds of sanding. You're only removing fractions of a millimeter.</p>
+          </div>
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Tang too loose</div>
+            <p>Wrap one layer of masking tape around the tang where it sits inside the guard or handle. Or: a small drop of medium super glue (CA glue) in the socket before inserting. Hold for 60 seconds.</p>
+          </div>
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Guard hole tight on one side</div>
+            <p>Elephant's foot &mdash; the first layer squished wider. Use a small needle file or folded sandpaper to open up the tight edge. Only file the entry side.</p>
+          </div>
+          <div class="ex-card">
+            <div class="ex-card-label neutral">Blade tip broke</div>
+            <p>Thin tips are fragile in PLA. If it snapped, you can glue it back with super glue, or tell Claude Code to make the tip slightly thicker (at least 2mm) and reprint just the blade.</p>
+          </div>
+          <div class="ex-card highlight-forge">
+            <div class="ex-card-label forge">The permanent fix</div>
+            <p>If the fit is good but you want it locked forever: one drop of medium CA (super glue) in the handle socket, slide the tang in, hold 60 seconds. Do NOT glue the guard &mdash; friction fit only, so you can take it apart if needed.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box tip-green">
+        <div class="tip-icon">&#9876;&#65039;</div>
+        <div class="tip-content"><strong>You're holding it.</strong> You directed an AI to research real katana anatomy. You designed a blade with a proper sori curve and shinogi cross-section. You engineered a tang-through-guard joint with precise clearances. You validated it digitally, tested it physically, and printed three pieces that snap together. This started as a text prompt. Now it's in your hands.</div>
+      </div>
+
+      <div class="tool-chips">
+        <span class="chip">Qidi Studio</span>
+        <span class="chip">Qidi Q1 Pro</span>
+        <span class="chip">Sandpaper</span>
+        <span class="chip">Super glue (optional)</span>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m3', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- XP DISPLAY -->
+  <!-- =============================== -->
+  <div style="margin-top: 48px; padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px;">
+    <div class="eyebrow" style="margin-bottom: 12px;">// skills earned today</div>
+    <div class="xp-row" id="xpRow">
+      <span class="xp-pip" id="xp1">Print Orientation</span>
+      <span class="xp-pip" id="xp2">Physical Fit Testing</span>
+      <span class="xp-pip" id="xp3">Assembly</span>
+    </div>
+    <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);">
+      <div style="font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px;">// total skills (all sessions)</div>
+      <div class="xp-row">
+        <span class="xp-pip earned">Storytelling</span>
+        <span class="xp-pip earned">Prompt Craft</span>
+        <span class="xp-pip earned">Shot Direction</span>
+        <span class="xp-pip earned">Critical Eye</span>
+        <span class="xp-pip earned">Creative Direction</span>
+        <span class="xp-pip earned">Topic Research</span>
+        <span class="xp-pip earned">Full-Project Direction</span>
+        <span class="xp-pip earned">Creative Polish</span>
+        <span class="xp-pip earned">Game Design</span>
+        <span class="xp-pip earned">Iterative Dev</span>
+        <span class="xp-pip earned">Art Direction</span>
+        <span class="xp-pip earned">Playtesting</span>
+        <span class="xp-pip earned">Technical Research</span>
+        <span class="xp-pip earned">Engineering Constraints</span>
+        <span class="xp-pip earned">3D Modeling</span>
+        <span class="xp-pip earned">Physical Prototyping</span>
+        <span class="xp-pip earned">Real-World Research</span>
+        <span class="xp-pip earned">Joint Engineering</span>
+        <span class="xp-pip earned">Digital Validation</span>
+        <span class="xp-pip" id="xp1b">Print Orientation</span>
+        <span class="xp-pip" id="xp2b">Physical Fit Testing</span>
+        <span class="xp-pip" id="xp3b">Assembly</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- THE END -->
+  <!-- =============================== -->
+  <div style="margin-top: 24px; padding: 20px 24px; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--forge); border-radius: 12px;">
+    <div style="font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px;">The Forge &mdash; Complete</div>
+    <div style="font-size: 13px; color: var(--text-muted); line-height: 1.7; font-weight: 300;">
+      <strong style="color: var(--forge);">Day 5 started with a text description.</strong> You went from words to 3D model to validated engineering to physical object. Three pieces, one joint design, zero guessing. That's the full pipeline &mdash; director to engineer to maker. The next time someone says "I wish I had a ___," you know exactly how to build it.
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const STATE = { completed: new Set() };
+  const TOTAL = 3;
+
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    const isOpen = card.classList.contains('open');
+    document.querySelectorAll('.mission-card').forEach(c => c.classList.remove('open'));
+    if (!isOpen) card.classList.add('open');
+  }
+
+  function markDone(id, e) {
+    e.stopPropagation();
+    const card = document.getElementById(id);
+    const num = id.replace('m', '');
+
+    if (STATE.completed.has(id)) {
+      STATE.completed.delete(id);
+      card.classList.remove('done');
+      document.getElementById('xp' + num).classList.remove('earned');
+      document.getElementById('xp' + num + 'b').classList.remove('earned');
+    } else {
+      STATE.completed.add(id);
+      card.classList.add('done');
+      card.classList.remove('open');
+      document.getElementById('xp' + num).classList.add('earned');
+      document.getElementById('xp' + num + 'b').classList.add('earned');
+    }
+
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const count = STATE.completed.size;
+    document.getElementById('progressFill').style.width = (count / TOTAL * 100) + '%';
+    document.getElementById('progressCount').textContent = count + ' / ' + TOTAL;
+  }
+
+  function toggleExample(id, btn) {
+    event.stopPropagation();
+    const panel = document.getElementById(id);
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+    btn.querySelector('.etoggle-icon').textContent = isOpen ? '+' : '\u00d7';
+  }
+
+  document.getElementById('m1').classList.add('open');
+</script>
+</body>
+</html>
