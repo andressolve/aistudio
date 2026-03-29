@@ -458,13 +458,14 @@
         <div class="tip-content"><strong>Look at the bottom.</strong> Flip the model upside down in the viewer. Is there a flat base? If the bottom is open or uneven, add "sitting on a solid display base" to your next prompt. You need a flat bottom for 3D printing.</div>
       </div>
 
-      <p>If the shape looks good, tell Claude Code to refine it:</p>
+      <p><strong>If the shape looks good</strong> &mdash; tell Claude Code to refine it:</p>
 
       <div class="say-box">
         <div class="say-label">&#128172; Say this to Claude Code</div>
         <div class="say-text">The shape looks good. Refine this model for better quality and textures.</div>
-        <div class="say-note">Only refine if you're happy with the shape. If it's wrong, skip to Mission 2 and rewrite your description instead &mdash; don't waste a refine on a bad shape.</div>
       </div>
+
+      <p><strong>If the shape is wrong</strong> &mdash; don't refine it. Skip straight to Mission 2. Claude Code will help you figure out what to change in your prompt and rewrite it for a better result. Don't spend a refine on a shape you're not happy with.</p>
 
       <ol class="steps">
         <li>Pick what you want to summon. Write the description on paper first &mdash; every detail matters.</li>
@@ -508,7 +509,7 @@
 
       <div class="say-box">
         <div class="say-label">&#128172; Say this to Claude Code</div>
-        <div class="say-text">Look at my model and the prompt I used to generate it. I want to 3D print this on an FDM printer (Qidi Q1 Pro, PLA, 0.4mm nozzle). Tell me:<br><br>1. What parts of this model will be hard to print? (thin features, overhangs, floating parts, no flat base)<br>2. Is the overall shape printable, or does it need a different pose/composition?<br>3. Write me an improved prompt that keeps my idea but makes it print-friendly. Use everything you know about FDM printing constraints and Meshy prompt best practices.<br><br>My original prompt was: "[YOUR PROMPT]"</div>
+        <div class="say-text">Look at my model and the prompt I used to generate it. I want to 3D print this on an FDM printer (Qidi Q1 Pro, PLA, 0.4mm nozzle). Before you answer, look up Meshy prompt best practices for 3D-printable models and FDM printing constraints for this kind of object. Then tell me:<br><br>1. What parts of this model will be hard to print? (thin features, overhangs, floating parts, no flat base, hollow shell)<br>2. Is the overall shape printable, or does it need a different pose/composition?<br>3. Write me an improved prompt that keeps my idea but makes it print-friendly. Use what you learned about Meshy prompting and FDM constraints.<br><br>My original prompt was: "[YOUR PROMPT]"</div>
       </div>
 
       <p>Claude Code will come back with a <strong>print-optimized rewrite</strong> of your prompt. It might suggest changes like:</p>
