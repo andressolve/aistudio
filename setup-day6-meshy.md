@@ -66,26 +66,43 @@ If missing, install from https://nodejs.org/.
 
 ---
 
+## 3b. Install admesh (mesh repair)
+
+About half of Meshy models need mesh repair before printing. `admesh` is a command-line tool Claude Code will use automatically.
+
+```bash
+brew install admesh    # macOS
+admesh --version       # verify
+```
+
+If brew isn't available: `sudo apt install admesh` (Linux) or download from https://github.com/admesh/admesh.
+
+The Day 6 activity has Claude Code run: `admesh -n -d -v -u -f -b repaired.stl original.stl` which fixes normals, fills holes, and removes floating fragments.
+
+---
+
 ## 4. Quick Smoke Test
 
 Run this sequence to confirm the full pipeline works:
 
 1. **Generate a test model:**
-   > "Use Meshy to generate a 3D model of a small cube with rounded edges. Use preview mode."
+   > "Use Meshy to generate a 3D model of a small cube with rounded edges. Use these settings: should_remesh true, topology triangle, origin at bottom."
 
 2. **Wait for it** (~60 seconds). Claude Code should poll until complete.
 
 3. **Remesh to STL:**
-   > "Remesh the result to STL format, target 30000 polygons, 5 cm tall."
+   > "Remesh the result to STL format, target 50000 polygons, 5 cm tall."
 
    Note: Meshy's `resize_height` parameter is in **meters** (so 5 cm = 0.05). Claude Code should handle this conversion, but if using curl directly, pass `"resize_height": 0.05`.
 
 4. **Download the STL** to a known location.
 
-5. **Verify the file:**
-   > "Analyze this STL file — is it watertight? How many triangles?"
+5. **Repair and verify:**
+   > "Run admesh on the STL to fix any geometry issues. Then check: is it watertight? How many triangles? Is it solid or a thin shell?"
 
-If all five steps work, Day 6 is ready to go.
+6. **Verify admesh works:** If admesh isn't installed, Claude Code should install it with `brew install admesh`.
+
+If all steps work, Day 6 is ready to go.
 
 ---
 

@@ -419,11 +419,28 @@
         </div>
       </div>
 
+      <p><strong>Your description must include these phrases</strong> or something like them. This isn't optional &mdash; without them, the AI generates models that look great on screen but can't be printed:</p>
+
+      <div class="prompt-box">
+        <div class="prompt-label">Print-ready checklist &mdash; add to every prompt</div>
+        <div class="prompt-text">&#9745; <strong>"sitting on a solid [stone/metal/wood] base"</strong> &mdash; gives the model a flat bottom<br>&#9745; <strong>"single solid piece"</strong> &mdash; keeps everything connected, no floating parts<br>&#9745; <strong>"thick sturdy proportions"</strong> &mdash; prevents thin features that snap<br>&#9745; <strong>"wings/arms close to body"</strong> &mdash; reduces overhangs that need supports</div>
+      </div>
+
+      <div class="tip-box">
+        <div class="tip-icon">&#9888;&#65039;</div>
+        <div class="tip-content"><strong>Words to AVOID in your prompt:</strong> smoke, fire, magic energy, glitter, sparks, fog, aura, glow effects. These create tiny floating mesh fragments that confuse the printer. Describe physical objects only.</div>
+      </div>
+
+      <div class="tip-box tip-forge">
+        <div class="tip-icon">&#128161;</div>
+        <div class="tip-content"><strong>Screen vs. print.</strong> The model on screen will have color, texture, and fine detail. Your 3D print won't &mdash; FDM printing can only show shape, not color. The print will look like a small unpainted figurine or statue. That's normal and expected. The shape is what matters.</div>
+      </div>
+
       <p>Ready? Give your description to Claude Code:</p>
 
       <div class="say-box">
         <div class="say-label">&#128172; Say this to Claude Code</div>
-        <div class="say-text">Use Meshy to generate a 3D model preview from this description:<br><br>"[YOUR DESCRIPTION]"<br><br>When it's done, show me the preview image. Then download the 3D model and create an HTML viewer I can open in my browser to spin it around.</div>
+        <div class="say-text">Use Meshy to generate a 3D model preview from this description. Use these Meshy settings: should_remesh true, topology triangle, origin at bottom.<br><br>"[YOUR DESCRIPTION]"<br><br>When it's done, show me the preview image. Then download the 3D model and create an HTML viewer I can open in my browser to spin it around.</div>
         <div class="say-note">Replace [YOUR DESCRIPTION] with what you wrote on paper. Keep it under 500 characters &mdash; be dense with detail, not wordy. This is a preview &mdash; no textures yet, just the shape. You'll refine it later if the shape is right.</div>
       </div>
 
@@ -472,64 +489,77 @@
   <!-- =============================== -->
   <!-- MISSION 2: REFINE OR REROLL -->
   <!-- =============================== -->
-  <div class="section-label">Phase 02 &mdash; Iterate</div>
+  <div class="section-label">Phase 02 &mdash; Optimize for Print</div>
 
   <div class="mission-card" id="m2">
     <div class="card-header" onclick="toggleCard('m2')">
       <div class="card-number">02</div>
       <div class="card-meta">
-        <div class="card-tag">Iterate</div>
-        <div class="card-title">Refine or Reroll</div>
+        <div class="card-tag">Optimize</div>
+        <div class="card-title">Make It Printable</div>
         <span class="card-badge badge-cool">15 min</span>
       </div>
       <div class="card-chevron">&#8250;</div>
     </div>
     <div class="card-body">
-      <p>Look at your first model. What's right? What's missing? What surprised you?</p>
+      <p>Your model looks cool on screen. But <strong>looking cool and being printable are two different things.</strong> Spread wings, thin swords, floating details, hollow shells &mdash; the AI generates these because they look good in a viewer. Your printer will turn them into spaghetti.</p>
 
-      <p>Here's the thing about this AI: <strong>you cannot tweak.</strong> You can't say "make the horns bigger" or "add more detail to the left side." It generates from scratch every time. So iteration means <strong>rewriting your entire description</strong>, informed by what you learned from the first one.</p>
-
-      <p>This is a different skill than what you used in Days 4-5, where you changed one thing at a time. Here, you rewrite the whole brief. Keep what worked. Change what didn't. Add what was missing.</p>
-
-      <div class="prompt-box">
-        <div class="prompt-label">Before your second prompt</div>
-        <div class="prompt-text">Look at your first model and answer:<br><br>&#8594; What details appeared that you DID describe? (keep those words)<br>&#8594; What's missing that you FORGOT to describe? (add those words)<br>&#8594; What appeared that you DIDN'T want? (add a note: "no [thing]")<br>&#8594; Is the overall style right? (realistic, stylized, cartoon?)</div>
-      </div>
+      <p>This is where Claude Code becomes your <strong>print advisor.</strong> It knows what works on an FDM printer and what doesn't. Ask it to review your model and your prompt:</p>
 
       <div class="say-box">
         <div class="say-label">&#128172; Say this to Claude Code</div>
-        <div class="say-text">I want to try a new version. Use Meshy to generate a 3D model preview from this improved description:<br><br>"[YOUR IMPROVED DESCRIPTION]"<br><br>When it's done, show me the preview and create a viewer. I want to compare this one with my first version.</div>
+        <div class="say-text">Look at my model and the prompt I used to generate it. I want to 3D print this on an FDM printer (Qidi Q1 Pro, PLA, 0.4mm nozzle). Tell me:<br><br>1. What parts of this model will be hard to print? (thin features, overhangs, floating parts, no flat base)<br>2. Is the overall shape printable, or does it need a different pose/composition?<br>3. Write me an improved prompt that keeps my idea but makes it print-friendly. Use everything you know about FDM printing constraints and Meshy prompt best practices.<br><br>My original prompt was: "[YOUR PROMPT]"</div>
       </div>
+
+      <p>Claude Code will come back with a <strong>print-optimized rewrite</strong> of your prompt. It might suggest changes like:</p>
+
+      <ul class="watch-list">
+        <li><span class="watch-icon">&#9876;&#65039;</span> <strong>Pose changes:</strong> "Dragon with wings spread" becomes "dragon coiled with wings tucked tight against its body" &mdash; same dragon, printable pose.</li>
+        <li><span class="watch-icon">&#128296;</span> <strong>Structure changes:</strong> "Floating on a cloud" becomes "perched on a thick rocky base" &mdash; same concept, flat bottom.</li>
+        <li><span class="watch-icon">&#128207;</span> <strong>Proportion changes:</strong> "Thin rapier sword" becomes "broad heavy battle axe on a display stand" &mdash; related idea, printable shape.</li>
+        <li><span class="watch-icon">&#128161;</span> <strong>Detail changes:</strong> "Intricate lace wings" becomes "thick leathery bat wings" &mdash; same feature, thick enough to print.</li>
+      </ul>
+
+      <p><strong>You decide.</strong> Claude Code suggests &mdash; you approve, modify, or override. It's still your design. But now you're designing for the real world, not just the screen.</p>
+
+      <p>If you like the rewritten prompt, generate a new preview:</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">Generate a new preview with the print-optimized prompt. Same Meshy settings as before. When it's done, show me both versions side by side &mdash; I want to compare.</div>
+      </div>
+
+      <p>Compare the two versions. The print-optimized one might look less dramatic on screen &mdash; that's the trade-off. But it'll actually survive the printer. <strong>Pick your favorite and refine it.</strong></p>
 
       <div class="tip-box tip-green">
         <div class="tip-icon">&#128161;</div>
-        <div class="tip-content"><strong>If your first model is exactly what you wanted</strong> &mdash; skip this mission and go straight to Mission 3. But most of the time, the second prompt is better. Now you know what the AI does with your words.</div>
+        <div class="tip-content"><strong>If your first model is already print-friendly</strong> &mdash; thick base, chunky proportions, no floating parts, no extreme overhangs &mdash; skip the rewrite. Just tell Claude Code to refine the original and move to Mission 3.</div>
       </div>
 
       <button class="example-toggle" onclick="toggleExample('ex2', this)">
-        <i class="etoggle-icon">+</i> SEE EXAMPLE ITERATION
+        <i class="etoggle-icon">+</i> SEE EXAMPLE: PRINT ADVISOR IN ACTION
       </button>
       <div class="example-panel" id="ex2">
-        <div class="example-panel-header">// example &mdash; prompt iteration</div>
+        <div class="example-panel-header">// example &mdash; claude code as print advisor</div>
         <div class="example-panel-body">
           <div class="ex-card">
-            <div class="ex-card-label neutral">First prompt</div>
+            <div class="ex-card-label neutral">Original prompt</div>
             <p>"A dragon sitting on a rock, with wings and horns. Detailed scales. On a base."</p>
           </div>
-          <p><strong style="color:var(--text)">Result:</strong> Dragon is there, but the wings are spread wide (hard to print), the base is paper-thin, and it looks like a cartoon.</p>
+          <p><strong style="color:var(--text)">Claude Code's analysis:</strong> "The wings are spread wide &mdash; that's a 70-degree overhang, which means heavy supports that'll leave marks on the surface. The base is described as generic, so Meshy will make it paper-thin. The 'sitting' pose means the legs are thin contact points. Here's a rewrite:"</p>
           <div class="ex-card highlight">
-            <div class="ex-card-label strong">Second prompt (improved)</div>
+            <div class="ex-card-label strong">Print-optimized rewrite</div>
             <p>"A fierce dragon with wings folded tight against its body, coiled around a tall rocky outcrop. Heavy scales with scratches and battle scars. Two swept-back horns. Thick muscular tail wrapped around the base. Realistic style, dark and weathered. Solid single piece on a thick stone pedestal."</p>
           </div>
-          <p><strong style="color:var(--text)">What changed:</strong> "Wings folded tight" solves the printing overhang. "Coiled around a rocky outcrop" gives it structure instead of thin legs in the air. "Thick stone pedestal" replaces the flimsy base. Added "realistic style" to kill the cartoon look. "Solid single piece" for printability.</p>
+          <p><strong style="color:var(--text)">What changed and why:</strong> "Wings folded tight" eliminates the overhang. "Coiled around a rocky outcrop" gives the body structural support instead of thin legs. "Thick stone pedestal" guarantees a solid flat base. "Solid single piece" tells Meshy to keep everything connected. Same dragon, completely different printability.</p>
         </div>
       </div>
 
       <ol class="steps">
-        <li>Study your first model. Identify what worked and what's missing.</li>
-        <li>Rewrite the full description on paper. Keep the good parts, fix the rest.</li>
-        <li>Generate a new preview. Compare the two shapes in the viewers.</li>
-        <li>Pick your favorite. Refine that one for full quality.</li>
+        <li>Give Claude Code your prompt and ask it to review for printability.</li>
+        <li>Read its suggestions. Decide what to keep, what to change.</li>
+        <li>Generate a new preview with the print-optimized prompt.</li>
+        <li>Compare both versions. Pick your favorite. Refine it.</li>
       </ol>
 
       <div class="tool-chips">
@@ -560,7 +590,7 @@
       <div class="card-chevron">&#8250;</div>
     </div>
     <div class="card-body">
-      <p>Your model exists on screen. It has hundreds of thousands of tiny triangles &mdash; beautiful for rendering, but your printer and slicer need a leaner file. Claude Code is going to <strong>optimize it for the physical world</strong>: shrink the triangle count, scale it to the right size, fix any geometry problems, and set up your slicer.</p>
+      <p>Your model exists on screen. It has hundreds of thousands of tiny triangles, and about half of all Meshy models have geometry problems &mdash; holes, thin shells, floating fragments. Claude Code is going to <strong>optimize and repair it for the physical world</strong>: shrink the triangle count, scale it to the right size, fix the mesh, and set up your slicer.</p>
 
       <p>First, pick your size:</p>
 
@@ -585,16 +615,17 @@
 
       <div class="say-box">
         <div class="say-label">&#128172; Say this to Claude Code</div>
-        <div class="say-text">I want to 3D print my best model on my Qidi Q1 Pro. Here's what I need:<br><br>1. Use Meshy's remesh tool to convert it to STL format, reduce it to about 30,000 triangles, and scale it to [SIZE] cm tall. Set the origin to the bottom so it sits flat.<br>2. Download the print-ready STL file.<br>3. Check the mesh: is it watertight? Any problems?<br>4. Tell me the slicer settings I should use: layer height, walls, infill, supports, brim. And the estimated print time.<br>5. Give me step-by-step instructions for loading it into Qidi Studio.</div>
-        <div class="say-note">Replace [SIZE] with the height you want from the size chart above. 10 cm is a good starting point.</div>
+        <div class="say-text">I want to 3D print my best model on my Qidi Q1 Pro (PLA, 0.4mm nozzle). Here's what I need:<br><br>1. Use Meshy's remesh tool to convert it to STL format with these settings: topology triangle, target polycount 50000, resize height [SIZE] cm, origin at bottom.<br>2. Download the STL file.<br>3. Repair the mesh: install admesh if needed, then run it to fix normals, fill holes, remove disconnected fragments, and make the mesh watertight. Save the repaired file.<br>4. Check if the repaired mesh is watertight and solid (not a thin hollow shell). If it's hollow, tell me &mdash; we may need to regenerate with a different prompt.<br>5. Tell me the slicer settings: layer height, walls, infill (at least 15%), tree supports if needed, brim. Estimated print time.<br>6. Give me step-by-step instructions for loading it into Qidi Studio.</div>
+        <div class="say-note">Replace [SIZE] with the height you want from the size chart above. 10 cm is a good starting point. The repair step is important &mdash; about half of Meshy models need it.</div>
       </div>
 
       <p>Claude Code will come back with a report. The key things to check:</p>
 
       <ul class="watch-list">
-        <li><span class="watch-icon">&#128200;</span> <strong>Triangle count:</strong> Raw Meshy models have around 600K triangles. After optimization, around 30K. Your printer can't resolve detail finer than ~0.4mm anyway &mdash; extra triangles just slow down the slicer.</li>
+        <li><span class="watch-icon">&#128200;</span> <strong>Triangle count:</strong> Raw Meshy models have around 600K triangles. After remesh, around 50K. Your printer can't resolve detail finer than ~0.4mm anyway &mdash; extra triangles just slow down the slicer.</li>
         <li><span class="watch-icon">&#9989;</span> <strong>Watertight:</strong> Should say "yes" or "repaired." If it says the mesh can't be fixed, see the troubleshooting panel below.</li>
-        <li><span class="watch-icon">&#128207;</span> <strong>Supports:</strong> Models with overhangs (arms reaching out, horns at angles) will need support material. Claude Code will tell you. It adds print time but prevents droopy plastic.</li>
+        <li><span class="watch-icon">&#128307;</span> <strong>Solid, not hollow:</strong> Meshy sometimes generates thin shells instead of solid objects. If Claude Code says the model is hollow, go back to Mission 2 and regenerate with "thick solid body" in your prompt.</li>
+        <li><span class="watch-icon">&#128207;</span> <strong>Supports:</strong> Models with overhangs (arms reaching out, horns at angles) will need tree supports. Claude Code will tell you. It adds print time but prevents droopy plastic.</li>
         <li><span class="watch-icon">&#9201;</span> <strong>Print time:</strong> A 10 cm model is typically 3-5 hours depending on complexity and supports. Check that the estimate seems right for your size.</li>
       </ul>
 
@@ -607,8 +638,12 @@
         <div class="example-panel-header">// what if something goes wrong</div>
         <div class="example-panel-body">
           <div class="ex-card">
+            <div class="ex-card-label neutral">Model is hollow / thin shell</div>
+            <p>This is the most common Meshy problem. The model looks solid on screen but is actually a paper-thin shell &mdash; the slicer prints it hollow with no infill. Tell Claude Code: "The model is a thin shell, not solid. Can you thicken it using Blender's Solidify modifier (2mm thickness)?" If that doesn't work, regenerate with "thick solid body, not hollow" in your prompt.</p>
+          </div>
+          <div class="ex-card">
             <div class="ex-card-label neutral">Mesh can't be repaired</div>
-            <p>Some Meshy models have geometry too broken to auto-fix. Go back to Mission 1 or 2 and add these words to your prompt: "solid single piece, thick walls, no thin floating details, sitting on a solid base." Regenerate.</p>
+            <p>Some Meshy models have geometry too broken for admesh to fix. Go back to Mission 2 and ask Claude Code for a print-optimized rewrite of your prompt. Add: "solid single piece, thick walls, no thin floating details, sitting on a solid base." Regenerate.</p>
           </div>
           <div class="ex-card">
             <div class="ex-card-label neutral">Slicer shows red areas</div>
@@ -671,7 +706,7 @@
     <div class="eyebrow" style="margin-bottom: 12px;">// skills earned today</div>
     <div class="xp-row" id="xpRow">
       <span class="xp-pip" id="xp1">3D Prompt Craft</span>
-      <span class="xp-pip" id="xp2">3D Iteration</span>
+      <span class="xp-pip" id="xp2">Print Optimization</span>
       <span class="xp-pip" id="xp3">Print Preparation</span>
     </div>
     <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);">
@@ -694,7 +729,7 @@
         <span class="xp-pip earned">3D Modeling</span>
         <span class="xp-pip earned">Physical Prototyping</span>
         <span class="xp-pip" id="xp1b">3D Prompt Craft</span>
-        <span class="xp-pip" id="xp2b">3D Iteration</span>
+        <span class="xp-pip" id="xp2b">Print Optimization</span>
         <span class="xp-pip" id="xp3b">Print Preparation</span>
       </div>
     </div>
