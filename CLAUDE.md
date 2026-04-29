@@ -16,6 +16,8 @@ Self-contained HTML activity guides — dark-themed, polished, interactive — t
 | `francisco-ai-studio-day4.html` | 4 | Build Your Own Game | Francisco | Game design doc (See/Do/Win-Lose), first playable, art pass with Nano Banana, playtesting with fresh eyes |
 | `ai-studio-day5-the-forge.html` | 5 | The Forge | Both | 3D modeling (Three.js), STL export, 3D printing. Code-to-physical-object pipeline |
 | `ai-studio-day5b-assembly.html` | 5.2 | Assembly | Both | Multi-part printing: split plans, joint design, test prints, assembly |
+| `ai-studio-day7-historical-bio.html` | 7 | The Biography | Both | Graphic novel biography of a real historical figure: research, scope to one window, five planning docs, character lock, sequential pages with Nano Banana 2 |
+| `ai-studio-day7b-the-quote.html` | 7b | The Quote | Both | Single lip-synced video shot of the morning's figure delivering a verified quote. Quote attribution literacy, talking-head shot brief, iterative video critique. Web tools (Kling.ai / Veo 3) on Andres's Mac |
 | `index.html` | — | Hub | — | Index page linking to all days |
 
 ## Design System
