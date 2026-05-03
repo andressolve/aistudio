@@ -31,6 +31,7 @@
     --day6: #6366f1;
     --day7: #dc2626;
     --day7b: #f0c040;
+    --daysaint: #f0c040;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -189,6 +190,9 @@
 
   .day-card[data-day="7b"] { --day-color: var(--day7b); }
   .day-card[data-day="7b"]:hover { border-color: var(--day7b); }
+
+  .day-card[data-day="saint"] { --day-color: var(--daysaint); }
+  .day-card[data-day="saint"]:hover { border-color: var(--daysaint); }
 
   .day-number {
     font-family: 'Syne', sans-serif;
@@ -432,6 +436,19 @@
         <div class="day-tag">// historian's lab &mdash; morning</div>
         <div class="day-title">The Biography</div>
         <div class="day-subtitle">Pick a real person from history. Build a <strong>graphic novel biography</strong> of one decisive moment in their life &mdash; serious, painterly, locked-character.</div>
+      </div>
+      <div class="card-arrow">&#8250;</div>
+    </a>
+
+    <a class="day-card" data-day="saint" href="ai-studio-name-saint.html">
+      <div class="day-number">
+        <span class="day-number-label">Special</span>
+        &#9728;
+      </div>
+      <div class="day-body">
+        <div class="day-tag">// hagiographer's lab</div>
+        <div class="day-title">The Name-Saint</div>
+        <div class="day-subtitle">Same shape as Day 7, but the subject was chosen for you the day you were baptized. Francisco &rarr; <strong>St. Francis of Assisi</strong>. Sebastian &rarr; <strong>St. Sebastian</strong>.</div>
       </div>
       <div class="card-arrow">&#8250;</div>
     </a>

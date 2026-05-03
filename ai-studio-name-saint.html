@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Studio — The Name-Saint</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --bg: #0a0a10;
+    --surface: #131320;
+    --surface2: #1c1c2e;
+    --border: #282842;
+    --accent: #f06030;
+    --accent2: #7c5cf0;
+    --accent3: #22d3a8;
+    --text: #e8e8f2;
+    --text-muted: #7a7a9e;
+    --text-dim: #464868;
+    --gold: #f0c030;
+    --bio: #dc2626;
+    --bio-deep: #991b1b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(240,192,48,0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 90%, rgba(220,38,38,0.04) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(124,92,240,0.03) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ---- HEADER ---- */
+  header { margin-bottom: 48px; }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .eyebrow::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 8vw, 68px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    color: var(--text);
+  }
+
+  h1 span { color: var(--gold); }
+
+  .subtitle {
+    margin-top: 20px;
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 620px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .subtitle strong { color: var(--text); font-weight: 500; }
+
+  /* ---- WHO'S WHO ---- */
+  .whos-who {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  @media (max-width: 600px) { .whos-who { grid-template-columns: 1fr; } }
+
+  .who-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--text-dim);
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s, opacity 0.2s;
+    position: relative;
+  }
+
+  .who-card:hover {
+    border-color: var(--gold);
+    border-left-color: var(--gold);
+    transform: translateY(-1px);
+  }
+
+  .who-card.selected {
+    border-color: var(--gold);
+    border-left-color: var(--gold);
+    background: rgba(240,192,64,0.06);
+  }
+
+  .who-card.selected::after {
+    content: '\2713 selected';
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .who-card.dim { opacity: 0.4; }
+
+  .who-hint {
+    margin-top: 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-align: center;
+  }
+
+  .who-hint.locked { color: var(--gold); }
+
+  .who-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .who-saint {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .who-blurb {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.55;
+    font-weight: 300;
+  }
+
+  /* ---- RECAP ---- */
+  .recap-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent3);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-top: 36px;
+  }
+
+  .recap-icon { font-size: 20px; line-height: 1; margin-top: 2px; }
+
+  .recap-content {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .recap-content strong { color: var(--accent3); font-weight: 500; }
+
+  /* ---- RULE CARD ---- */
+  .rule-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .rule-icon { font-size: 28px; line-height: 1; margin-top: 2px; }
+
+  .rule-text h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .rule-text p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .rule-text strong { color: var(--gold); font-weight: 500; }
+
+  /* ---- PROGRESS ---- */
+  .progress-area {
+    margin-bottom: 40px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .progress-track {
+    flex: 1; height: 5px;
+    background: var(--surface2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--bio));
+    border-radius: 99px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+
+  .progress-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--gold);
+    white-space: nowrap;
+    min-width: 50px;
+    text-align: right;
+  }
+
+  /* ---- MISSION CARDS ---- */
+  .mission-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 0;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .mission-card.done {
+    opacity: 0.55;
+    border-color: var(--border);
+  }
+
+  .mission-card.done .card-number {
+    background: var(--accent3);
+    color: var(--bg);
+  }
+
+  .mission-card.done .card-number::after { content: '\2713'; }
+
+  .card-header {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .card-header:hover { background: var(--surface2); }
+
+  .card-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    width: 64px;
+    min-width: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+    color: var(--text-muted);
+    border-right: 1px solid var(--border);
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .card-meta {
+    padding: 18px 20px;
+    flex: 1;
+  }
+
+  .card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .card-badge {
+    display: inline-block;
+    margin-top: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 99px;
+    border: 1px solid;
+  }
+
+  .badge-warm { color: var(--gold); border-color: var(--gold); background: rgba(240,192,64,0.08); }
+  .badge-cool { color: var(--accent3); border-color: var(--accent3); background: rgba(45,212,191,0.08); }
+  .badge-bio { color: var(--bio); border-color: var(--bio); background: rgba(220,38,38,0.08); }
+
+  .card-chevron {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    color: var(--text-dim);
+    font-size: 20px;
+    transition: transform 0.3s, color 0.2s;
+  }
+
+  .mission-card.open .card-chevron {
+    transform: rotate(90deg);
+    color: var(--gold);
+  }
+
+  /* ---- CARD BODY ---- */
+  .card-body {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 24px 24px 20px;
+    animation: slideDown 0.25s ease;
+  }
+
+  .mission-card.open .card-body { display: block; }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-body p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 14px;
+    font-weight: 300;
+  }
+
+  .card-body p:last-of-type { margin-bottom: 0; }
+
+  .card-body strong { color: var(--text); font-weight: 500; }
+
+  /* ---- SAY BOX ---- */
+  .say-box {
+    background: var(--bg);
+    border: 1px solid rgba(124,92,191,0.3);
+    border-left: 3px solid var(--accent2);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 14px 0;
+  }
+
+  .say-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .say-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  .saint-slot {
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  .saint-slot.filled {
+    color: var(--gold);
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  /* ---- TIPS ---- */
+  .tip-box {
+    background: rgba(240,192,64,0.06);
+    border: 1px solid rgba(240,192,64,0.25);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 16px 0;
+    display: flex;
+    gap: 12px;
+  }
+
+  .tip-icon { font-size: 16px; line-height: 1; margin-top: 1px; }
+
+  .tip-content {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .tip-content strong { color: var(--gold); font-weight: 500; }
+
+  /* ---- COMPLETE BUTTON ---- */
+  .complete-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid var(--accent3);
+    border-radius: 8px;
+    color: var(--accent3);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .complete-btn:hover {
+    background: var(--accent3);
+    color: var(--bg);
+  }
+
+  .mission-card.done .complete-btn {
+    border-color: var(--text-dim);
+    color: var(--text-dim);
+  }
+
+  /* ---- XP ---- */
+  .xp-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .xp-pip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    transition: all 0.3s;
+  }
+
+  .xp-pip.earned {
+    background: rgba(240,192,64,0.1);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">// hagiographer's lab</div>
+    <h1>The Name-<span>Saint</span></h1>
+    <p class="subtitle">A graphic novel biography of <strong>the saint you were named for</strong>. Same shape as Day 7 &mdash; but this time the subject was chosen for you the day you were baptized.</p>
+
+    <div class="whos-who">
+      <div class="who-card" data-saint="francis" onclick="selectSaint('francis')">
+        <div class="who-name">Francisco &rarr;</div>
+        <div class="who-saint">St. Francis of Assisi</div>
+        <div class="who-blurb">Italy, c.1181&ndash;1226. The merchant's son who gave away everything.</div>
+      </div>
+      <div class="who-card" data-saint="sebastian" onclick="selectSaint('sebastian')">
+        <div class="who-name">Sebastian &rarr;</div>
+        <div class="who-saint">St. Sebastian</div>
+        <div class="who-blurb">Roman Empire, c.255&ndash;288. The soldier in the emperor's guard who wouldn't deny his faith.</div>
+      </div>
+    </div>
+    <div class="who-hint" id="whoHint">&larr; Click your card to lock in your saint. The prompts below will fill in.</div>
+  </header>
+
+  <!-- RECAP -->
+  <div class="recap-card">
+    <div class="recap-icon">&#128203;</div>
+    <div class="recap-content">
+      You did this on Day 7 with a historical figure. You know the moves: <strong>research, outline, direct, run</strong>. Today you do the same shape with your patron.
+    </div>
+  </div>
+
+  <!-- THE RULE -->
+  <div class="rule-card">
+    <div class="rule-icon">&#9728;&#65039;</div>
+    <div class="rule-text">
+      <h3>The Hagiographer's Rule</h3>
+      <p>Saints aren't statues, and this isn't Wikipedia. <strong>Don't try to cover the whole life</strong> &mdash; but don't just stack disconnected moments either. Pick two or three moments that <strong>trace how he became who he was</strong>: a before, a turn, an after. <span data-saint-slot="arc">For example: the merchant's son before, the turning point, the man he became after &mdash; that's an arc, not a slideshow.</span> The icon is the simplification; your job is to show the becoming.</p>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-area">
+    <span class="progress-label">MISSIONS COMPLETE</span>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <span class="progress-count" id="progressCount">0 / 4</span>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 1: RESEARCH -->
+  <!-- =============================== -->
+  <div class="mission-card" id="m1">
+    <div class="card-header" onclick="toggleCard('m1')">
+      <div class="card-number">01</div>
+      <div class="card-meta">
+        <div class="card-tag">Research</div>
+        <div class="card-title">Meet Them as a Person</div>
+        <span class="card-badge badge-warm">15 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Before any outline, learn who your saint actually <em>was</em> &mdash; not just what he's famous for. Quirks, family, what he fought about, what he actually said, what he was like before he was holy.</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">Look up <span data-saint-slot="name" class="saint-slot">[click your card at the top]</span>. Tell me who he was as a person &mdash; quirks, family, what he fought about, what he actually said out loud. What's documented history vs. what's later legend. Not just the iconography.</div>
+      </div>
+
+      <p>Read what comes back. The strange specific stuff &mdash; <span data-saint-slot="example">a particular argument, a real friendship, a thing he said that no one expected</span> &mdash; is what makes a real book different from a holy card.</p>
+
+      <button class="complete-btn" onclick="markDone('m1', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 2: OUTLINE -->
+  <!-- =============================== -->
+  <div class="mission-card" id="m2">
+    <div class="card-header" onclick="toggleCard('m2')">
+      <div class="card-number">02</div>
+      <div class="card-meta">
+        <div class="card-tag">Outline</div>
+        <div class="card-title">Get an Outline</div>
+        <span class="card-badge badge-cool">10 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Now ask for the shape of the book &mdash; <strong>not the whole life</strong>, just two or three moments that show how he <em>became</em> who he was. A before, a turn, an after. Ballpark length: <strong>around 20 pages</strong>, give or take.</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">Give me an outline for a graphic novel about <span data-saint-slot="name" class="saint-slot">[click your card at the top]</span>. Not the whole life and not a slideshow &mdash; pick two or three moments that trace how he became who he was. A before, a turning point, an after. The moments that mean something. Ballpark 20 pages, give or take.</div>
+      </div>
+
+      <button class="complete-btn" onclick="markDone('m2', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 3: DIRECT -->
+  <!-- =============================== -->
+  <div class="mission-card" id="m3">
+    <div class="card-header" onclick="toggleCard('m3')">
+      <div class="card-number">03</div>
+      <div class="card-meta">
+        <div class="card-tag">Direct</div>
+        <div class="card-title">Direct the Story</div>
+        <span class="card-badge badge-bio">15 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Read the outline. <strong>This is the part that matters.</strong> Tell Claude what to change. More of this, less of that, start later, cut this part, dig deeper into that moment. Plain English, in your own words.</p>
+
+      <div class="tip-box">
+        <div class="tip-icon">&#9998;</div>
+        <div class="tip-content">A good director responds to a draft. They don't write from scratch. The outline isn't a contract &mdash; it's something to push against. <strong>Push.</strong></div>
+      </div>
+
+      <p>When the outline feels right to you, you're done.</p>
+
+      <button class="complete-btn" onclick="markDone('m3', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- MISSION 4: MAKE THE BOOK -->
+  <!-- =============================== -->
+  <div class="mission-card" id="m4">
+    <div class="card-header" onclick="toggleCard('m4')">
+      <div class="card-number">04</div>
+      <div class="card-meta">
+        <div class="card-tag">Build</div>
+        <div class="card-title">Make the Book</div>
+        <span class="card-badge badge-bio">60&ndash;90 min</span>
+      </div>
+      <div class="card-chevron">&#8250;</div>
+    </div>
+    <div class="card-body">
+      <p>Now the <strong>biographical graphic novel skill</strong> does the work. Character reference, every page, the reader &mdash; the whole book, end to end, no pausing to ask you. You step away. You come back to a finished book.</p>
+
+      <div class="say-box">
+        <div class="say-label">&#128172; Say this to Claude Code</div>
+        <div class="say-text">Use the biographical graphic novel skill to make the book. Run it end to end &mdash; don't stop to ask me.</div>
+      </div>
+
+      <p>When it's done, flip through it. Read your saint's life as a book you directed.</p>
+
+      <button class="complete-btn" onclick="markDone('m4', event)">
+        <span>&#10003;</span> Mark Complete
+      </button>
+    </div>
+  </div>
+
+  <!-- =============================== -->
+  <!-- XP -->
+  <!-- =============================== -->
+  <div style="margin-top: 48px; padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px;">
+    <div class="eyebrow" style="margin-bottom: 12px;">// skills practiced today</div>
+    <div class="xp-row" id="xpRow">
+      <span class="xp-pip" id="xp1">Hagiography</span>
+      <span class="xp-pip" id="xp2">Outline Direction</span>
+      <span class="xp-pip" id="xp3">Editorial Eye</span>
+      <span class="xp-pip" id="xp4">Letting Tools Run</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const STATE = { completed: new Set() };
+  const TOTAL = 4;
+
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    const isOpen = card.classList.contains('open');
+    document.querySelectorAll('.mission-card').forEach(c => c.classList.remove('open'));
+    if (!isOpen) card.classList.add('open');
+  }
+
+  function markDone(id, e) {
+    e.stopPropagation();
+    const card = document.getElementById(id);
+    const num = id.replace('m', '');
+
+    if (STATE.completed.has(id)) {
+      STATE.completed.delete(id);
+      card.classList.remove('done');
+      document.getElementById('xp' + num).classList.remove('earned');
+    } else {
+      STATE.completed.add(id);
+      card.classList.add('done');
+      card.classList.remove('open');
+      document.getElementById('xp' + num).classList.add('earned');
+    }
+
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const count = STATE.completed.size;
+    document.getElementById('progressFill').style.width = (count / TOTAL * 100) + '%';
+    document.getElementById('progressCount').textContent = count + ' / ' + TOTAL;
+  }
+
+  // ---- SAINT SELECTOR ----
+  const SAINTS = {
+    francis: {
+      name: "St. Francis of Assisi (c.1181\u20131226 AD), the Italian merchant's son who became a friar",
+      arc: "Francis the rich young merchant's son partying in Assisi, Francis stripping off his fine clothes in the town square to give them back to his father, Francis years later preaching to the birds at Bevagna \u2014 that's an arc, not a slideshow.",
+      example: "Francis stripping naked in the town square to give his clothes back to his father, the dream at Spoleto that turned him around, the way he kissed a leper's hand"
+    },
+    sebastian: {
+      name: "St. Sebastian (c.255\u2013288 AD), the Roman officer in Diocletian's Praetorian Guard",
+      arc: "Sebastian the Roman officer trusted by the emperor, Sebastian secretly visiting Christians in prison and converting his fellow soldiers, Sebastian finally tied to a post and shot full of arrows for refusing to deny Christ \u2014 that's an arc, not a slideshow.",
+      example: "Sebastian quietly converting fellow soldiers in the guardhouse, the moment Diocletian found out, the way he stood up after surviving the arrows"
+    }
+  };
+
+  function selectSaint(key) {
+    const saint = SAINTS[key];
+    document.querySelectorAll('[data-saint-slot="name"]').forEach(el => {
+      el.textContent = saint.name;
+      el.classList.add('filled');
+    });
+    document.querySelectorAll('[data-saint-slot="arc"]').forEach(el => {
+      el.textContent = saint.arc;
+    });
+    document.querySelectorAll('[data-saint-slot="example"]').forEach(el => {
+      el.textContent = saint.example;
+    });
+    document.querySelectorAll('.who-card').forEach(c => {
+      const isSelected = c.dataset.saint === key;
+      c.classList.toggle('selected', isSelected);
+      c.classList.toggle('dim', !isSelected);
+    });
+    const hint = document.getElementById('whoHint');
+    hint.textContent = '\u2713 Locked in. Prompts below are filled with your saint.';
+    hint.classList.add('locked');
+  }
+
+  document.getElementById('m1').classList.add('open');
+</script>
+</body>
+</html>
