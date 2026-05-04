@@ -65,13 +65,42 @@ These emerged from iterating on the activities — keep them in mind when buildi
 - **Simpler ≠ better when the domain has real constraints.** For purely creative activities (graphic novels, guides), fewer missions and lighter structure works. For activities with engineering constraints (3D printing, anything with physical output), the activity needs enough structure to prevent failure. A failed 3D print wastes real time and filament. A mediocre graphic novel is just a redo. Match the rigor to the stakes.
 - **The "rule card" framing metaphor is optional.** Day 1 and Day 4 use it well (Director's Rule, Game Designer's Rule). Day 5 uses it well too (the 45° gravity rule). But don't force one where it doesn't help.
 
+## Mission density — the Day 7/7b calibration (this is the target)
+
+Day 7 and 7b shipped at the right density. Match this. Earlier days are heavier than they need to be — when revising, lean toward 7b.
+
+**The proven mission shape:**
+1. One paragraph explaining the move. One sentence is ideal. Two is the limit.
+2. One say-box — a self-contained prompt the kid pastes into Claude Code.
+3. *Optionally* one closing sentence (a check, a fork, an "if X — regenerate").
+4. Mark Complete button.
+
+That's it. No steps list. No tool chips. No watch-list. No tip box. No "SEE AN EXAMPLE" toggle. No capstone — unless the day genuinely needs synthesis the missions didn't deliver.
+
+**The say-box prompt rule.** Self-contained but minimum-viable. The kid's Claude session can't read minds — name the subject, the format, the intent, and reference continuity ("from this morning", "we'll animate it next"). But strip everything that's specification noise: parameter dumps, file paths, taxonomies, dimensions, attribution labels, "first do X, then Y" branches. If the skill doc handles it, don't repeat it in the kid-facing prompt.
+
+**Reflexive cuts when drafting:**
+- Attribution taxonomies (VERIFIED/ATTRIBUTED/APOCRYPHAL) — drop unless it's *the* skill of the mission.
+- Style hardcoding (photoreal vs illustrated) when the morning's reference already locks it. Say "same style as the graphic novel" not "photoreal, cinematic, 50mm lens."
+- Tool chips listing every tool — kids know what tools they have.
+- "Watch for:" failure-mode lists — that's skill-doc material, not kid material.
+- Multi-step prompts when one prompt produces the same result.
+- Capstones added by reflex.
+
+**Anti-patterns I (Claude) fall into and need to resist:**
+- Spec-mode bleed: skill doc rigor leaking into kid-facing prompts.
+- "Helpful" fallback branches ("if it doesn't work, try…").
+- Wrapping the prompt in instructions about how to use the prompt.
+- Adding context the kid already has from this morning's session.
+- Treating brevity as risky. It's not. Verbosity is the failure mode here.
+
+When in doubt, open `ai-studio-day7b-the-quote.html` and look at M1, M2, M3. That's the bar.
+
 ## How to Build New Activities
 
 1. Single self-contained HTML file. All CSS inline in `<style>`, all JS inline in `<script>`. No external deps except Google Fonts.
-2. Follow the existing component patterns — don't invent new UI primitives.
-3. Start with a header (eyebrow label, big Syne title, subtitle), then a recap card. Add a "rule" card only if the framing metaphor genuinely helps.
-4. Structure missions as numbered accordion cards. Each mission needs: tag, title, time estimate badge, body with explanation, a prompt/say box, steps list, tool chips, and a Mark Complete button.
-5. Include "SEE AN EXAMPLE" toggle panels — kids need concrete examples, not just instructions. Show weak vs strong examples side by side where possible.
-6. End with XP pips (today's skills + cumulative from all prior days).
-7. Add the new day to `index.html`.
-8. Keep the director metaphor: the kid is the director, AI is the crew. Every mission reinforces that the kid's job is to describe, critique, and iterate — not to do the mechanical work themselves.
+2. Follow existing component patterns — don't invent new UI primitives.
+3. Header (eyebrow, Syne title, subtitle) → recap card → missions → XP pips. Add a "rule" card only if the framing metaphor genuinely helps.
+4. Missions are numbered accordion cards. Use the Day 7/7b shape above. Heavier components (steps list, watch-list, examples, tip box) are *available* — use them only when a specific mission earns it. Default = lean.
+5. Add the new day to `index.html`.
+6. Keep the director metaphor: the kid describes, critiques, iterates. The AI does the mechanical work.
