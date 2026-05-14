@@ -349,6 +349,15 @@
     line-height: 1.65;
   }
 
+  .say-note {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 10px;
+    font-style: italic;
+    font-weight: 300;
+  }
+
   /* ---- COMPLETE BUTTON ---- */
   .complete-btn {
     display: inline-flex;
@@ -452,6 +461,7 @@
       <div class="say-box">
         <div class="say-label">&#128172; Say this to Claude Code</div>
         <div class="say-text">I want a scene with a [CHARACTER] in a [ENVIRONMENT], [ACTION].</div>
+        <div class="say-note">e.g., "I want a scene with a hobbit in misty pine woods, exploring."</div>
       </div>
 
       <button class="complete-btn" onclick="markDone('m1', event)">
